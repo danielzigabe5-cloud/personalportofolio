@@ -1,3 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Replace any @import 'tailwindcss' or JavaScript path imports with standard directives */
+@tailwindcss base;
+@tailwindcss components;
+@tailwindcss utilities;

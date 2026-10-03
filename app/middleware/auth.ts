@@ -1,9 +1,4 @@
-export default defineNuxtRouteMiddleware((to) => {
-  // 🍪 Token ፈልግ
+export default defineNuxtRouteMiddleware(() => {
   const token = useCookie('auth_token')
-
-  // 🔐 Token ከሌለ → ወደ Login
-  if (!token.value) {
-    return navigateTo('/admin/login')
-  }
+  if (!token.value) return navigateTo('/admin/login')
 })

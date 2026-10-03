@@ -10,18 +10,16 @@ export default defineNuxtConfig({
   ],
 
   modules: [
-    '@nuxtjs/tailwindcss',
-    '@nuxt/icon'
+    '@nuxtjs/tailwindcss'
   ],
 
   app: {
     head: {
-      title: 'Alemu Mekete | Frontend Developer',
-
+      title: 'DZ Admin Panel',
       meta: [
         {
           name: 'description',
-          content: 'Personal portfolio of Alemu Mekete - Frontend Developer'
+          content: 'Daniel Zigabe Personal Portfolio Admin Dashboard'
         }
       ]
     }
