@@ -1,291 +1,382 @@
 <script setup lang="ts">
+import profileImg from '~/assets/images/daniel.jpg'
+
+definePageMeta({
+  layout: 'default'
+})
+
 const projects = [
   {
     title: 'CombolojoSPORT',
     description: 'Sports venue booking platform for Ethiopia.',
-    image: '/images/combolojo.jpg',
-    tags: ['Nuxt.js', 'Laravel', 'Flutter']
+    image: profileImg,
+    tags: ['Nuxt.js', 'Laravel', 'Flutter'],
+    demo: '#',
+    github: '#'
   },
   {
     title: 'Internship Attendance System',
     description: 'Student, Advisor and Company management system.',
-    image: '/images/internship.jpg',
-    tags: ['Nuxt.js', 'Laravel', 'MySQL']
+    image: profileImg,
+    tags: ['Nuxt.js', 'Laravel', 'MySQL'],
+    demo: '#',
+    github: '#'
   },
   {
     title: 'Personal Portfolio',
     description: 'Modern developer portfolio website.',
-    image: '/images/portfolio.jpg',
-    tags: ['Nuxt.js', 'Vue.js', 'CSS']
+    image: profileImg,
+    tags: ['Nuxt.js', 'Vue.js', 'CSS'],
+    demo: '#',
+    github: '#'
   }
 ]
 </script>
 
 <template>
-  <div>
+  <div class="projects-page">
+
+    <!-- HEADER -->
     <section class="page-header">
       <div class="page-container">
-        <span>MY WORK</span>
-        <h1>My <strong>Projects</strong></h1>
-        <p>Some of the projects I have worked on.</p>
+
+        <span class="eyebrow">
+          MY WORK
+        </span>
+
+        <h1>
+          My <strong>Projects</strong>
+        </h1>
+
+        <p>
+          Some of the projects I have worked on.
+        </p>
+
       </div>
     </section>
 
+    <!-- PROJECTS -->
     <section class="projects-section">
-      <div class="page-container projects-grid">
-        <article
-          v-for="project in projects"
-          :key="project.title"
-          class="project-card-large"
-        >
-          <img :src="project.image" :alt="project.title" />
+      <div class="page-container">
 
-          <div class="project-card-body">
-            <h2>{{ project.title }}</h2>
-            <p>{{ project.description }}</p>
+        <div class="projects-grid">
 
-            <div class="project-tags">
-              <span v-for="tag in project.tags" :key="tag">
-                {{ tag }}
-              </span>
+          <article
+            v-for="project in projects"
+            :key="project.title"
+            class="project-card"
+          >
+
+            <div class="project-image">
+              <img
+                :src="project.image"
+                :alt="project.title"
+                loading="lazy"
+              />
             </div>
 
-            <div class="project-buttons">
-              <a href="#" class="green-small-button">↗ Live Demo</a>
-              <a href="#" class="dark-small-button">GitHub</a>
+            <div class="project-card-body">
+
+              <h2>
+                {{ project.title }}
+              </h2>
+
+              <p>
+                {{ project.description }}
+              </p>
+
+              <ul class="project-tags">
+                <li
+                  v-for="tag in project.tags"
+                  :key="tag"
+                >
+                  {{ tag }}
+                </li>
+              </ul>
+
+              <div class="project-buttons">
+
+                <a
+                  :href="project.demo"
+                  class="blue-button"
+                >
+                  ↗ Live Demo
+                </a>
+
+                <a
+                  :href="project.github"
+                  class="github-button"
+                >
+                  GitHub
+                </a>
+
+              </div>
+
             </div>
-          </div>
-        </article>
+
+          </article>
+
+        </div>
+
       </div>
     </section>
+
   </div>
 </template>
 
 <style scoped>
-/* ===== Base Container ===== */
+.projects-page {
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+/* CONTAINER */
+
 .page-container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-/* ===== Page Header ===== */
+/* HEADER */
+
 .page-header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #fff;
-  padding: 80px 20px 60px;
+  padding: 85px 20px 65px;
   text-align: center;
-  border-bottom: 3px solid #42b883;
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #f8fafc
+  );
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.page-header span {
+.eyebrow {
   display: inline-block;
-  color: #42b883;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
   margin-bottom: 12px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 3px;
 }
 
 .page-header h1 {
+  margin: 0 0 14px;
+  color: #0f172a;
   font-size: 48px;
   font-weight: 800;
-  margin: 0 0 14px;
-  color: #ffffff;
 }
 
 .page-header h1 strong {
-  color: #42b883;
+  color: #2563eb;
 }
 
 .page-header p {
-  color: #94a3b8;
-  font-size: 17px;
   margin: 0;
+  color: #64748b;
+  font-size: 17px;
 }
 
-/* ===== Projects Section ===== */
+/* PROJECT SECTION */
+
 .projects-section {
-  background: #f8fafc;
   padding: 80px 20px;
+  background: #f8fafc;
 }
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(320px, 1fr)
+  );
+  gap: 30px;
 }
 
-/* ===== Project Card ===== */
-.project-card-large {
-  background: #ffffff;
-  border-radius: 18px;
+/* CARD */
+
+.project-card {
   overflow: hidden;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
-  transition: 0.35s;
   display: flex;
   flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+  transition: 0.35s ease;
 }
 
-.project-card-large:hover {
+.project-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 50px rgba(66, 184, 131, 0.18);
-  border-color: #42b883;
+  border-color: #93c5fd;
+  box-shadow: 0 20px 45px rgba(37, 99, 235, 0.12);
 }
 
-/* ===== Project Image ===== */
-.project-card-large img {
+/* IMAGE */
+
+.project-image {
   width: 100%;
   height: 220px;
-  object-fit: cover;
-  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
-  transition: 0.5s;
-  display: block;
+  overflow: hidden;
+  background: #eff6ff;
 }
 
-.project-card-large:hover img {
+.project-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: 0.5s ease;
+}
+
+.project-card:hover .project-image img {
   transform: scale(1.05);
 }
 
-/* ===== Card Body ===== */
+/* BODY */
+
 .project-card-body {
-  padding: 26px 28px 28px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   flex: 1;
+  gap: 13px;
+  padding: 26px 28px 28px;
 }
 
 .project-card-body h2 {
+  margin: 0;
   color: #0f172a;
   font-size: 21px;
   font-weight: 800;
-  margin: 0;
-  line-height: 1.3;
 }
 
 .project-card-body p {
+  flex: 1;
+  margin: 0;
   color: #64748b;
   font-size: 15px;
   line-height: 1.6;
-  margin: 0;
-  flex: 1;
 }
 
-/* ===== Tags ===== */
+/* TAGS */
+
 .project-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 4px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.project-tags span {
-  display: inline-block;
-  padding: 5px 12px;
-  background: rgba(66, 184, 131, 0.1);
-  color: #42b883;
+.project-tags li {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
   font-size: 12px;
   font-weight: 700;
-  border-radius: 20px;
-  letter-spacing: 0.4px;
-  border: 1px solid rgba(66, 184, 131, 0.2);
-  transition: 0.25s;
+  transition: 0.25s ease;
 }
 
-.project-tags span:hover {
-  background: #42b883;
+.project-tags li:hover {
+  background: #2563eb;
   color: #ffffff;
   transform: translateY(-2px);
 }
 
-/* ===== Buttons ===== */
+/* BUTTONS */
+
 .project-buttons {
   display: flex;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
-.green-small-button,
-.dark-small-button {
+.blue-button,
+.github-button {
   flex: 1;
   padding: 11px 16px;
   border-radius: 10px;
+  text-align: center;
+  text-decoration: none;
   font-size: 13px;
   font-weight: 700;
-  text-decoration: none;
-  text-align: center;
-  transition: 0.3s;
-  cursor: pointer;
-  letter-spacing: 0.3px;
+  transition: 0.3s ease;
 }
 
-.green-small-button {
-  background: linear-gradient(135deg, #42b883, #347474);
+.blue-button {
+  background: #2563eb;
   color: #ffffff;
-  box-shadow: 0 6px 16px rgba(66, 184, 131, 0.3);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.22);
 }
 
-.green-small-button:hover {
+.blue-button:hover {
+  background: #1d4ed8;
   transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(66, 184, 131, 0.45);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.30);
 }
 
-.dark-small-button {
-  background: #0f172a;
-  color: #e2e8f0;
-  border: 1px solid #334155;
+.github-button {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
 }
 
-.dark-small-button:hover {
-  background: #1e293b;
-  color: #42b883;
-  border-color: #42b883;
+.github-button:hover {
+  background: #f8fafc;
+  color: #2563eb;
+  border-color: #2563eb;
   transform: translateY(-3px);
 }
 
-/* ===== Responsive ===== */
+/* RESPONSIVE */
+
 @media (max-width: 900px) {
   .page-header h1 {
-    font-size: 38px;
+    font-size: 40px;
   }
+
   .projects-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
-  }
-  .project-card-large img {
-    height: 200px;
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(290px, 1fr)
+    );
   }
 }
 
 @media (max-width: 600px) {
   .page-header {
-    padding: 60px 16px 40px;
+    padding: 60px 16px 45px;
   }
+
   .page-header h1 {
-    font-size: 30px;
+    font-size: 32px;
   }
+
   .page-header p {
     font-size: 15px;
   }
+
   .projects-section {
     padding: 50px 16px;
   }
+
   .projects-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  .project-card-large img {
+
+  .project-image {
     height: 190px;
   }
+
   .project-card-body {
-    padding: 22px 22px 24px;
+    padding: 22px;
   }
-  .project-card-body h2 {
-    font-size: 18px;
-  }
+
   .project-buttons {
     flex-direction: column;
   }

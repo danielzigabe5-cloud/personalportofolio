@@ -1,120 +1,281 @@
 <script setup lang="ts">
-const groups = [
+
+definePageMeta({
+  layout: 'default'
+})
+
+const skillCategories = [
   {
     title: 'Frontend Development',
-    icon: '⌘',
+    icon: '🎨',
     skills: [
-      ['Nuxt.js', 90],
-      ['Vue.js', 85],
-      ['HTML / CSS', 95],
-      ['Tailwind CSS', 90]
+      { name: 'Vue.js', level: 90 },
+      { name: 'Nuxt.js', level: 90 },
+      { name: 'HTML5', level: 95 },
+      { name: 'CSS3', level: 90 },
+      { name: 'Tailwind CSS', level: 85 },
+      { name: 'JavaScript', level: 85 }
     ]
   },
+
   {
     title: 'Backend Development',
-    icon: '↗',
+    icon: '⚙️',
     skills: [
-      ['Laravel', 80],
-      ['PHP', 75],
-      ['MySQL', 80],
-      ['REST API', 85]
+      { name: 'Laravel', level: 85 },
+      { name: 'PHP', level: 85 },
+      { name: 'MySQL', level: 85 },
+      { name: 'REST API', level: 85 },
+      { name: 'Postman', level: 80 }
     ]
   },
+
   {
     title: 'Mobile Development',
-    icon: '⌕',
+    icon: '📱',
     skills: [
-      ['Flutter', 80],
-      ['Dart', 75]
+      { name: 'Flutter', level: 80 },
+      { name: 'Dart', level: 80 },
+      { name: 'REST API Integration', level: 80 }
     ]
   },
+
   {
-    title: 'Tools & Others',
-    icon: '⚙',
+    title: 'Tools & Technologies',
+    icon: '🛠️',
     skills: [
-      ['Git / GitHub', 90],
-      ['VS Code', 95],
-      ['UI/UX Design', 75],
-      ['Responsive Design', 90]
+      { name: 'Git', level: 85 },
+      { name: 'GitHub', level: 85 },
+      { name: 'Docker', level: 75 },
+      { name: 'Figma', level: 80 },
+      { name: 'Trello', level: 80 }
     ]
   }
 ]
+
 </script>
 
+
 <template>
-  <div>
+
+  <div class="skills-page">
+
+    <!-- =========================================
+          PAGE HEADER
+    ========================================== -->
+
     <section class="page-header">
+
       <div class="page-container">
-        <span>TECHNOLOGIES</span>
-        <h1>My <strong>Skills</strong></h1>
-        <p>Technologies and tools I work with.</p>
+
+        <span class="eyebrow">
+          MY EXPERTISE
+        </span>
+
+        <h1>
+          My <strong>Skills</strong>
+        </h1>
+
+        <p>
+          Technologies and tools I use to build modern applications.
+        </p>
+
       </div>
+
     </section>
+
+
+    <!-- =========================================
+          SKILLS SECTION
+    ========================================== -->
 
     <section class="skills-section">
-      <div class="page-container skills-grid">
-        <div
-          v-for="group in groups"
-          :key="group.title"
-          class="skill-group"
-        >
-          <div class="skill-group-title">
-            <div class="skill-group-icon">{{ group.icon }}</div>
-            <h2>{{ group.title }}</h2>
-          </div>
 
-          <div
-            v-for="skill in group.skills"
-            :key="skill[0]"
-            class="progress-item"
+      <div class="page-container">
+
+        <div class="skills-grid">
+
+          <article
+            v-for="category in skillCategories"
+            :key="category.title"
+            class="skill-card"
           >
-            <div class="progress-top">
-              <span>{{ skill[0] }}</span>
-              <span>{{ skill[1] }}%</span>
+
+            <!-- CATEGORY HEADER -->
+
+            <div class="skill-card-header">
+
+              <div class="skill-icon">
+                {{ category.icon }}
+              </div>
+
+              <h2>
+                {{ category.title }}
+              </h2>
+
             </div>
 
-            <div class="progress-bar">
+
+            <!-- SKILLS -->
+
+            <div class="skills-list">
+
               <div
-                class="progress-value"
-                :style="{ width: `${skill[1]}%` }"
-              ></div>
+                v-for="skill in category.skills"
+                :key="skill.name"
+                class="skill-item"
+              >
+
+                <div class="skill-info">
+
+                  <span class="skill-name">
+                    {{ skill.name }}
+                  </span>
+
+                  <span class="skill-percentage">
+                    {{ skill.level }}%
+                  </span>
+
+                </div>
+
+
+                <div class="progress-background">
+
+                  <div
+                    class="progress-bar"
+                    :style="{ width: `${skill.level}%` }"
+                  ></div>
+
+                </div>
+
+              </div>
+
             </div>
-          </div>
+
+          </article>
+
         </div>
+
+
+        <!-- =========================================
+              TECHNOLOGY SUMMARY
+        ========================================== -->
+
+        <div class="technology-summary">
+
+          <div class="summary-content">
+
+            <span class="summary-label">
+              TECHNOLOGY STACK
+            </span>
+
+            <h2>
+              Building with
+              <strong>Modern Technologies</strong>
+            </h2>
+
+            <p>
+              I work with modern frontend, backend and mobile
+              technologies to create responsive, scalable and
+              user-friendly applications.
+            </p>
+
+          </div>
+
+
+          <div class="summary-badge">
+
+            <span>🚀</span>
+
+            <strong>
+              Full Stack Developer
+            </strong>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="page-container learning-box">
-        <div class="learning-icon">&lt;/&gt;</div>
-        <div>
-          <h3>Always learning, always growing.</h3>
-          <p>New technologies. Better solutions.</p>
-        </div>
-        <span>🚀</span>
-      </div>
     </section>
+
   </div>
+
 </template>
 
+
 <style scoped>
-/* ===== Base Container ===== */
+
+/* =====================================================
+   COLOR SYSTEM (LIGHT / WHITE THEME)
+===================================================== */
+
+/*
+  Main Background:
+  #FFFFFF (Pure White)
+
+  Section Header / Elevated Card:
+  #F8FAFC (Slate 50)
+
+  Text Dark Primary:
+  #0F172A (Slate 900)
+
+  Text Muted / Body:
+  #475569 (Slate 600)
+
+  Primary Blue:
+  #2563EB (Blue 600)
+
+  Accent Blue Light:
+  #EFF6FF (Blue 50) / #DBEAFE (Blue 100)
+
+  Border:
+  #E2E8F0 (Slate 200)
+*/
+
+
+/* =====================================================
+   BASE
+===================================================== */
+
+.skills-page {
+  min-height: 100vh;
+  background-color: #FFFFFF;
+  color: #0F172A;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
 .page-container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-/* ===== Page Header ===== */
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
 .page-header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #fff;
-  padding: 80px 20px 60px;
+  background: linear-gradient(
+    180deg,
+    #F8FAFC 0%,
+    #FFFFFF 100%
+  );
+  padding: 80px 20px 50px;
   text-align: center;
-  border-bottom: 3px solid #42b883;
+  border-bottom: 1px solid #E2E8F0;
 }
 
-.page-header span {
+
+/* =====================================================
+   EYEBROW
+===================================================== */
+
+.page-header .eyebrow {
   display: inline-block;
-  color: #42b883;
+  color: #2563EB;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 3px;
@@ -122,283 +283,376 @@ const groups = [
   margin-bottom: 12px;
 }
 
+
+/* =====================================================
+   MAIN TITLE
+===================================================== */
+
 .page-header h1 {
   font-size: 48px;
   font-weight: 800;
+  line-height: 1.2;
   margin: 0 0 14px;
-  color: #ffffff;
+  color: #0F172A;
 }
 
 .page-header h1 strong {
-  color: #42b883;
+  color: #2563EB;
 }
 
+
+/* =====================================================
+   HEADER DESCRIPTION
+===================================================== */
+
 .page-header p {
-  color: #94a3b8;
+  color: #475569;
   font-size: 17px;
+  line-height: 1.6;
   margin: 0;
 }
 
-/* ===== Skills Section ===== */
+
+/* =====================================================
+   SKILLS SECTION
+===================================================== */
+
 .skills-section {
-  background: #f8fafc;
-  padding: 80px 20px;
+  background-color: #FFFFFF;
+  padding: 60px 20px 80px;
 }
+
+
+/* =====================================================
+   GRID
+===================================================== */
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 28px;
-  margin-bottom: 50px;
 }
 
-/* ===== Skill Group ===== */
-.skill-group {
-  background: #ffffff;
-  padding: 30px 32px;
+
+/* =====================================================
+   SKILL CARD
+===================================================== */
+
+.skill-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 18px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.05);
-  transition: 0.3s;
+  padding: 28px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
 }
 
-.skill-group:hover {
-  transform: translateY(-4px);
-  border-color: #42b883;
-  box-shadow: 0 16px 40px rgba(66, 184, 131, 0.12);
+
+/* =====================================================
+   CARD HOVER
+===================================================== */
+
+.skill-card:hover {
+  transform: translateY(-6px);
+  border-color: #93C5FD;
+  box-shadow: 0 16px 32px rgba(37, 99, 235, 0.08);
 }
 
-.skill-group-title {
+
+/* =====================================================
+   CARD HEADER
+===================================================== */
+
+.skill-card-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #f1f5f9;
-  position: relative;
+  gap: 15px;
+  padding-bottom: 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid #F1F5F9;
 }
 
-.skill-group-title::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 60px;
-  height: 2px;
-  background: #42b883;
-}
 
-.skill-group-icon {
-  width: 46px;
-  height: 46px;
+/* =====================================================
+   SKILL ICON
+===================================================== */
+
+.skill-icon {
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #42b883, #347474);
-  color: #ffffff;
-  border-radius: 12px;
+  border-radius: 14px;
+  background-color: #EFF6FF;
+  border: 1px solid #DBEAFE;
+  font-size: 24px;
+}
+
+
+/* =====================================================
+   CATEGORY TITLE
+===================================================== */
+
+.skill-card-header h2 {
+  color: #0F172A;
   font-size: 20px;
   font-weight: 800;
-  flex-shrink: 0;
-  box-shadow: 0 6px 16px rgba(66, 184, 131, 0.3);
-}
-
-.skill-group-title h2 {
-  color: #0f172a;
-  font-size: 18px;
-  font-weight: 800;
   margin: 0;
-  line-height: 1.3;
 }
 
-/* ===== Progress Item ===== */
-.progress-item {
-  margin-bottom: 18px;
+
+/* =====================================================
+   SKILLS LIST
+===================================================== */
+
+.skills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.progress-item:last-child {
-  margin-bottom: 0;
+.skill-item {
+  width: 100%;
 }
 
-.progress-top {
+
+/* =====================================================
+   SKILL INFO
+===================================================== */
+
+.skill-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
 }
 
-.progress-top span:first-child {
-  color: #334155;
+
+/* =====================================================
+   SKILL NAME
+===================================================== */
+
+.skill-name {
+  color: #1E293B;
   font-size: 14px;
   font-weight: 600;
 }
 
-.progress-top span:last-child {
-  color: #42b883;
+
+/* =====================================================
+   PERCENTAGE
+===================================================== */
+
+.skill-percentage {
+  color: #2563EB;
   font-size: 13px;
-  font-weight: 800;
-  background: rgba(66, 184, 131, 0.1);
-  padding: 2px 10px;
-  border-radius: 12px;
+  font-weight: 700;
 }
 
-/* ===== Progress Bar ===== */
-.progress-bar {
+
+/* =====================================================
+   PROGRESS BACKGROUND
+===================================================== */
+
+.progress-background {
   width: 100%;
   height: 8px;
-  background: #f1f5f9;
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-}
-
-.progress-value {
-  height: 100%;
-  background: linear-gradient(90deg, #42b883, #4fd19b);
-  border-radius: 10px;
-  transition: width 1.2s ease-in-out;
-  position: relative;
-  box-shadow: 0 0 8px rgba(66, 184, 131, 0.4);
-}
-
-.progress-value::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 30px;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5));
-  animation: shine 2s infinite;
-}
-
-@keyframes shine {
-  0% { opacity: 0; }
-  50% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-/* ===== Learning Box ===== */
-.learning-box {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  padding: 32px 40px;
+  background-color: #F1F5F9;
   border-radius: 20px;
-  border: 1px solid #334155;
-  position: relative;
   overflow: hidden;
+  border: 1px solid #E2E8F0;
 }
 
-.learning-box::before {
-  content: '';
-  position: absolute;
-  top: -60px;
-  right: -60px;
-  width: 220px;
-  height: 220px;
-  background: radial-gradient(circle, rgba(66, 184, 131, 0.15), transparent 70%);
-  border-radius: 50%;
+
+/* =====================================================
+   PROGRESS BAR
+===================================================== */
+
+.progress-bar {
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(
+    90deg,
+    #2563EB,
+    #3B82F6
+  );
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.25);
+  transition: width 1s ease;
 }
 
-.learning-icon {
-  width: 60px;
-  height: 60px;
+
+/* =====================================================
+   TECHNOLOGY SUMMARY
+===================================================== */
+
+.technology-summary {
+  margin-top: 50px;
+  padding: 36px;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    #EFF6FF 0%,
+    #F8FAFC 100%
+  );
+  border: 1px solid #DBEAFE;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #42b883, #347474);
-  color: #ffffff;
-  border-radius: 16px;
-  font-size: 18px;
+  justify-content: space-between;
+  gap: 30px;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.04);
+}
+
+
+/* =====================================================
+   SUMMARY CONTENT
+===================================================== */
+
+.summary-content {
+  max-width: 750px;
+}
+
+
+/* =====================================================
+   SUMMARY LABEL
+===================================================== */
+
+.summary-label {
+  display: inline-block;
+  color: #2563EB;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+
+/* =====================================================
+   SUMMARY TITLE
+===================================================== */
+
+.summary-content h2 {
+  color: #0F172A;
+  font-size: 28px;
   font-weight: 800;
-  font-family: 'Courier New', monospace;
-  flex-shrink: 0;
-  box-shadow: 0 8px 20px rgba(66, 184, 131, 0.35);
+  margin: 0 0 10px;
 }
 
-.learning-box div:nth-child(2) {
-  flex: 1;
-  position: relative;
-  z-index: 1;
+.summary-content h2 strong {
+  color: #2563EB;
 }
 
-.learning-box h3 {
-  color: #ffffff;
-  font-size: 20px;
-  font-weight: 800;
-  margin: 0 0 4px;
-}
 
-.learning-box p {
-  color: #94a3b8;
-  font-size: 14px;
+/* =====================================================
+   SUMMARY DESCRIPTION
+===================================================== */
+
+.summary-content p {
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.7;
   margin: 0;
 }
 
-.learning-box > span {
-  font-size: 40px;
-  position: relative;
-  z-index: 1;
-  animation: float 3s ease-in-out infinite;
+
+/* =====================================================
+   SUMMARY BADGE
+===================================================== */
+
+.summary-badge {
+  min-width: 210px;
+  padding: 18px 22px;
+  border-radius: 14px;
+  background-color: #FFFFFF;
+  border: 1px solid #BFDBFE;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #1D4ED8;
+  white-space: nowrap;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+.summary-badge span {
+  font-size: 22px;
 }
 
-/* ===== Responsive ===== */
+.summary-badge strong {
+  font-size: 13px;
+  color: #1D4ED8;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
 @media (max-width: 900px) {
   .page-header h1 {
     font-size: 38px;
   }
+
   .skills-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 22px;
+    grid-template-columns: 1fr;
+  }
+
+  .technology-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summary-badge {
+    width: 100%;
   }
 }
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media (max-width: 600px) {
   .page-header {
     padding: 60px 16px 40px;
   }
+
   .page-header h1 {
     font-size: 30px;
   }
+
   .page-header p {
     font-size: 15px;
   }
+
   .skills-section {
-    padding: 50px 16px;
+    padding: 40px 16px;
   }
+
   .skills-grid {
-    grid-template-columns: 1fr;
     gap: 20px;
   }
-  .skill-group {
-    padding: 24px 22px;
+
+  .skill-card {
+    padding: 22px;
   }
-  .skill-group-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 17px;
+
+  .skill-card-header h2 {
+    font-size: 18px;
   }
-  .skill-group-title h2 {
-    font-size: 16px;
+
+  .technology-summary {
+    padding: 24px;
+    margin-top: 35px;
   }
-  .learning-box {
-    flex-direction: column;
-    text-align: center;
-    padding: 28px 22px;
-    gap: 16px;
+
+  .summary-content h2 {
+    font-size: 22px;
   }
-  .learning-box h3 {
-    font-size: 17px;
-  }
-  .learning-box > span {
-    font-size: 32px;
+
+  .summary-content p {
+    font-size: 14px;
   }
 }
+
 </style>

@@ -1,97 +1,141 @@
 <script setup lang="ts">
 import profileImg from '~/assets/images/daniel.jpg'
+
+definePageMeta({
+  layout: 'default'
+})
 </script>
 
 <template>
-  <div>
+  <div class="about-page">
+
+    <!-- PAGE HEADER -->
     <section class="page-header">
       <div class="page-container">
         <span>WHO I AM</span>
-        <h1>About <strong>Me</strong></h1>
-        <p>A little about my background and journey.</p>
+
+        <h1>
+          About <strong>Me</strong>
+        </h1>
+
+        <p>
+          A little about my background and journey.
+        </p>
       </div>
     </section>
 
+    <!-- ABOUT SECTION -->
     <section class="about-section">
       <div class="page-container about-layout">
-        <!-- Text -->
+
+        <!-- TEXT -->
         <div class="about-text">
-          <span class="green-label">ABOUT ME</span>
+          <span class="blue-label">ABOUT ME</span>
+
           <h2>
             I'm a passionate
             <strong>web developer</strong>
           </h2>
 
           <p>
-            I am a passionate and dedicated web developer with a strong interest in
-            building modern and scalable web applications.
+            I am a passionate and dedicated web developer with a strong interest
+            in building modern and scalable web applications.
           </p>
 
           <p>
-            I enjoy learning new technologies, solving problems and turning ideas
-            into real-world digital solutions.
+            I enjoy learning new technologies, solving problems and turning
+            ideas into real-world digital solutions.
           </p>
 
-          <!-- Cards -->
+          <!-- CARDS -->
           <div class="about-cards">
-            <div>
+
+            <div class="about-card">
               <span class="about-icon">◎</span>
+
               <h3>Problem Solver</h3>
-              <p>I love finding practical solutions to complex problems.</p>
+
+              <p>
+                I love finding practical solutions to complex problems.
+              </p>
             </div>
 
-            <div>
+            <div class="about-card">
               <span class="about-icon">↗</span>
+
               <h3>Quick Learner</h3>
-              <p>I adapt quickly to new technologies.</p>
+
+              <p>
+                I adapt quickly to new technologies.
+              </p>
             </div>
 
-            <div>
+            <div class="about-card">
               <span class="about-icon">◈</span>
+
               <h3>Team Player</h3>
-              <p>I enjoy collaborating with other developers.</p>
+
+              <p>
+                I enjoy collaborating with other developers.
+              </p>
             </div>
+
           </div>
         </div>
 
-        <!-- Image -->
+        <!-- IMAGE -->
         <div class="about-photo">
           <img
             :src="profileImg"
             alt="Daniel Zigabe"
           />
         </div>
+
       </div>
     </section>
 
-    <!-- EDUCATION -->
+    <!-- INFORMATION -->
     <section class="about-info-section">
-      <div class="page-container">
+      <div class="page-container info-grid">
+
+        <!-- EDUCATION -->
         <div class="about-info-block">
           <div class="about-info-icon">🎓</div>
+
           <div>
             <h2>Education</h2>
+
             <h3>Mekdela Amba University</h3>
-            <p>Bachelor's Degree in Computer Science</p>
+
+            <p>
+              Bachelor's Degree in Computer Science
+            </p>
+
             <span>2023 — Present</span>
           </div>
         </div>
 
+        <!-- GOALS -->
         <div class="about-info-block">
           <div class="about-info-icon">🎯</div>
+
           <div>
             <h2>My Goals</h2>
+
             <p>
-              To become a skilled software engineer, contribute to innovative projects,
-              and build impactful solutions for the community.
+              To become a skilled software engineer, contribute to innovative
+              projects, and build impactful solutions for the community.
             </p>
           </div>
         </div>
 
+        <!-- INTERESTS -->
         <div class="about-info-block">
           <div class="about-info-icon">♡</div>
+
           <div>
             <h2>Interests</h2>
+
             <div class="interest-tags">
               <span>Coding</span>
               <span>Football</span>
@@ -101,124 +145,149 @@ import profileImg from '~/assets/images/daniel.jpg'
             </div>
           </div>
         </div>
+
       </div>
     </section>
+
   </div>
 </template>
 
 <style scoped>
-/* Page Header */
-.page-header {
-  padding: 4rem 1.5rem 2rem;
-  text-align: center;
-  background-color: #0d1117;
+.about-page {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #0f172a;
 }
 
 .page-container {
-  max-width: 1100px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* HEADER */
+
+.page-header {
+  padding: 90px 20px 70px;
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #f8fafc 100%
+  );
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .page-header span {
-  color: #10b981;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 2px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 3px;
 }
 
 .page-header h1 {
-  font-size: 2.5rem;
-  color: #ffffff;
-  margin: 0.5rem 0;
+  margin: 12px 0;
+  color: #0f172a;
+  font-size: 52px;
+  font-weight: 800;
 }
 
 .page-header h1 strong {
-  color: #10b981;
+  color: #2563eb;
 }
 
 .page-header p {
-  color: #9ca3af;
-  font-size: 1rem;
+  margin: 0;
+  color: #64748b;
+  font-size: 17px;
 }
 
-/* About Layout */
+/* ABOUT */
+
 .about-section {
-  padding: 4rem 1.5rem;
-  background-color: #0d1117;
+  padding: 85px 20px;
+  background: #ffffff;
 }
 
 .about-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3rem;
+  gap: 70px;
   align-items: center;
 }
 
-.green-label {
-  color: #10b981;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+.blue-label {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
 }
 
 .about-text h2 {
-  font-size: 2rem;
-  color: #ffffff;
-  margin: 0.5rem 0 1.5rem;
+  margin: 12px 0 22px;
+  color: #0f172a;
+  font-size: 36px;
+  line-height: 1.25;
 }
 
 .about-text h2 strong {
-  color: #10b981;
+  color: #2563eb;
 }
 
-.about-text p {
-  color: #9ca3af;
-  line-height: 1.7;
-  margin-bottom: 1rem;
+.about-text > p {
+  margin-bottom: 16px;
+  color: #64748b;
+  line-height: 1.8;
+  font-size: 15px;
 }
 
-/* Feature Cards */
+/* CARDS */
+
 .about-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 14px;
+  margin-top: 30px;
 }
 
-.about-cards > div {
-  background-color: #161b22;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 1.25rem;
-  border-radius: 12px;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+.about-card {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+  transition: 0.3s ease;
 }
 
-.about-cards > div:hover {
-  transform: translateY(-4px);
-  border-color: #10b981;
+.about-card:hover {
+  transform: translateY(-5px);
+  border-color: #60a5fa;
+  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.12);
 }
 
 .about-icon {
-  color: #10b981;
-  font-size: 1.25rem;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 10px;
+  color: #2563eb;
+  font-size: 25px;
 }
 
-.about-cards h3 {
-  color: #ffffff;
-  font-size: 0.95rem;
-  margin-bottom: 0.4rem;
+.about-card h3 {
+  margin: 0 0 7px;
+  color: #0f172a;
+  font-size: 15px;
 }
 
-.about-cards p {
-  color: #9ca3af;
-  font-size: 0.8rem;
-  line-height: 1.4;
-  margin-bottom: 0;
+.about-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
-/* Photo Styling */
+/* PHOTO */
+
 .about-photo {
   display: flex;
   justify-content: center;
@@ -226,93 +295,126 @@ import profileImg from '~/assets/images/daniel.jpg'
 
 .about-photo img {
   width: 100%;
-  max-width: 380px;
-  height: auto;
-  border-radius: 20px;
-  border: 3px solid #10b981;
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
+  max-width: 390px;
+  border: 4px solid #2563eb;
+  border-radius: 24px;
+  box-shadow: 0 20px 45px rgba(37, 99, 235, 0.15);
   object-fit: cover;
 }
 
-/* Info Section */
+/* INFO */
+
 .about-info-section {
-  padding: 4rem 1.5rem;
-  background-color: #161b22;
+  padding: 75px 20px;
+  background: #f8fafc;
 }
 
-.about-info-section .page-container {
+.info-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  gap: 24px;
 }
 
 .about-info-block {
   display: flex;
-  gap: 1rem;
-  background-color: #0d1117;
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 16px;
+  padding: 25px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.05);
+  transition: 0.3s ease;
+}
+
+.about-info-block:hover {
+  transform: translateY(-4px);
+  border-color: #93c5fd;
 }
 
 .about-info-icon {
-  font-size: 1.75rem;
+  font-size: 28px;
 }
 
 .about-info-block h2 {
-  color: #ffffff;
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 20px;
 }
 
 .about-info-block h3 {
-  color: #10b981;
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
+  margin: 0 0 5px;
+  color: #2563eb;
+  font-size: 15px;
 }
 
 .about-info-block p {
-  color: #9ca3af;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
-.about-info-block span {
-  color: #6b7280;
-  font-size: 0.8rem;
+.about-info-block > div > span {
+  color: #94a3b8;
+  font-size: 12px;
 }
 
-/* Interest Tags */
 .interest-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .interest-tags span {
-  background-color: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  padding: 0.3rem 0.75rem;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-/* Responsive Media Queries */
+/* RESPONSIVE */
+
 @media (max-width: 900px) {
   .about-layout {
     grid-template-columns: 1fr;
   }
 
-  .about-info-section .page-container {
+  .about-photo {
+    order: -1;
+  }
+
+  .info-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 600px) {
+  .page-header {
+    padding: 60px 16px 45px;
+  }
+
+  .page-header h1 {
+    font-size: 34px;
+  }
+
+  .about-section {
+    padding: 55px 16px;
+  }
+
   .about-cards {
     grid-template-columns: 1fr;
+  }
+
+  .about-text h2 {
+    font-size: 28px;
+  }
+
+  .about-info-section {
+    padding: 50px 16px;
   }
 }
 </style>

@@ -1,322 +1,376 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: 'default'
+})
+
+const experiences = [
+  {
+    date: 'Jan 2026 — Present',
+    title: 'Frontend Developer Intern',
+    company: 'Tech Company',
+    points: [
+      'Developed responsive web interfaces using Nuxt.js.',
+      'Integrated REST APIs with frontend applications.',
+      'Collaborated with a team of developers.',
+      'Built dashboard interfaces.',
+      'Participated in code reviews.'
+    ]
+  },
+  {
+    date: '2025 — 2026',
+    title: 'Internship Attendance & Advisor System',
+    company: 'Personal / Academic Project',
+    points: [
+      'Designed and developed the complete system.',
+      'Implemented role-based dashboards for Student, Advisor, Company and Admin.',
+      'Used Nuxt.js, Laravel and MySQL.',
+      'Added chatbot functionality for booking guidance.'
+    ]
+  }
+]
+</script>
+
 <template>
-  <div>
+  <div class="experience-page">
+
+    <!-- HEADER -->
     <section class="page-header">
       <div class="page-container">
-        <span>MY PROFESSIONAL JOURNEY</span>
-        <h1>Experience & <strong>Internship</strong></h1>
-        <p>My professional and development journey.</p>
+        <span class="eyebrow">
+          MY PROFESSIONAL JOURNEY
+        </span>
+
+        <h1>
+          Experience &
+          <strong>Internship</strong>
+        </h1>
+
+        <p>
+          My professional and development journey.
+        </p>
       </div>
     </section>
 
+    <!-- EXPERIENCE -->
     <section class="experience-section">
       <div class="page-container">
+
         <div class="timeline">
 
-          <!-- EXPERIENCE 1 -->
-          <div class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-card">
-              <span class="timeline-date">Jan 2026 — Present</span>
-              <h2>Frontend Developer Intern</h2>
-              <h3>Tech Company</h3>
-              <ul>
-                <li>Developed responsive web interfaces using Nuxt.js.</li>
-                <li>Integrated REST APIs with frontend applications.</li>
-                <li>Collaborated with a team of developers.</li>
-                <li>Built dashboard interfaces.</li>
-                <li>Participated in code reviews.</li>
-              </ul>
-            </div>
-          </div>
+          <div
+            v-for="(exp, index) in experiences"
+            :key="index"
+            class="timeline-item"
+          >
 
-          <!-- EXPERIENCE 2 -->
-          <div class="timeline-item">
             <div class="timeline-dot"></div>
+
             <div class="timeline-card">
-              <span class="timeline-date">2025 — 2026</span>
-              <h2>Internship Attendance & Advisor System</h2>
-              <h3>Personal / Academic Project</h3>
+
+              <span class="timeline-date">
+                {{ exp.date }}
+              </span>
+
+              <h2>
+                {{ exp.title }}
+              </h2>
+
+              <h3>
+                {{ exp.company }}
+              </h3>
+
               <ul>
-                <li>Designed and developed the complete system.</li>
-                <li>Implemented role-based dashboards for Student, Advisor, Company and Admin.</li>
-                <li>Used Nuxt.js, Laravel and MySQL.</li>
-                <li>Added chatbot functionality for booking guidance.</li>
+                <li
+                  v-for="(point, i) in exp.points"
+                  :key="i"
+                >
+                  {{ point }}
+                </li>
               </ul>
+
             </div>
+
           </div>
 
         </div>
+
       </div>
     </section>
+
   </div>
 </template>
 
 <style scoped>
-/* ===== Base Container ===== */
+.experience-page {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #0f172a;
+}
+
 .page-container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
 }
 
-/* ===== Page Header ===== */
+/* HEADER */
+
 .page-header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #fff;
-  padding: 80px 20px 60px;
+  padding: 90px 20px 70px;
   text-align: center;
-  border-bottom: 3px solid #42b883;
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #f8fafc
+  );
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.page-header span {
+.eyebrow {
   display: inline-block;
-  color: #42b883;
+  margin-bottom: 14px;
+  color: #2563eb;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 3px;
   text-transform: uppercase;
-  margin-bottom: 12px;
 }
 
 .page-header h1 {
+  margin: 0 0 15px;
+  color: #0f172a;
   font-size: 48px;
   font-weight: 800;
-  margin: 0 0 14px;
-  color: #ffffff;
 }
 
 .page-header h1 strong {
-  color: #42b883;
+  color: #2563eb;
 }
 
 .page-header p {
-  color: #94a3b8;
-  font-size: 17px;
   margin: 0;
+  color: #64748b;
+  font-size: 17px;
 }
 
-/* ===== Experience Section ===== */
+/* SECTION */
+
 .experience-section {
+  min-height: 600px;
+  padding: 85px 20px;
   background: #f8fafc;
-  padding: 80px 20px;
 }
 
-/* ===== Timeline ===== */
+/* TIMELINE */
+
 .timeline {
   position: relative;
+  width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding-left: 40px;
+  padding-left: 46px;
 }
 
-/* ቀጥ ያለ አረንጓዴ መስመር */
 .timeline::before {
   content: '';
   position: absolute;
-  left: 14px;
-  top: 8px;
-  bottom: 8px;
+  left: 16px;
+  top: 10px;
+  bottom: 10px;
   width: 3px;
-  background: linear-gradient(180deg, #42b883 0%, #347474 100%);
-  border-radius: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    #2563eb,
+    #60a5fa
+  );
 }
 
-/* ===== Timeline Item ===== */
+/* ITEM */
+
 .timeline-item {
   position: relative;
-  margin-bottom: 40px;
+  margin-bottom: 42px;
 }
 
 .timeline-item:last-child {
   margin-bottom: 0;
 }
 
-/* ===== Timeline Dot ===== */
+/* DOT */
+
 .timeline-dot {
   position: absolute;
-  left: -33px;
-  top: 26px;
-  width: 20px;
-  height: 20px;
+  left: -39px;
+  top: 30px;
+  width: 22px;
+  height: 22px;
   background: #ffffff;
-  border: 4px solid #42b883;
+  border: 4px solid #2563eb;
   border-radius: 50%;
-  box-shadow: 0 0 0 5px rgba(66, 184, 131, 0.15);
+  box-shadow: 0 0 0 5px #dbeafe;
   z-index: 2;
-  transition: 0.3s;
+  transition: 0.3s ease;
 }
 
 .timeline-item:hover .timeline-dot {
-  background: #42b883;
+  background: #2563eb;
   transform: scale(1.2);
-  box-shadow: 0 0 0 8px rgba(66, 184, 131, 0.25);
+  box-shadow: 0 0 0 8px #dbeafe;
 }
 
-/* ===== Timeline Card ===== */
+/* CARD */
+
 .timeline-card {
-  background: #ffffff;
-  padding: 30px 34px;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
-  transition: 0.3s;
   position: relative;
-  overflow: hidden;
-}
-
-.timeline-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(180deg, #42b883, #347474);
-  opacity: 0;
-  transition: 0.3s;
+  padding: 32px 34px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  transition: 0.3s ease;
 }
 
 .timeline-card:hover {
   transform: translateX(8px);
-  border-color: #42b883;
-  box-shadow: 0 16px 40px rgba(66, 184, 131, 0.15);
+  border-color: #93c5fd;
+  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.10);
 }
 
-.timeline-card:hover::before {
-  opacity: 1;
-}
+/* DATE */
 
-/* ===== Timeline Date ===== */
 .timeline-date {
   display: inline-block;
-  color: #42b883;
+  margin-bottom: 15px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  background: rgba(66, 184, 131, 0.1);
-  padding: 6px 14px;
-  border-radius: 20px;
-  margin-bottom: 14px;
+  letter-spacing: 1.2px;
 }
 
-/* ===== Headings ===== */
+/* TITLES */
+
 .timeline-card h2 {
+  margin: 0 0 7px;
   color: #0f172a;
-  font-size: 22px;
+  font-size: 23px;
   font-weight: 800;
-  margin: 0 0 6px;
-  line-height: 1.3;
 }
 
 .timeline-card h3 {
-  color: #42b883;
+  margin: 0 0 20px;
+  color: #2563eb;
   font-size: 15px;
   font-weight: 600;
-  margin: 0 0 18px;
-  letter-spacing: 0.3px;
 }
 
-/* ===== List ===== */
+/* LIST */
+
 .timeline-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 11px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .timeline-card li {
-  color: #475569;
-  font-size: 15px;
-  line-height: 1.6;
-  padding-left: 26px;
   position: relative;
-  transition: 0.25s;
+  padding-left: 27px;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.65;
+  transition: 0.25s ease;
 }
 
 .timeline-card li::before {
   content: '▸';
   position: absolute;
   left: 0;
-  top: 0;
-  color: #42b883;
-  font-weight: 800;
+  color: #2563eb;
   font-size: 16px;
+  font-weight: 800;
 }
 
 .timeline-card li:hover {
-  color: #0f172a;
+  color: #334155;
   transform: translateX(4px);
 }
 
-/* ===== Responsive ===== */
+/* RESPONSIVE */
+
 @media (max-width: 900px) {
   .page-header h1 {
     font-size: 38px;
   }
-  .timeline {
-    padding-left: 32px;
+
+  .experience-section {
+    padding: 70px 20px;
   }
-  .timeline::before {
-    left: 10px;
-  }
-  .timeline-dot {
-    left: -29px;
-    width: 18px;
-    height: 18px;
-  }
+
   .timeline-card {
-    padding: 26px 26px;
-  }
-  .timeline-card h2 {
-    font-size: 19px;
+    padding: 28px;
   }
 }
 
 @media (max-width: 600px) {
+  .page-container {
+    padding: 0 16px;
+  }
+
   .page-header {
-    padding: 60px 16px 40px;
+    padding: 60px 16px 45px;
   }
+
   .page-header h1 {
-    font-size: 28px;
+    font-size: 30px;
   }
-  .page-header p {
-    font-size: 15px;
-  }
+
   .experience-section {
-    padding: 50px 12px;
+    padding: 55px 12px;
   }
+
   .timeline {
-    padding-left: 26px;
+    padding-left: 30px;
   }
+
   .timeline::before {
-    left: 8px;
+    left: 9px;
+    width: 2px;
   }
+
   .timeline-dot {
-    left: -25px;
-    width: 16px;
-    height: 16px;
+    left: -27px;
+    top: 24px;
+    width: 17px;
+    height: 17px;
     border-width: 3px;
   }
+
   .timeline-card {
-    padding: 22px 20px;
-    border-radius: 14px;
+    padding: 23px 20px;
   }
+
+  .timeline-card:hover {
+    transform: translateX(4px);
+  }
+
   .timeline-card h2 {
-    font-size: 17px;
+    font-size: 18px;
   }
+
   .timeline-card h3 {
     font-size: 13px;
   }
+
   .timeline-card li {
-    font-size: 14px;
-    padding-left: 22px;
-  }
-  .timeline-date {
-    font-size: 11px;
-    padding: 5px 11px;
+    font-size: 13.5px;
   }
 }
 </style>

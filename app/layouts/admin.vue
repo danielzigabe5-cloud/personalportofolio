@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#020617] text-slate-200">
+  <div class="min-h-screen bg-slate-950 text-slate-200">
 
     <div class="flex min-h-screen">
 
@@ -16,8 +16,8 @@
         </main>
 
         <footer
-          class="border-t border-slate-800 px-6 py-4 text-center
-                 text-xs text-slate-500"
+          class="border-t border-indigo-900/40 px-6 py-4 text-center
+                 text-xs text-indigo-300/60"
         >
           © {{ new Date().getFullYear() }} Daniel Zigabe. All Rights Reserved.
         </footer>

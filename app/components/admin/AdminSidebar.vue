@@ -61,14 +61,14 @@ const isActive = (path: string) => {
     class="
       fixed inset-y-0 left-0 z-50
       hidden w-64 flex-col
-      border-r border-slate-800
-      bg-[#050b14]
+      border-r border-indigo-900/40
+      bg-slate-950
       lg:flex
     "
   >
 
     <!-- Logo -->
-    <div class="flex h-20 items-center border-b border-slate-800 px-6">
+    <div class="flex h-20 items-center border-b border-indigo-900/40 px-6">
 
       <NuxtLink
         to="/admin"
@@ -78,19 +78,21 @@ const isActive = (path: string) => {
         <div
           class="
             flex h-10 w-10 items-center justify-center
-            rounded-xl bg-[#39ff14]
-            font-black text-[#020617]
+            rounded-xl bg-violet-600
+            font-black text-white
+            ring-2 ring-violet-400/30
+            shadow-[0_0_12px_rgba(139,92,246,0.35)]
           "
         >
           DZ
         </div>
 
         <div>
-          <div class="font-black text-white">
+          <div class="font-black text-slate-100">
             DZ Admin
           </div>
 
-          <div class="text-xs text-slate-500">
+          <div class="text-xs text-indigo-300/70">
             Panel
           </div>
         </div>
@@ -107,7 +109,7 @@ const isActive = (path: string) => {
         class="
           mb-4 px-3 text-[10px] font-bold
           uppercase tracking-[0.2em]
-          text-slate-600
+          text-indigo-300/60
         "
       >
         Management
@@ -124,8 +126,8 @@ const isActive = (path: string) => {
         "
         :class="
           isActive(item.path)
-            ? 'bg-[#39ff14]/10 text-[#39ff14]'
-            : 'text-slate-400 hover:bg-slate-900 hover:text-white'
+            ? 'bg-violet-600/15 text-violet-400 ring-1 ring-violet-500/30'
+            : 'text-slate-400 hover:bg-indigo-950/50 hover:text-slate-100'
         "
       >
 
@@ -143,14 +145,15 @@ const isActive = (path: string) => {
 
 
     <!-- Bottom -->
-    <div class="border-t border-slate-800 p-4">
+    <div class="border-t border-indigo-900/40 p-4">
 
       <NuxtLink
         to="/"
         class="
           mb-2 flex items-center gap-3 rounded-xl
           px-3 py-3 text-sm text-slate-400
-          hover:bg-slate-900 hover:text-white
+          transition
+          hover:bg-indigo-950/50 hover:text-slate-100
         "
       >
         <span>🌐</span>
@@ -161,7 +164,8 @@ const isActive = (path: string) => {
         class="
           flex w-full items-center gap-3 rounded-xl
           px-3 py-3 text-sm text-red-400
-          hover:bg-red-500/10
+          transition
+          hover:bg-red-500/10 hover:text-red-300
         "
       >
         <span>🚪</span>
