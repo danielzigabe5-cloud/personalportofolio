@@ -1,15 +1,41 @@
 <script setup lang="ts">
+// 1. Page Metadata
 definePageMeta({
   layout: 'default'
 })
 
-const projects = [
+// 2. SEO Optimization
+useSeoMeta({
+  title: 'Projects | Daniel Zigabe',
+  description: 'Explore my selected work including web applications, mobile platforms, and management systems.',
+  ogTitle: 'Projects - Daniel Zigabe',
+  ogDescription: 'A selection of web, mobile and management systems developed using modern technologies.',
+})
+
+/* =========================================================
+   TYPES / INTERFACES
+========================================================= */
+interface Project {
+  number: string
+  title: string
+  category: string
+  description: string
+  tags: string[]
+  status: string
+  type: 'sports' | 'management' | 'portfolio'
+  demo: string
+  github: string
+}
+
+/* =========================================================
+   DATA
+========================================================= */
+const projects: Project[] = [
   {
     number: '01',
     title: 'CombolojoSPORT',
     category: 'Sports Venue Platform',
-    description:
-      'A modern sports venue platform designed to help users discover sports facilities and manage venue bookings across Ethiopia.',
+    description: 'A modern sports venue platform designed to help users discover sports facilities and manage venue bookings across Ethiopia.',
     tags: ['Nuxt.js', 'Laravel', 'Flutter', 'MySQL'],
     status: 'Featured Project',
     type: 'sports',
@@ -20,8 +46,7 @@ const projects = [
     number: '02',
     title: 'Internship Attendance & Advisor System',
     category: 'Management System',
-    description:
-      'A digital management platform connecting students, company supervisors, advisors and administrators in one system.',
+    description: 'A digital management platform connecting students, company supervisors, advisors and administrators in one system.',
     tags: ['Nuxt.js', 'Laravel', 'MySQL'],
     status: 'Academic Project',
     type: 'management',
@@ -32,8 +57,7 @@ const projects = [
     number: '03',
     title: 'Personal Portfolio',
     category: 'Portfolio Website',
-    description:
-      'A responsive developer portfolio built to showcase professional experience, technical skills, education and selected projects.',
+    description: 'A responsive developer portfolio built to showcase professional experience, technical skills, education and selected projects.',
     tags: ['Nuxt.js', 'Vue.js', 'TypeScript', 'CSS'],
     status: 'Personal Project',
     type: 'portfolio',
@@ -44,23 +68,19 @@ const projects = [
 </script>
 
 <template>
-  <div class="projects-page">
+  <!-- Changed to <main> for better semantic HTML -->
+  <main class="projects-page">
 
     <!-- =====================================================
          PAGE HERO
     ====================================================== -->
-    <section class="page-header">
+    <section class="page-header" aria-labelledby="page-title">
       <div class="page-container">
-
         <div class="header-content">
-          <span class="eyebrow">
-            SELECTED WORK
-          </span>
-
-          <h1>
+          <span class="eyebrow">SELECTED WORK</span>
+          <h1 id="page-title">
             Projects I've <strong>Built</strong>
           </h1>
-
           <p>
             A selection of web, mobile and management systems
             developed using modern technologies.
@@ -68,20 +88,17 @@ const projects = [
         </div>
 
         <div class="header-meta">
-          <div class="meta-line"></div>
-          <span>03 PROJECTS</span>
+          <div class="meta-line" aria-hidden="true"></div>
+          <span>{{ projects.length < 10 ? '0' + projects.length : projects.length }} PROJECTS</span>
         </div>
-
       </div>
     </section>
-
 
     <!-- =====================================================
          PROJECTS
     ====================================================== -->
-    <section class="projects-section">
+    <section class="projects-section" aria-label="Project List">
       <div class="page-container">
-
         <div class="projects-grid">
 
           <article
@@ -89,143 +106,94 @@ const projects = [
             :key="project.number"
             class="project-card"
           >
-
-            <!-- PROJECT VISUAL -->
+            <!-- PROJECT VISUAL (Hidden from screen readers to prevent noise, since real info is below) -->
             <div
               class="project-visual"
               :class="`visual-${project.type}`"
+              aria-hidden="true"
             >
-
               <div class="visual-topbar">
                 <span class="browser-dot"></span>
                 <span class="browser-dot"></span>
                 <span class="browser-dot"></span>
-
-                <span class="visual-number">
-                  {{ project.number }}
-                </span>
+                <span class="visual-number">{{ project.number }}</span>
               </div>
 
-
               <!-- SPORTS VISUAL -->
-              <div
-                v-if="project.type === 'sports'"
-                class="sports-preview"
-              >
-
+              <div v-if="project.type === 'sports'" class="sports-preview">
                 <div class="preview-sidebar">
                   <span class="sidebar-logo">C</span>
-
                   <span class="sidebar-line active"></span>
                   <span class="sidebar-line"></span>
                   <span class="sidebar-line"></span>
                   <span class="sidebar-line"></span>
                 </div>
-
                 <div class="preview-main">
-
                   <div class="preview-heading">
                     <div>
                       <small>WELCOME BACK</small>
                       <strong>Find Your Venue</strong>
                     </div>
-
                     <span class="mini-avatar">D</span>
                   </div>
-
                   <div class="search-preview">
                     <span>⌕</span>
                     <span>Search sports venues...</span>
                   </div>
-
                   <div class="venue-preview-grid">
-
                     <div class="mini-card">
                       <div class="mini-image football"></div>
                       <span>Football Arena</span>
                       <small>Addis Ababa</small>
                     </div>
-
                     <div class="mini-card">
                       <div class="mini-image basketball"></div>
                       <span>Basketball Court</span>
                       <small>Addis Ababa</small>
                     </div>
-
                   </div>
-
                 </div>
-
               </div>
 
-
               <!-- MANAGEMENT VISUAL -->
-              <div
-                v-else-if="project.type === 'management'"
-                class="management-preview"
-              >
-
+              <div v-else-if="project.type === 'management'" class="management-preview">
                 <div class="dashboard-sidebar">
                   <span class="dashboard-logo">DZ</span>
-
-                  <span class="dashboard-item active">
-                    Dashboard
-                  </span>
-
-                  <span class="dashboard-item">
-                    Students
-                  </span>
-
-                  <span class="dashboard-item">
-                    Attendance
-                  </span>
-
-                  <span class="dashboard-item">
-                    Reports
-                  </span>
+                  <span class="dashboard-item active">Dashboard</span>
+                  <span class="dashboard-item">Students</span>
+                  <span class="dashboard-item">Attendance</span>
+                  <span class="dashboard-item">Reports</span>
                 </div>
-
                 <div class="dashboard-main">
-
                   <div class="dashboard-title">
                     <div>
                       <small>ADMINISTRATION</small>
                       <strong>Dashboard Overview</strong>
                     </div>
-
-                    <span class="dashboard-user">
-                      D
-                    </span>
+                    <span class="dashboard-user">D</span>
                   </div>
-
                   <div class="stats-preview">
-
                     <div class="small-stat">
                       <small>Students</small>
                       <strong>128</strong>
                       <span>+12%</span>
                     </div>
-
                     <div class="small-stat">
                       <small>Attendance</small>
                       <strong>94%</strong>
                       <span>+4.2%</span>
                     </div>
-
                     <div class="small-stat">
                       <small>Reports</small>
                       <strong>24</strong>
                       <span>+6</span>
                     </div>
-
                   </div>
-
                   <div class="chart-preview">
                     <div class="chart-heading">
                       <span>Attendance Overview</span>
                       <small>Last 7 days</small>
                     </div>
-
                     <div class="bars">
                       <span style="height: 45%"></span>
                       <span style="height: 70%"></span>
@@ -236,173 +204,119 @@ const projects = [
                       <span style="height: 78%"></span>
                     </div>
                   </div>
-
                 </div>
-
               </div>
 
-
               <!-- PORTFOLIO VISUAL -->
-              <div
-                v-else
-                class="portfolio-preview"
-              >
-
+              <div v-else class="portfolio-preview">
                 <div class="portfolio-nav">
                   <strong>DZ</strong>
-
                   <div class="nav-lines">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span><span></span>
                   </div>
                 </div>
-
                 <div class="portfolio-hero">
-
                   <div class="portfolio-copy">
                     <small>HELLO, I'M</small>
-
                     <strong>
                       Daniel<br />
                       <em>Zigabe</em>
                     </strong>
-
-                    <span>
-                      Frontend Developer
-                    </span>
-
+                    <span>Frontend Developer</span>
                     <div class="portfolio-buttons">
-                      <i></i>
-                      <i></i>
+                      <i></i><i></i>
                     </div>
                   </div>
-
                   <div class="portfolio-avatar">
                     <span>DZ</span>
                   </div>
-
                 </div>
-
               </div>
 
-
               <div class="visual-overlay"></div>
-
             </div>
-
 
             <!-- PROJECT CONTENT -->
             <div class="project-card-body">
-
               <div class="project-top">
-
                 <div>
-                  <span class="project-status">
-                    {{ project.status }}
-                  </span>
-
-                  <span class="project-category">
-                    {{ project.category }}
-                  </span>
+                  <span class="project-status">{{ project.status }}</span>
+                  <span class="project-category">{{ project.category }}</span>
                 </div>
-
-                <span class="project-number">
-                  {{ project.number }}
-                </span>
-
+                <span class="project-number">{{ project.number }}</span>
               </div>
 
-
-              <h2>
-                {{ project.title }}
-              </h2>
-
-              <p class="project-description">
-                {{ project.description }}
-              </p>
-
+              <h2>{{ project.title }}</h2>
+              <p class="project-description">{{ project.description }}</p>
 
               <!-- TECHNOLOGIES -->
               <div class="project-tags">
-
-                <span
-                  v-for="tag in project.tags"
-                  :key="tag"
-                >
+                <span v-for="tag in project.tags" :key="tag">
                   {{ tag }}
                 </span>
-
               </div>
 
-
-              <!-- ACTIONS -->
+              <!-- ACTIONS (Improved Semantic Logic) -->
               <div class="project-actions">
-
                 <NuxtLink
                   v-if="project.demo !== '#'"
                   :to="project.demo"
                   class="primary-button"
                 >
                   View Project
-                  <span>↗</span>
+                  <span aria-hidden="true">↗</span>
                 </NuxtLink>
-
-                <a
+                <span
                   v-else
-                  href="#"
                   class="primary-button disabled-button"
-                  @click.prevent
+                  aria-disabled="true"
+                  title="Demo not available yet"
                 >
                   View Project
-                  <span>↗</span>
-                </a>
+                  <span aria-hidden="true">↗</span>
+                </span>
 
                 <a
+                  v-if="project.github !== '#'"
                   :href="project.github"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="github-button"
-                  @click.prevent="project.github === '#' ? null : undefined"
                 >
-                  <span class="github-icon">⌘</span>
+                  <span class="github-icon" aria-hidden="true">⌘</span>
                   GitHub
                 </a>
-
+                <span
+                  v-else
+                  class="github-button disabled-button"
+                  aria-disabled="true"
+                  title="Private Repository"
+                >
+                  <span class="github-icon" aria-hidden="true">⌘</span>
+                  GitHub
+                </span>
               </div>
-
             </div>
-
           </article>
-
         </div>
-
 
         <!-- BOTTOM NOTE -->
         <div class="projects-footer">
-
-          <div class="footer-line"></div>
-
+          <div class="footer-line" aria-hidden="true"></div>
           <div class="footer-content">
-
-            <span>
-              MORE PROJECTS COMING SOON
-            </span>
-
+            <span>MORE PROJECTS COMING SOON</span>
             <NuxtLink to="/contact">
               Have a project in mind?
               <strong>Let's talk →</strong>
             </NuxtLink>
-
           </div>
-
         </div>
 
       </div>
     </section>
 
-  </div>
+  </main>
 </template>
-
 
 <style scoped>
 /* =========================================================
@@ -415,7 +329,6 @@ const projects = [
   color: #0f172a;
 }
 
-
 /* =========================================================
    CONTAINER
 ========================================================= */
@@ -426,7 +339,6 @@ const projects = [
   margin: 0 auto;
   padding: 0 24px;
 }
-
 
 /* =========================================================
    HEADER
@@ -529,7 +441,6 @@ const projects = [
   background: #cbd5e1;
 }
 
-
 /* =========================================================
    PROJECT SECTION
 ========================================================= */
@@ -538,7 +449,6 @@ const projects = [
   padding: 90px 0 100px;
   background: #f8fafc;
 }
-
 
 /* =========================================================
    GRID
@@ -549,7 +459,6 @@ const projects = [
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 30px;
 }
-
 
 /* =========================================================
    PROJECT CARD
@@ -563,20 +472,14 @@ const projects = [
   border: 1px solid #e2e8f0;
   border-radius: 18px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.045);
-  transition:
-    transform 0.35s ease,
-    box-shadow 0.35s ease,
-    border-color 0.35s ease;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
 .project-card:hover {
   transform: translateY(-7px);
   border-color: #bfdbfe;
-  box-shadow:
-    0 22px 50px rgba(15, 23, 42, 0.09),
-    0 8px 20px rgba(37, 99, 235, 0.06);
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.09), 0 8px 20px rgba(37, 99, 235, 0.06);
 }
-
 
 /* =========================================================
    PROJECT VISUAL
@@ -596,13 +499,10 @@ const projects = [
   left: 0;
   right: 0;
   height: 36px;
-
   display: flex;
   align-items: center;
   gap: 6px;
-
   padding: 0 14px;
-
   background: rgba(15, 23, 42, 0.92);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -622,18 +522,12 @@ const projects = [
   letter-spacing: 1px;
 }
 
-
 /* =========================================================
    SPORTS PREVIEW
 ========================================================= */
 
 .visual-sports {
-  background:
-    linear-gradient(
-      135deg,
-      #052e16,
-      #064e3b
-    );
+  background: linear-gradient(135deg, #052e16, #064e3b);
 }
 
 .sports-preview {
@@ -653,11 +547,9 @@ const projects = [
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 32px;
   height: 32px;
   margin: 0 auto 25px;
-
   border-radius: 9px;
   background: #22c55e;
   color: #052e16;
@@ -708,10 +600,8 @@ const projects = [
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 30px;
   height: 30px;
-
   border-radius: 50%;
   background: #22c55e;
   color: #052e16;
@@ -723,10 +613,8 @@ const projects = [
   display: flex;
   align-items: center;
   gap: 8px;
-
   margin-top: 20px;
   padding: 10px 12px;
-
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.08);
   color: #94a3b8;
@@ -757,21 +645,11 @@ const projects = [
 }
 
 .mini-image.football {
-  background:
-    linear-gradient(
-      135deg,
-      #166534,
-      #22c55e
-    );
+  background: linear-gradient(135deg, #166534, #22c55e);
 }
 
 .mini-image.basketball {
-  background:
-    linear-gradient(
-      135deg,
-      #9a3412,
-      #f97316
-    );
+  background: linear-gradient(135deg, #9a3412, #f97316);
 }
 
 .mini-card > span {
@@ -789,18 +667,12 @@ const projects = [
   font-size: 7px;
 }
 
-
 /* =========================================================
    MANAGEMENT PREVIEW
 ========================================================= */
 
 .visual-management {
-  background:
-    linear-gradient(
-      135deg,
-      #0f172a,
-      #172554
-    );
+  background: linear-gradient(135deg, #0f172a, #172554);
 }
 
 .management-preview {
@@ -868,10 +740,8 @@ const projects = [
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 27px;
   height: 27px;
-
   border-radius: 50%;
   background: #2563eb;
   color: white;
@@ -952,18 +822,12 @@ const projects = [
   opacity: 0.85;
 }
 
-
 /* =========================================================
    PORTFOLIO PREVIEW
 ========================================================= */
 
 .visual-portfolio {
-  background:
-    linear-gradient(
-      135deg,
-      #0f172a,
-      #1e293b
-    );
+  background: linear-gradient(135deg, #0f172a, #1e293b);
 }
 
 .portfolio-preview {
@@ -1003,7 +867,6 @@ const projects = [
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   height: calc(100% - 45px);
 }
 
@@ -1058,20 +921,10 @@ const projects = [
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 120px;
   height: 120px;
-
   border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle at 35% 30%,
-      #60a5fa,
-      #2563eb 45%,
-      #172554 46%
-    );
-
+  background: radial-gradient(circle at 35% 30%, #60a5fa, #2563eb 45%, #172554 46%);
   border: 7px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 50px rgba(37, 99, 235, 0.25);
 }
@@ -1083,7 +936,6 @@ const projects = [
   font-weight: 900;
 }
 
-
 /* =========================================================
    VISUAL OVERLAY
 ========================================================= */
@@ -1092,13 +944,8 @@ const projects = [
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    transparent 55%,
-    rgba(2, 6, 23, 0.18)
-  );
+  background: linear-gradient(to bottom, transparent 55%, rgba(2, 6, 23, 0.18));
 }
-
 
 /* =========================================================
    PROJECT BODY
@@ -1156,7 +1003,6 @@ const projects = [
   line-height: 1.7;
 }
 
-
 /* =========================================================
    TAGS
 ========================================================= */
@@ -1178,7 +1024,6 @@ const projects = [
   font-weight: 700;
 }
 
-
 /* =========================================================
    ACTIONS
 ========================================================= */
@@ -1195,16 +1040,12 @@ const projects = [
   align-items: center;
   justify-content: center;
   gap: 8px;
-
   min-height: 42px;
   padding: 0 17px;
-
   border-radius: 9px;
-
   text-decoration: none;
   font-size: 12px;
   font-weight: 800;
-
   transition: 0.25s ease;
 }
 
@@ -1215,7 +1056,7 @@ const projects = [
   box-shadow: 0 7px 18px rgba(37, 99, 235, 0.18);
 }
 
-.primary-button:hover {
+.primary-button:hover:not(.disabled-button) {
   background: #1d4ed8;
   transform: translateY(-2px);
 }
@@ -1231,7 +1072,7 @@ const projects = [
   color: #334155;
 }
 
-.github-button:hover {
+.github-button:hover:not(.disabled-button) {
   border-color: #2563eb;
   color: #2563eb;
   transform: translateY(-2px);
@@ -1241,11 +1082,12 @@ const projects = [
   font-size: 14px;
 }
 
+/* Updated Disabled Button Style */
 .disabled-button {
-  opacity: 0.65;
-  cursor: default;
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none; /* Prevents click events when disabled */
 }
-
 
 /* =========================================================
    FOOTER NOTE
@@ -1291,158 +1133,122 @@ const projects = [
   text-decoration: underline;
 }
 
-
 /* =========================================================
    RESPONSIVE
 ========================================================= */
 
 @media (max-width: 950px) {
-
   .page-header .page-container {
     align-items: flex-start;
     flex-direction: column;
   }
-
   .header-meta {
     padding-bottom: 0;
   }
-
   .projects-grid {
     grid-template-columns: 1fr;
     max-width: 720px;
     margin: 0 auto;
   }
-
   .project-visual {
     height: 330px;
   }
 }
 
-
 @media (max-width: 650px) {
-
   .page-container {
     padding: 0 18px;
   }
-
   .page-header {
     padding: 65px 0 55px;
   }
-
   .page-header h1 {
     font-size: 42px;
     letter-spacing: -1.8px;
   }
-
   .page-header p {
     font-size: 15px;
   }
-
   .projects-section {
     padding: 55px 0 70px;
   }
-
   .project-visual {
     height: 270px;
   }
-
   .project-card-body {
     padding: 23px;
   }
-
   .project-card-body h2 {
     font-size: 21px;
   }
-
   .project-description {
     min-height: auto;
   }
-
   .project-actions {
     flex-direction: column;
   }
-
   .github-button {
     flex: auto;
   }
-
   .footer-content {
     align-items: flex-start;
     flex-direction: column;
   }
-
   .footer-content > span {
     font-size: 9px;
   }
-
   .footer-content a {
     line-height: 1.6;
   }
-
   .dashboard-sidebar {
     width: 78px;
   }
-
   .dashboard-main {
     padding: 22px 14px;
   }
-
   .preview-sidebar {
     width: 48px;
   }
-
   .preview-main {
     padding: 25px 15px;
   }
-
   .portfolio-preview {
     padding-left: 20px;
     padding-right: 20px;
   }
-
   .portfolio-avatar {
     width: 90px;
     height: 90px;
   }
-
   .portfolio-copy strong {
     font-size: 23px;
   }
 }
 
-
 @media (max-width: 420px) {
-
   .page-header h1 {
     font-size: 36px;
   }
-
   .project-visual {
     height: 230px;
   }
-
   .project-card-body {
     padding: 20px;
   }
-
   .project-tags span {
     font-size: 9px;
   }
-
   .portfolio-avatar {
     width: 72px;
     height: 72px;
   }
-
   .portfolio-copy strong {
     font-size: 20px;
   }
-
   .portfolio-copy > span {
     font-size: 7px;
   }
 }
-
 
 /* =========================================================
    ACCESSIBILITY
