@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+
 // 1. Page Metadata
 definePageMeta({
   layout: 'default'
@@ -9,29 +11,31 @@ useSeoMeta({
   title: 'Projects | Daniel Zigabe',
   description: 'Explore my selected work including web applications, mobile platforms, and management systems.',
   ogTitle: 'Projects - Daniel Zigabe',
-  ogDescription: 'A selection of web, mobile and management systems developed using modern technologies.',
+  ogDescription: 'A selection of web, mobile and management systems developed using modern technologies.'
 })
 
 /* =========================================================
    TYPES / INTERFACES
 ========================================================= */
 interface Project {
+  id?: string
   number: string
   title: string
   category: string
   description: string
   tags: string[]
   status: string
-  type: 'sports' | 'management' | 'portfolio'
+  type: 'sports' | 'management' | 'portfolio' | 'custom'
   demo: string
   github: string
 }
 
 /* =========================================================
-   DATA
+   DEFAULT DATA (SSR Fallback)
 ========================================================= */
-const projects: Project[] = [
+const defaultProjects: Project[] = [
   {
+    id: '1',
     number: '01',
     title: 'CombolojoSPORT',
     category: 'Sports Venue Platform',
@@ -39,10 +43,11 @@ const projects: Project[] = [
     tags: ['Nuxt.js', 'Laravel', 'Flutter', 'MySQL'],
     status: 'Featured Project',
     type: 'sports',
-    demo: '/projects/combolojosport',
+    demo: 'https://combolojosport.example.com',
     github: '#'
   },
   {
+    id: '2',
     number: '02',
     title: 'Internship Attendance & Advisor System',
     category: 'Management System',
@@ -50,25 +55,71 @@ const projects: Project[] = [
     tags: ['Nuxt.js', 'Laravel', 'MySQL'],
     status: 'Academic Project',
     type: 'management',
-    demo: '/projects/internship-attendance-system',
+    demo: '#',
     github: '#'
   },
   {
+    id: '3',
     number: '03',
     title: 'Personal Portfolio',
     category: 'Portfolio Website',
     description: 'A responsive developer portfolio built to showcase professional experience, technical skills, education and selected projects.',
-    tags: ['Nuxt.js', 'Vue.js', 'TypeScript', 'CSS'],
+    tags: ['Nuxt.js', 'Vue.js', 'TypeScript', 'Tailwind CSS'],
     status: 'Personal Project',
     type: 'portfolio',
     demo: '#',
     github: '#'
   }
 ]
+
+const projects = ref<Project[]>(defaultProjects)
+
+// Helper: Detect appropriate visual preview type
+function detectType(title: string, category: string): 'sports' | 'management' | 'portfolio' | 'custom' {
+  const text = (title + ' ' + category).toLowerCase()
+  if (text.includes('sport')) return 'sports'
+  if (text.includes('attendance') || text.includes('management') || text.includes('system') || text.includes('dashboard')) return 'management'
+  if (text.includes('portfolio')) return 'portfolio'
+  return 'custom'
+}
+
+/* =========================================================
+   LOAD FROM ADMIN STORAGE
+========================================================= */
+onMounted(() => {
+  const saved = localStorage.getItem('portfolio_projects')
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        projects.value = parsed.map((item: any, index: number) => {
+          // Parse tags from tech string (e.g., "Nuxt + Laravel + Tailwind" -> ["Nuxt", "Laravel", "Tailwind"])
+          const tags = item.tech
+            ? item.tech.split(/[+,/|]/).map((t: string) => t.trim()).filter((t: string) => t.length > 0)
+            : ['Vue.js', 'Nuxt.js']
+
+          return {
+            id: item.id || String(index + 1),
+            number: String(index + 1).padStart(2, '0'),
+            title: item.title,
+            category: item.category || 'Web Application',
+            description: item.description || `A modern full-stack ${item.category || 'software'} project engineered using ${item.tech || 'modern technologies'}.`,
+            tags: tags,
+            status: item.status || 'Active Project',
+            type: detectType(item.title, item.category || ''),
+            demo: item.url || '#',
+            github: item.github || '#'
+          }
+        })
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+})
 </script>
 
 <template>
-  <!-- Changed to <main> for better semantic HTML -->
   <main class="projects-page">
 
     <!-- =====================================================
@@ -103,10 +154,10 @@ const projects: Project[] = [
 
           <article
             v-for="project in projects"
-            :key="project.number"
+            :key="project.id || project.number"
             class="project-card"
           >
-            <!-- PROJECT VISUAL (Hidden from screen readers to prevent noise, since real info is below) -->
+            <!-- PROJECT VISUAL -->
             <div
               class="project-visual"
               :class="`visual-${project.type}`"
@@ -208,7 +259,7 @@ const projects: Project[] = [
               </div>
 
               <!-- PORTFOLIO VISUAL -->
-              <div v-else class="portfolio-preview">
+              <div v-else-if="project.type === 'portfolio'" class="portfolio-preview">
                 <div class="portfolio-nav">
                   <strong>DZ</strong>
                   <div class="nav-lines">
@@ -230,6 +281,24 @@ const projects: Project[] = [
                   <div class="portfolio-avatar">
                     <span>DZ</span>
                   </div>
+                </div>
+              </div>
+
+              <!-- CUSTOM NEW APP VISUAL (FOR DYNAMICALLY ADDED PROJECTS) -->
+              <div v-else class="custom-preview">
+                <div class="custom-header">
+                  <span class="badge-tag">{{ project.category }}</span>
+                  <strong class="code-title">{{ project.title }}.app</strong>
+                </div>
+                <div class="code-block">
+                  <p><span class="code-keyword">const</span> <span class="code-var">app</span> = <span class="code-fn">createApp</span>()</p>
+                  <p><span class="code-var">app</span>.<span class="code-fn">use</span>({{ project.tags[0] || 'Nuxt' }})</p>
+                  <p><span class="code-keyword">await</span> <span class="code-var">app</span>.<span class="code-fn">deploy</span>({ status: <span class="code-str">'{{ project.status }}'</span> })</p>
+                </div>
+                <div class="app-cards-preview">
+                  <div class="mini-app-card"></div>
+                  <div class="mini-app-card active"></div>
+                  <div class="mini-app-card"></div>
                 </div>
               </div>
 
@@ -256,16 +325,18 @@ const projects: Project[] = [
                 </span>
               </div>
 
-              <!-- ACTIONS (Improved Semantic Logic) -->
+              <!-- ACTIONS -->
               <div class="project-actions">
-                <NuxtLink
+                <a
                   v-if="project.demo !== '#'"
-                  :to="project.demo"
+                  :href="project.demo"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="primary-button"
                 >
                   View Project
                   <span aria-hidden="true">↗</span>
-                </NuxtLink>
+                </a>
                 <span
                   v-else
                   class="primary-button disabled-button"
@@ -322,16 +393,11 @@ const projects: Project[] = [
 /* =========================================================
    PAGE
 ========================================================= */
-
 .projects-page {
   min-height: 100vh;
   background: #ffffff;
   color: #0f172a;
 }
-
-/* =========================================================
-   CONTAINER
-========================================================= */
 
 .page-container {
   width: 100%;
@@ -343,22 +409,13 @@ const projects: Project[] = [
 /* =========================================================
    HEADER
 ========================================================= */
-
 .page-header {
   position: relative;
   overflow: hidden;
   padding: 95px 0 80px;
   background:
-    radial-gradient(
-      circle at 15% 20%,
-      rgba(37, 99, 235, 0.07),
-      transparent 28%
-    ),
-    linear-gradient(
-      135deg,
-      #ffffff 0%,
-      #f8fafc 100%
-    );
+    radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.07), transparent 28%),
+    linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-bottom: 1px solid #e2e8f0;
 }
 
@@ -444,25 +501,16 @@ const projects: Project[] = [
 /* =========================================================
    PROJECT SECTION
 ========================================================= */
-
 .projects-section {
   padding: 90px 0 100px;
   background: #f8fafc;
 }
-
-/* =========================================================
-   GRID
-========================================================= */
 
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 30px;
 }
-
-/* =========================================================
-   PROJECT CARD
-========================================================= */
 
 .project-card {
   overflow: hidden;
@@ -484,7 +532,6 @@ const projects: Project[] = [
 /* =========================================================
    PROJECT VISUAL
 ========================================================= */
-
 .project-visual {
   position: relative;
   height: 310px;
@@ -522,10 +569,7 @@ const projects: Project[] = [
   letter-spacing: 1px;
 }
 
-/* =========================================================
-   SPORTS PREVIEW
-========================================================= */
-
+/* SPORTS */
 .visual-sports {
   background: linear-gradient(135deg, #052e16, #064e3b);
 }
@@ -667,10 +711,7 @@ const projects: Project[] = [
   font-size: 7px;
 }
 
-/* =========================================================
-   MANAGEMENT PREVIEW
-========================================================= */
-
+/* MANAGEMENT */
 .visual-management {
   background: linear-gradient(135deg, #0f172a, #172554);
 }
@@ -822,10 +863,7 @@ const projects: Project[] = [
   opacity: 0.85;
 }
 
-/* =========================================================
-   PORTFOLIO PREVIEW
-========================================================= */
-
+/* PORTFOLIO */
 .visual-portfolio {
   background: linear-gradient(135deg, #0f172a, #1e293b);
 }
@@ -936,10 +974,76 @@ const projects: Project[] = [
   font-weight: 900;
 }
 
-/* =========================================================
-   VISUAL OVERLAY
-========================================================= */
+/* CUSTOM APP PREVIEW */
+.visual-custom {
+  background: linear-gradient(135deg, #090d16, #1e1b4b);
+}
 
+.custom-preview {
+  height: 100%;
+  padding: 48px 24px 20px;
+}
+
+.custom-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.badge-tag {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.code-title {
+  color: #cbd5e1;
+  font-size: 11px;
+  font-family: monospace;
+}
+
+.code-block {
+  padding: 14px;
+  background: rgba(2, 6, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  font-family: monospace;
+  font-size: 9px;
+  line-height: 1.8;
+  color: #94a3b8;
+}
+
+.code-keyword { color: #f43f5e; }
+.code-var { color: #38bdf8; }
+.code-fn { color: #818cf8; }
+.code-str { color: #34d399; }
+
+.app-cards-preview {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.mini-app-card {
+  flex: 1;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mini-app-card.active {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+/* OVERLAY */
 .visual-overlay {
   position: absolute;
   inset: 0;
@@ -950,7 +1054,6 @@ const projects: Project[] = [
 /* =========================================================
    PROJECT BODY
 ========================================================= */
-
 .project-card-body {
   display: flex;
   flex: 1;
@@ -1003,10 +1106,7 @@ const projects: Project[] = [
   line-height: 1.7;
 }
 
-/* =========================================================
-   TAGS
-========================================================= */
-
+/* TAGS */
 .project-tags {
   display: flex;
   flex-wrap: wrap;
@@ -1024,10 +1124,7 @@ const projects: Project[] = [
   font-weight: 700;
 }
 
-/* =========================================================
-   ACTIONS
-========================================================= */
-
+/* ACTIONS */
 .project-actions {
   display: flex;
   gap: 9px;
@@ -1082,17 +1179,13 @@ const projects: Project[] = [
   font-size: 14px;
 }
 
-/* Updated Disabled Button Style */
 .disabled-button {
   opacity: 0.6;
   cursor: not-allowed;
-  pointer-events: none; /* Prevents click events when disabled */
+  pointer-events: none;
 }
 
-/* =========================================================
-   FOOTER NOTE
-========================================================= */
-
+/* FOOTER */
 .projects-footer {
   margin-top: 70px;
 }
@@ -1133,10 +1226,7 @@ const projects: Project[] = [
   text-decoration: underline;
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
+/* RESPONSIVE */
 @media (max-width: 950px) {
   .page-header .page-container {
     align-items: flex-start;
@@ -1249,10 +1339,6 @@ const projects: Project[] = [
     font-size: 7px;
   }
 }
-
-/* =========================================================
-   ACCESSIBILITY
-========================================================= */
 
 .primary-button:focus-visible,
 .github-button:focus-visible,

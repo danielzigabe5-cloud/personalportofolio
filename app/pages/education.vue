@@ -1,46 +1,97 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+
 definePageMeta({
   layout: 'default'
 })
 
-const university = {
-  date: '2023 — Present',
-  name: 'Mekdela Amba University',
-  degree: "Bachelor's Degree in Computer Science",
-  location: 'Tulu Awliya Campus, Ethiopia',
-  description:
-    "Currently pursuing a Bachelor's degree in Computer Science, developing knowledge and practical skills in software development, web technologies, databases, and computer systems."
+interface EducationItem {
+  id: string | number
+  institution: string
+  degree: string
+  field: string
+  period: string
+  location?: string
+  description?: string
+  isCurrent?: boolean
 }
 
-const courses = [
+// 1. DEFAULT DATA (SSR Fallback)
+const defaultEducationList: EducationItem[] = [
+  {
+    id: '1',
+    institution: 'Mekdela Amba University',
+    degree: "Bachelor's Degree",
+    field: 'Computer Science',
+    period: '2023 — Present',
+    location: 'Tulu Awliya Campus, Ethiopia',
+    description:
+      "Currently pursuing a Bachelor's degree in Computer Science, developing knowledge and practical skills in software development, web technologies, databases, and computer systems.",
+    isCurrent: true
+  }
+]
+
+const educationList = ref<EducationItem[]>(defaultEducationList)
+
+const courses = ref([
   'Data Structures & Algorithms',
   'Database Systems',
+  'Web Development & Architecture',
+  'Software Engineering Principles',
+  'Computer Networks & Security'
+])
+
+const certifications = ref([
+  'Responsive Web Design',
+  'JavaScript Algorithms & Data Structures',
+  'Introduction to Laravel REST APIs',
+  'Modern Vue.js & Nuxt Development'
+])
+
+const learningTags = ref([
   'Web Development',
   'Software Engineering',
-  'Computer Networks'
-]
+  'Database Systems',
+  'Problem Solving',
+  'Nuxt.js',
+  'Laravel'
+])
 
-const certifications = [
-  'Responsive Web Design',
-  'JavaScript Algorithms',
-  'Introduction to Laravel',
-  'Web Development'
-]
+// 2. LOAD LIVE DATA FROM ADMIN STORAGE
+onMounted(() => {
+  // Sync Education from Admin
+  const savedEdu = localStorage.getItem('portfolio_education') || localStorage.getItem('portfolio_education_records')
+  if (savedEdu) {
+    try {
+      const parsed = JSON.parse(savedEdu)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        educationList.value = parsed.map((item: any) => ({
+          ...item,
+          location: item.location || 'Ethiopia'
+        }))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
-const learning = {
-  title: 'Turning Academic Knowledge Into Practical Skills',
-  description:
-    'My education has helped me build a strong foundation in computer science while giving me the opportunity to apply theoretical knowledge to real-world software development projects.',
-  tags: [
-    'Web Development',
-    'Software Engineering',
-    'Database Systems',
-    'Problem Solving'
-  ]
-}
+  // Sync Tags with Admin Skills if available
+  const savedSkills = localStorage.getItem('portfolio_skills')
+  if (savedSkills) {
+    try {
+      const parsedSkills = JSON.parse(savedSkills)
+      if (Array.isArray(parsedSkills) && parsedSkills.length > 0) {
+        const topSkills = parsedSkills.slice(0, 6).map((s: any) => s.name)
+        learningTags.value = Array.from(new Set([...learningTags.value, ...topSkills]))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+})
 
 const quote =
-  "Education is not just about learning; it's about building a better future."
+  "Education is not just about learning; it's about building a better future through practical problem solving."
 </script>
 
 <template>
@@ -56,55 +107,62 @@ const quote =
         </h1>
 
         <p>
-          My academic journey, technical learning, and educational background.
+          My academic journey, technical qualifications, and continuous learning path.
         </p>
       </div>
     </section>
 
-    <!-- EDUCATION -->
+    <!-- EDUCATION SECTION -->
     <section class="education-section">
       <div class="page-container">
 
-        <!-- UNIVERSITY -->
-        <div class="university-card">
+        <!-- DYNAMIC UNIVERSITY / EDUCATION CARDS -->
+        <div class="education-cards-wrapper">
+          <div
+            v-for="item in educationList"
+            :key="item.id"
+            class="university-card"
+          >
+            <div class="university-icon">
+              🎓
+            </div>
 
-          <div class="university-icon">
-            🎓
+            <div class="university-content">
+              <div class="date-row">
+                <span class="education-date">
+                  {{ item.period }}
+                </span>
+                <span v-if="item.isCurrent" class="current-badge">
+                  ● Currently Enrolled
+                </span>
+              </div>
+
+              <h2>
+                {{ item.institution }}
+              </h2>
+
+              <h3>
+                {{ item.degree }} <span v-if="item.field">in {{ item.field }}</span>
+              </h3>
+
+              <p class="location">
+                📍 {{ item.location || 'Ethiopia' }}
+              </p>
+
+              <p class="description">
+                {{ item.description || 'Focusing on core software principles, algorithms, and practical software engineering applications.' }}
+              </p>
+            </div>
           </div>
-
-          <div class="university-content">
-            <span class="education-date">
-              {{ university.date }}
-            </span>
-
-            <h2>
-              {{ university.name }}
-            </h2>
-
-            <h3>
-              {{ university.degree }}
-            </h3>
-
-            <p class="location">
-              📍 {{ university.location }}
-            </p>
-
-            <p class="description">
-              {{ university.description }}
-            </p>
-          </div>
-
         </div>
 
-        <!-- GRID -->
+        <!-- GRID: COURSES & CERTIFICATIONS -->
         <div class="education-grid">
 
           <!-- COURSES -->
           <div class="education-list">
-
             <div class="section-title">
               <div class="title-icon">📚</div>
-
               <div>
                 <span>ACADEMIC</span>
                 <h2>Relevant Courses</h2>
@@ -120,15 +178,12 @@ const quote =
                 <span>{{ course }}</span>
               </li>
             </ul>
-
           </div>
 
           <!-- CERTIFICATIONS -->
           <div class="education-list">
-
             <div class="section-title">
               <div class="title-icon">🏆</div>
-
               <div>
                 <span>PROFESSIONAL</span>
                 <h2>Certifications</h2>
@@ -144,14 +199,12 @@ const quote =
                 <span>{{ cert }}</span>
               </li>
             </ul>
-
           </div>
 
         </div>
 
-        <!-- LEARNING -->
+        <!-- LEARNING FOCUS -->
         <div class="learning-card">
-
           <div class="learning-icon">
             💡
           </div>
@@ -160,36 +213,31 @@ const quote =
             <span>MY LEARNING FOCUS</span>
 
             <h2>
-              {{ learning.title }}
+              Turning Academic Knowledge Into Practical Skills
             </h2>
 
             <p>
-              {{ learning.description }}
+              My computer science education provides a solid foundational understanding of software architecture, data structures, and algorithms, allowing me to build robust, scalable applications.
             </p>
 
             <div class="learning-tags">
               <span
-                v-for="tag in learning.tags"
+                v-for="tag in learningTags"
                 :key="tag"
               >
                 {{ tag }}
               </span>
             </div>
           </div>
-
         </div>
 
         <!-- QUOTE -->
         <div class="education-quote">
-
           <span class="quote-mark">“</span>
-
           <p>
             {{ quote }}
           </p>
-
           <div class="quote-line"></div>
-
         </div>
 
       </div>
@@ -205,7 +253,6 @@ const quote =
 }
 
 /* CONTAINER */
-
 .page-container {
   width: 100%;
   max-width: 1200px;
@@ -214,7 +261,6 @@ const quote =
 }
 
 /* HEADER */
-
 .page-header {
   padding: 90px 20px 70px;
   text-align: center;
@@ -253,19 +299,23 @@ const quote =
 }
 
 /* SECTION */
-
 .education-section {
   padding: 80px 20px;
   background: #f8fafc;
 }
 
-/* UNIVERSITY */
+.education-cards-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 45px;
+}
 
+/* UNIVERSITY CARD */
 .university-card {
   display: flex;
   align-items: flex-start;
   gap: 30px;
-  margin-bottom: 45px;
   padding: 38px 42px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -297,9 +347,16 @@ const quote =
   flex: 1;
 }
 
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
 .education-date {
   display: inline-block;
-  margin-bottom: 10px;
   padding: 6px 13px;
   border-radius: 20px;
   background: #eff6ff;
@@ -309,16 +366,30 @@ const quote =
   letter-spacing: 1.5px;
 }
 
+.current-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .university-card h2 {
   margin: 0 0 7px;
   color: #0f172a;
   font-size: 27px;
+  font-weight: 800;
 }
 
 .university-card h3 {
   margin: 0 0 10px;
   color: #2563eb;
   font-size: 17px;
+  font-weight: 700;
 }
 
 .location {
@@ -335,7 +406,6 @@ const quote =
 }
 
 /* GRID */
-
 .education-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -388,6 +458,7 @@ const quote =
   margin: 0;
   color: #0f172a;
   font-size: 21px;
+  font-weight: 800;
 }
 
 .education-list ul {
@@ -433,7 +504,6 @@ const quote =
 }
 
 /* LEARNING */
-
 .learning-card {
   display: flex;
   align-items: center;
@@ -475,6 +545,7 @@ const quote =
   margin: 0 0 10px;
   color: #0f172a;
   font-size: 23px;
+  font-weight: 800;
 }
 
 .learning-content p {
@@ -501,7 +572,6 @@ const quote =
 }
 
 /* QUOTE */
-
 .education-quote {
   padding: 50px 60px;
   text-align: center;
@@ -541,7 +611,6 @@ const quote =
 }
 
 /* RESPONSIVE */
-
 @media (max-width: 900px) {
   .education-grid {
     grid-template-columns: 1fr;

@@ -1,34 +1,15 @@
 <script setup lang="ts">
-import profileImg from '~/assets/images/daniel.jpg'
+import { ref, computed, onMounted } from 'vue'
+import defaultImg from '~/assets/images/daniel.jpg'
 
 // 1. Page Metadata
 definePageMeta({
   layout: 'default'
 })
 
-// 2. SEO Optimization (Crucial for Portfolios)
-useSeoMeta({
-  title: 'Daniel Zigabe | Frontend Developer',
-  description: 'I design and build modern, responsive web and mobile applications that turn ideas into practical digital solutions.',
-  ogTitle: 'Daniel Zigabe - Portfolio',
-  ogDescription: 'Discover my frontend, web, and mobile development projects.',
-  ogImage: profileImg,
-  twitterCard: 'summary_large_image',
-})
-
 /* =========================================================
    TYPES / INTERFACES
 ========================================================= */
-interface Stat {
-  value: string
-  label: string
-}
-
-interface Skill {
-  name: string
-  short: string
-}
-
 interface Project {
   slug: string
   number: string
@@ -36,7 +17,7 @@ interface Project {
   title: string
   description: string
   tags: string[]
-  image: string
+  url?: string
 }
 
 interface Service {
@@ -46,24 +27,32 @@ interface Service {
 }
 
 /* =========================================================
-   DATA
+   REACTIVE STATE (CONNECTS TO ADMIN DATA)
 ========================================================= */
-const stats: Stat[] = [
-  { value: '7+', label: 'Projects Built' },
-  { value: '1+', label: 'Year Experience' },
-  { value: '6+', label: 'Technologies' }
-]
+const profile = ref({
+  name: 'Daniel Zigabe',
+  role: 'Frontend Developer',
+  bio: 'I design and build modern, responsive web and mobile applications that turn ideas into practical digital solutions.',
+  email: 'danielzigabe5@gmail.com',
+  avatarUrl: null as string | null
+})
 
-const skills: Skill[] = [
+const stats = ref({
+  projectsCount: 3,
+  experienceYears: 1,
+  skillsCount: 6
+})
+
+const topSkills = ref([
   { name: 'Nuxt.js', short: 'N' },
   { name: 'Laravel', short: 'L' },
   { name: 'Flutter', short: 'F' },
   { name: 'Vue.js', short: 'V' },
   { name: 'Tailwind CSS', short: 'T' },
   { name: 'MySQL', short: 'M' }
-]
+])
 
-const projects: Project[] = [
+const featuredProjects = ref<Project[]>([
   {
     slug: 'combolojosport',
     number: '01',
@@ -71,7 +60,7 @@ const projects: Project[] = [
     title: 'CombolojoSPORT',
     description: 'A sports venue platform designed to help users discover sports facilities, explore events and connect with venue services across Ethiopia.',
     tags: ['Nuxt.js', 'Laravel', 'Flutter'],
-    image: profileImg
+    url: 'https://combolojosport.example.com'
   },
   {
     slug: 'internship-attendance-system',
@@ -80,35 +69,125 @@ const projects: Project[] = [
     title: 'Internship Attendance System',
     description: 'A multi-role internship management platform connecting students, company supervisors, advisors and administrators.',
     tags: ['Nuxt.js', 'Laravel', 'MySQL'],
-    image: profileImg
+    url: ''
   }
-]
+])
 
 const services: Service[] = [
   {
     number: '01',
     title: 'Frontend Development',
-    description: 'Building responsive and accessible interfaces with modern frontend technologies.'
+    description: 'Building responsive, accessible, and fast interfaces with modern tools like Nuxt.js, Vue 3, and Tailwind CSS.'
   },
   {
     number: '02',
-    title: 'Web Applications',
-    description: 'Developing practical web applications that solve real business and user problems.'
+    title: 'Full-Stack Web Applications',
+    description: 'Developing end-to-end web applications with connected REST APIs, robust databases, and secure architecture.'
   },
   {
     number: '03',
     title: 'Mobile Applications',
-    description: 'Creating cross-platform mobile experiences using Flutter and connected APIs.'
+    description: 'Creating cross-platform mobile experiences using Flutter, integrated with Laravel backends.'
   }
 ]
+
+// Computed Initials (e.g., DZ)
+const initials = computed(() => {
+  if (!profile.value.name.trim()) return 'DZ'
+  const parts = profile.value.name.trim().split(' ')
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase()
+  }
+  return parts[0].slice(0, 2).toUpperCase()
+})
+
+// 2. SEO Optimization
+useSeoMeta({
+  title: () => `${profile.value.name} | ${profile.value.role}`,
+  description: () => profile.value.bio,
+  ogTitle: () => `${profile.value.name} - Portfolio`,
+  ogDescription: () => profile.value.bio
+})
+
+/* =========================================================
+   LOAD FROM ADMIN STORAGE
+========================================================= */
+onMounted(() => {
+  // A. Load Profile
+  const savedProfile = localStorage.getItem('portfolio_profile')
+  if (savedProfile) {
+    try {
+      const parsed = JSON.parse(savedProfile)
+      if (parsed.name) profile.value.name = parsed.name
+      if (parsed.role) profile.value.role = parsed.role
+      if (parsed.bio) profile.value.bio = parsed.bio
+      if (parsed.email) profile.value.email = parsed.email
+      if (parsed.avatarUrl) profile.value.avatarUrl = parsed.avatarUrl
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // B. Load Projects & Stats
+  const savedProjects = localStorage.getItem('portfolio_projects')
+  if (savedProjects) {
+    try {
+      const parsedProjects = JSON.parse(savedProjects)
+      if (Array.isArray(parsedProjects) && parsedProjects.length > 0) {
+        stats.value.projectsCount = parsedProjects.length
+        // Take top 2 for homepage featured showcase
+        featuredProjects.value = parsedProjects.slice(0, 2).map((item: any, i: number) => ({
+          slug: item.id || `project-${i + 1}`,
+          number: String(i + 1).padStart(2, '0'),
+          category: (item.category || 'Web Application').toUpperCase(),
+          title: item.title,
+          description: item.description || `A modern digital solution engineered using ${item.tech || 'Nuxt & Laravel'}.`,
+          tags: item.tech ? item.tech.split(/[+,/|]/).map((t: string) => t.trim()).slice(0, 3) : ['Nuxt.js', 'Vue.js'],
+          url: item.url || ''
+        }))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // C. Load Skills & Stats
+  const savedSkills = localStorage.getItem('portfolio_skills')
+  if (savedSkills) {
+    try {
+      const parsedSkills = JSON.parse(savedSkills)
+      if (Array.isArray(parsedSkills) && parsedSkills.length > 0) {
+        stats.value.skillsCount = parsedSkills.length
+        // Take top 6 skills for the homepage
+        topSkills.value = parsedSkills.slice(0, 6).map((s: any) => ({
+          name: s.name,
+          short: s.name.charAt(0).toUpperCase()
+        }))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // D. Load Experience Years
+  const savedExp = localStorage.getItem('portfolio_experiences')
+  if (savedExp) {
+    try {
+      const parsedExp = JSON.parse(savedExp)
+      if (Array.isArray(parsedExp) && parsedExp.length > 0) {
+        stats.value.experienceYears = Math.max(1, parsedExp.length)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+})
 </script>
 
 <template>
   <main class="portfolio-page">
-    
-    <!-- =====================================================
-         BACKGROUND DECORATION
-    ====================================================== -->
+
+    <!-- BACKGROUND DECORATION -->
     <div class="background-grid" aria-hidden="true"></div>
     <div class="blue-glow glow-one" aria-hidden="true"></div>
     <div class="blue-glow glow-two" aria-hidden="true"></div>
@@ -118,7 +197,7 @@ const services: Service[] = [
     ====================================================== -->
     <section class="hero-section" aria-label="Introduction">
       <div class="hero-container">
-        
+
         <!-- LEFT CONTENT -->
         <div class="hero-content">
           <div class="availability" role="status">
@@ -129,19 +208,17 @@ const services: Service[] = [
           <span class="hello-text">HELLO, I'M</span>
 
           <h1 class="hero-title">
-            Daniel
-            <span>Zigabe.</span>
+            {{ profile.name.split(' ')[0] }}
+            <span>{{ profile.name.split(' ').slice(1).join(' ') || '.' }}</span>
           </h1>
 
           <div class="hero-role-wrapper">
             <span class="role-line" aria-hidden="true"></span>
-            <h2 class="hero-role">Frontend Developer</h2>
+            <h2 class="hero-role">{{ profile.role }}</h2>
           </div>
 
           <p class="hero-description">
-            I design and build modern, responsive web and mobile
-            applications that turn ideas into practical digital
-            solutions.
+            {{ profile.bio }}
           </p>
 
           <!-- BUTTONS -->
@@ -156,28 +233,36 @@ const services: Service[] = [
             </NuxtLink>
           </div>
 
-          <!-- STATS -->
+          <!-- STATS (CONNECTED TO REAL COUNTERS) -->
           <div class="stats-container">
-            <div v-for="stat in stats" :key="stat.label" class="stat">
-              <strong>{{ stat.value }}</strong>
-              <span>{{ stat.label }}</span>
+            <div class="stat">
+              <strong>{{ stats.projectsCount }}+</strong>
+              <span>Projects Built</span>
+            </div>
+            <div class="stat">
+              <strong>{{ stats.experienceYears }}+</strong>
+              <span>Years Experience</span>
+            </div>
+            <div class="stat">
+              <strong>{{ stats.skillsCount }}+</strong>
+              <span>Technologies</span>
             </div>
           </div>
         </div>
 
-        <!-- RIGHT PROFILE -->
+        <!-- RIGHT PROFILE PHOTO -->
         <div class="profile-section" aria-hidden="true">
           <div class="profile-background"></div>
           <div class="profile-ring ring-one"></div>
           <div class="profile-ring ring-two"></div>
 
           <div class="profile-circle">
-            <img 
-              :src="profileImg" 
-              alt="Daniel Zigabe - Frontend Developer" 
-              loading="eager" 
-              width="330" 
-              height="330" 
+            <img
+              :src="profile.avatarUrl || defaultImg"
+              :alt="profile.name"
+              loading="eager"
+              width="330"
+              height="330"
             />
           </div>
 
@@ -185,20 +270,21 @@ const services: Service[] = [
           <div class="floating-card code-card">
             <span class="code-icon">&lt;/&gt;</span>
             <div>
-              <strong>Developer</strong>
+              <strong>{{ initials }}</strong>
               <small>Building with code</small>
             </div>
           </div>
 
           <!-- TECH CARD -->
           <div class="floating-card tech-card">
-            <span class="tech-symbol">N</span>
+            <span class="tech-symbol">⚡</span>
             <div>
-              <strong>Nuxt.js</strong>
-              <small>Frontend</small>
+              <strong>{{ topSkills[0]?.name || 'Nuxt.js' }}</strong>
+              <small>Specialized</small>
             </div>
           </div>
         </div>
+
       </div>
     </section>
 
@@ -210,8 +296,7 @@ const services: Service[] = [
         <div class="intro-content">
           <span class="intro-label">WHAT I DO</span>
           <p>
-            I combine design, development and problem solving to
-            create useful digital experiences.
+            I combine clean design, full-stack architecture, and problem solving to create useful digital products.
           </p>
         </div>
       </div>
@@ -229,15 +314,14 @@ const services: Service[] = [
             <strong>digital products.</strong>
           </h2>
           <p>
-            My focus is on building practical, scalable and
-            user-friendly applications using modern technologies.
+            My focus is on engineering scalable, responsive, and user-friendly software using modern technology stacks.
           </p>
         </div>
 
         <div class="services-grid" role="list">
-          <article 
-            v-for="service in services" 
-            :key="service.number" 
+          <article
+            v-for="service in services"
+            :key="service.number"
             class="service-card"
             role="listitem"
           >
@@ -252,7 +336,7 @@ const services: Service[] = [
     </section>
 
     <!-- =====================================================
-         SKILLS
+         SKILLS (REAL TOP TECHNOLOGIES)
     ====================================================== -->
     <section class="skills-section" aria-labelledby="skills-title">
       <div class="container">
@@ -263,15 +347,14 @@ const services: Service[] = [
             <strong>build.</strong>
           </h2>
           <p>
-            A selection of technologies I use for web, backend
-            and mobile application development.
+            A curated selection of modern technologies and frameworks I use for frontend, backend, and mobile development.
           </p>
         </div>
 
         <div class="skills-grid" role="list">
-          <div 
-            v-for="skill in skills" 
-            :key="skill.name" 
+          <div
+            v-for="skill in topSkills"
+            :key="skill.name"
             class="skill-card"
             role="listitem"
           >
@@ -287,7 +370,7 @@ const services: Service[] = [
     </section>
 
     <!-- =====================================================
-         FEATURED PROJECTS
+         FEATURED PROJECTS (CONNECTED TO REAL PROJECTS)
     ====================================================== -->
     <section class="projects-section" aria-labelledby="projects-title">
       <div class="container">
@@ -307,22 +390,33 @@ const services: Service[] = [
         </div>
 
         <div class="projects-grid">
-          <article 
-            v-for="project in projects" 
-            :key="project.slug" 
+          <article
+            v-for="project in featuredProjects"
+            :key="project.slug"
             class="project-card"
           >
-            <!-- PROJECT VISUAL -->
+            <!-- REFINED PROJECT VISUAL (Clean App Mockup, no broken image) -->
             <div class="project-visual">
               <div class="project-number" aria-hidden="true">{{ project.number }}</div>
-              <div class="project-pattern" aria-hidden="true">
-                <span></span><span></span><span></span>
+              
+              <!-- Clean Browser Mockup -->
+              <div class="mockup-frame">
+                <div class="mockup-header">
+                  <div class="mockup-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="mockup-url">{{ project.title.toLowerCase().replace(/\s+/g, '-') }}.app</div>
+                </div>
+                <div class="mockup-content">
+                  <div class="mockup-badge">{{ project.category }}</div>
+                  <h4>{{ project.title }}</h4>
+                  <div class="mockup-bars">
+                    <span class="bar-long"></span>
+                    <span class="bar-med"></span>
+                  </div>
+                </div>
               </div>
-              <img 
-                :src="project.image" 
-                :alt="`Screenshot of ${project.title}`" 
-                loading="lazy" 
-              />
+
               <div class="project-overlay" aria-hidden="true"></div>
             </div>
 
@@ -338,10 +432,22 @@ const services: Service[] = [
                     {{ tag }}
                   </span>
                 </div>
-                <NuxtLink 
-                  :to="`/projects/${project.slug}`" 
-                  class="project-link" 
-                  :aria-label="`View details of ${project.title}`"
+
+                <a
+                  v-if="project.url"
+                  :href="project.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="project-link"
+                  title="Visit Project Link"
+                >
+                  <span aria-hidden="true">↗</span>
+                </a>
+                <NuxtLink
+                  v-else
+                  to="/projects"
+                  class="project-link"
+                  title="View Projects"
                 >
                   <span aria-hidden="true">→</span>
                 </NuxtLink>
@@ -353,7 +459,7 @@ const services: Service[] = [
     </section>
 
     <!-- =====================================================
-         CV / ABOUT CTA
+         CAREER CTA
     ====================================================== -->
     <section class="career-section" aria-label="Career Information">
       <div class="container">
@@ -365,8 +471,7 @@ const services: Service[] = [
               <strong>journey?</strong>
             </h2>
             <p>
-              Learn more about my education, professional experience,
-              technical skills and the projects I have worked on.
+              Learn more about my computer science education, professional internship experience, technical stack, and design philosophy.
             </p>
 
             <div class="career-buttons">
@@ -375,19 +480,13 @@ const services: Service[] = [
                 <span aria-hidden="true">→</span>
               </NuxtLink>
 
-              <a 
-                href="/cv/Daniel-Zigabe-CV.pdf" 
-                download 
-                class="outline-button"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Download CV
-                <span aria-hidden="true">↓</span>
-              </a>
+              <NuxtLink to="/experience" class="outline-button">
+                Experience
+                <span aria-hidden="true">💼</span>
+              </NuxtLink>
             </div>
           </div>
-          <div class="career-mark" aria-hidden="true">DZ</div>
+          <div class="career-mark" aria-hidden="true">{{ initials }}</div>
         </div>
       </div>
     </section>
@@ -405,8 +504,7 @@ const services: Service[] = [
               <strong>in mind?</strong>
             </h2>
             <p>
-              Let's discuss your idea and see how we can turn it
-              into a useful digital product.
+              I am open to software development opportunities, freelance work, and innovative collaborations.
             </p>
           </div>
 
@@ -425,7 +523,6 @@ const services: Service[] = [
 /* =========================================================
    BASE
 ========================================================= */
-
 .portfolio-page {
   position: relative;
   min-height: 100vh;
@@ -444,7 +541,6 @@ const services: Service[] = [
 /* =========================================================
    BACKGROUND
 ========================================================= */
-
 .background-grid {
   position: absolute;
   top: 0;
@@ -483,7 +579,6 @@ const services: Service[] = [
 /* =========================================================
    HERO
 ========================================================= */
-
 .hero-section {
   position: relative;
   padding: 105px 24px 95px;
@@ -499,10 +594,6 @@ const services: Service[] = [
   align-items: center;
   gap: 70px;
 }
-
-/* =========================================================
-   HERO CONTENT
-========================================================= */
 
 .hero-content {
   position: relative;
@@ -585,10 +676,7 @@ const services: Service[] = [
   line-height: 1.9;
 }
 
-/* =========================================================
-   HERO BUTTONS
-========================================================= */
-
+/* BUTTONS */
 .hero-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -645,10 +733,7 @@ const services: Service[] = [
   transform: translateX(4px);
 }
 
-/* =========================================================
-   STATS
-========================================================= */
-
+/* STATS */
 .stats-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -688,10 +773,7 @@ const services: Service[] = [
   font-weight: 700;
 }
 
-/* =========================================================
-   PROFILE
-========================================================= */
-
+/* PROFILE SECTION */
 .profile-section {
   position: relative;
   min-height: 490px;
@@ -741,15 +823,6 @@ const services: Service[] = [
   overflow: hidden;
 }
 
-.profile-circle::after {
-  content: '';
-  position: absolute;
-  inset: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
 .profile-circle img {
   width: 100%;
   height: 100%;
@@ -758,10 +831,7 @@ const services: Service[] = [
   object-fit: cover;
 }
 
-/* =========================================================
-   FLOATING CARDS
-========================================================= */
-
+/* FLOATING CARDS */
 .floating-card {
   position: absolute;
   z-index: 4;
@@ -820,10 +890,7 @@ const services: Service[] = [
   color: #ffffff;
 }
 
-/* =========================================================
-   INTRO STRIP
-========================================================= */
-
+/* INTRO STRIP */
 .intro-strip {
   padding: 24px 20px;
   border-top: 1px solid #e2e8f0;
@@ -853,10 +920,7 @@ const services: Service[] = [
   font-weight: 600;
 }
 
-/* =========================================================
-   SERVICES
-========================================================= */
-
+/* SERVICES */
 .services-section {
   padding: 100px 20px;
   background: #ffffff;
@@ -902,11 +966,6 @@ const services: Service[] = [
   line-height: 1.8;
 }
 
-.section-header:not(.left) p {
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .services-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -950,7 +1009,6 @@ const services: Service[] = [
   background: #eff6ff;
   color: #2563eb;
   font-size: 22px;
-  font-weight: 400;
 }
 
 .service-card h3 {
@@ -980,10 +1038,7 @@ const services: Service[] = [
   transform: translateX(5px);
 }
 
-/* =========================================================
-   SKILLS
-========================================================= */
-
+/* SKILLS */
 .skills-section {
   padding: 100px 20px;
   background: #f8fafc;
@@ -1057,10 +1112,7 @@ const services: Service[] = [
   transform: translateX(3px);
 }
 
-/* =========================================================
-   PROJECTS
-========================================================= */
-
+/* PROJECTS */
 .projects-section {
   padding: 100px 20px;
   background: #ffffff;
@@ -1119,68 +1171,117 @@ const services: Service[] = [
   box-shadow: 0 20px 45px rgba(37, 99, 235, 0.08);
 }
 
-/* PROJECT VISUAL */
-
+/* REFINED MOCKUP VISUAL */
 .project-visual {
   position: relative;
-  height: 270px;
+  height: 240px;
   overflow: hidden;
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
-.project-visual img {
+.mockup-frame {
   width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  opacity: 0.75;
-  transition: transform 0.5s ease;
+  max-width: 380px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
-.project-card:hover .project-visual img {
-  transform: scale(1.04);
+.mockup-header {
+  height: 28px;
+  background: rgba(2, 6, 23, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+
+.mockup-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.mockup-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #475569;
+}
+
+.mockup-dots span:nth-child(1) { background: #ef4444; }
+.mockup-dots span:nth-child(2) { background: #f59e0b; }
+.mockup-dots span:nth-child(3) { background: #10b981; }
+
+.mockup-url {
+  color: #94a3b8;
+  font-size: 8px;
+  font-family: monospace;
+}
+
+.mockup-content {
+  padding: 24px 20px;
+  text-align: left;
+}
+
+.mockup-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(37, 99, 235, 0.25);
+  color: #60a5fa;
+  font-size: 7px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.mockup-content h4 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.mockup-bars {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mockup-bars span {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.bar-long { width: 75%; }
+.bar-med { width: 45%; }
 
 .project-overlay {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background: linear-gradient(180deg, transparent 45%, rgba(15, 23, 42, 0.22));
 }
 
 .project-number {
   position: absolute;
   z-index: 3;
-  top: 18px;
-  left: 20px;
-  color: #ffffff;
-  font-size: 11px;
+  top: 14px;
+  left: 18px;
+  color: #94a3b8;
+  font-size: 10px;
   font-weight: 900;
-  text-shadow: 0 2px 5px rgba(15, 23, 42, 0.2);
 }
-
-.project-pattern {
-  position: absolute;
-  z-index: 2;
-  right: -30px;
-  bottom: -50px;
-  width: 170px;
-  height: 170px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
-}
-
-.project-pattern span {
-  position: absolute;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-}
-
-.project-pattern span:nth-child(1) { inset: 20px; }
-.project-pattern span:nth-child(2) { inset: 45px; }
-.project-pattern span:nth-child(3) { inset: 70px; }
 
 /* PROJECT CONTENT */
-
 .project-content {
   padding: 25px;
 }
@@ -1252,10 +1353,7 @@ const services: Service[] = [
   background: #2563eb;
 }
 
-/* =========================================================
-   CAREER CTA
-========================================================= */
-
+/* CAREER CTA */
 .career-section {
   padding: 0 20px 100px;
   background: #ffffff;
@@ -1273,28 +1371,6 @@ const services: Service[] = [
   border-radius: 24px;
   background: #0f172a;
   box-shadow: 0 25px 60px rgba(15, 23, 42, 0.15);
-}
-
-.career-card::before {
-  content: '';
-  position: absolute;
-  width: 280px;
-  height: 280px;
-  right: 120px;
-  top: -130px;
-  border: 1px solid rgba(96, 165, 250, 0.16);
-  border-radius: 50%;
-}
-
-.career-card::after {
-  content: '';
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  right: 160px;
-  top: -90px;
-  border: 1px solid rgba(96, 165, 250, 0.12);
-  border-radius: 50%;
 }
 
 .career-content {
@@ -1376,17 +1452,15 @@ const services: Service[] = [
 .career-mark {
   position: absolute;
   right: 55px;
-  color: rgba(96, 165, 250, 0.1);
+  color: rgba(96, 165, 250, 0.08);
   font-size: 150px;
   line-height: 1;
   font-weight: 900;
   letter-spacing: -15px;
+  pointer-events: none;
 }
 
-/* =========================================================
-   CONTACT
-========================================================= */
-
+/* CONTACT */
 .contact-section {
   padding: 0 20px 100px;
   background: #ffffff;
@@ -1454,10 +1528,7 @@ const services: Service[] = [
   box-shadow: 0 15px 30px rgba(37, 99, 235, 0.27);
 }
 
-/* =========================================================
-   TABLET
-========================================================= */
-
+/* RESPONSIVE */
 @media (max-width: 1050px) {
   .hero-container {
     grid-template-columns: 1fr;
@@ -1489,10 +1560,6 @@ const services: Service[] = [
     grid-template-columns: 1fr;
   }
 }
-
-/* =========================================================
-   MOBILE
-========================================================= */
 
 @media (max-width: 700px) {
   .container {
@@ -1600,7 +1667,7 @@ const services: Service[] = [
     grid-template-columns: 1fr;
   }
   .project-visual {
-    height: 230px;
+    height: 200px;
   }
   .career-section,
   .contact-section {
@@ -1630,10 +1697,6 @@ const services: Service[] = [
     width: 100%;
   }
 }
-
-/* =========================================================
-   EXTRA SMALL
-========================================================= */
 
 @media (max-width: 400px) {
   .hero-title {
@@ -1667,10 +1730,6 @@ const services: Service[] = [
     font-size: 19px;
   }
 }
-
-/* =========================================================
-   ACCESSIBILITY
-========================================================= */
 
 a:focus-visible {
   outline: 3px solid rgba(37, 99, 235, 0.3);

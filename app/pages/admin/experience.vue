@@ -1,22 +1,135 @@
 <script setup lang="ts">
+import { ref, reactive, computed, onMounted, watch } from 'vue'
+
 definePageMeta({
   layout: 'admin'
 })
 
-const experiences = [
+interface ExperienceItem {
+  id: string
+  company: string
+  position: string
+  period: string
+  description: string
+}
+
+/* =====================================================
+   DEFAULT DATA & LOCAL STORAGE
+===================================================== */
+const defaultExperiences: ExperienceItem[] = [
   {
+    id: '1',
     company: 'Koyehub',
     position: 'Frontend Developer Intern',
     period: '2026',
     description: 'Developed responsive interfaces using Nuxt.js and modern web technologies.'
   },
   {
+    id: '2',
     company: 'Personal Projects',
     position: 'Full Stack Developer',
     period: '2025 - Present',
     description: 'Building web and mobile applications using Nuxt, Laravel and Flutter.'
   }
 ]
+
+const experiences = ref<ExperienceItem[]>([])
+
+// Load from LocalStorage
+onMounted(() => {
+  const saved = localStorage.getItem('portfolio_experiences')
+  if (saved) {
+    try {
+      experiences.value = JSON.parse(saved)
+    } catch {
+      experiences.value = defaultExperiences
+    }
+  } else {
+    experiences.value = defaultExperiences
+  }
+})
+
+// Auto-sync to LocalStorage
+watch(
+  experiences,
+  (newVal) => {
+    if (import.meta.client) {
+      localStorage.setItem('portfolio_experiences', JSON.stringify(newVal))
+    }
+  },
+  { deep: true }
+)
+
+/* =====================================================
+   MODAL & FORM STATE
+===================================================== */
+const isModalOpen = ref(false)
+const editingId = ref<string | null>(null)
+
+const form = reactive({
+  company: '',
+  position: '',
+  period: '',
+  description: ''
+})
+
+const isEditing = computed(() => editingId.value !== null)
+
+const openAddModal = () => {
+  editingId.value = null
+  form.company = ''
+  form.position = ''
+  form.period = ''
+  form.description = ''
+  isModalOpen.value = true
+}
+
+const openEditModal = (exp: ExperienceItem) => {
+  editingId.value = exp.id
+  form.company = exp.company
+  form.position = exp.position
+  form.period = exp.period
+  form.description = exp.description
+  isModalOpen.value = true
+}
+
+const closeModal = () => {
+  isModalOpen.value = false
+  editingId.value = null
+}
+
+const saveExperience = () => {
+  if (!form.company.trim() || !form.position.trim()) return
+
+  if (isEditing.value) {
+    const index = experiences.value.findIndex(exp => exp.id === editingId.value)
+    if (index !== -1) {
+      experiences.value[index] = {
+        id: editingId.value!,
+        company: form.company.trim(),
+        position: form.position.trim(),
+        period: form.period.trim() || 'Present',
+        description: form.description.trim()
+      }
+    }
+  } else {
+    experiences.value.unshift({
+      id: Date.now().toString(),
+      company: form.company.trim(),
+      position: form.position.trim(),
+      period: form.period.trim() || 'Present',
+      description: form.description.trim()
+    })
+  }
+
+  closeModal()
+}
+
+const deleteExperience = (id: string, position: string, company: string) => {
+  if (confirm(`"${position} at ${company}" የሚለውን የስራ ልምድ ማጥፋት እርግጠኛ ነዎት?`)) {
+    experiences.value = experiences.value.filter(exp => exp.id !== id)
+  }
+}
 </script>
 
 <template>
@@ -29,12 +142,13 @@ const experiences = [
           Experience
         </h1>
         <p class="mt-1 text-sm text-slate-400">
-          Manage your professional experience.
+          Manage your professional experience ({{ experiences.length }} Total).
         </p>
       </div>
 
       <button
         type="button"
+        @click="openAddModal"
         class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
       >
         <span class="text-lg leading-none">+</span>
@@ -43,12 +157,13 @@ const experiences = [
     </div>
 
     <!-- EXPERIENCE LIST -->
-    <div class="space-y-4">
+    <div v-if="experiences.length > 0" class="space-y-4">
       <div
         v-for="experience in experiences"
-        :key="experience.company"
+        :key="experience.id"
         class="group rounded-2xl border border-slate-700 bg-slate-800/50 p-6 transition duration-300 hover:-translate-y-1 hover:border-slate-600 hover:bg-slate-800"
       >
+        <!-- CARD HEADER -->
         <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 class="text-lg font-black text-slate-100">
@@ -59,31 +174,145 @@ const experiences = [
             </p>
           </div>
 
-          <span class="inline-flex w-fit items-center rounded-full border border-slate-700 bg-slate-900/50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <!-- DURATION BADGE -->
+          <span class="inline-flex w-fit items-center rounded-full border border-slate-700 bg-slate-900/50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">
             {{ experience.period }}
           </span>
         </div>
 
-        <p class="mt-5 text-sm leading-7 text-slate-400">
+        <!-- DESCRIPTION -->
+        <p class="mt-4 text-sm leading-relaxed text-slate-400">
           {{ experience.description }}
         </p>
 
-        <div class="mt-5 flex gap-2 border-t border-slate-700 pt-4">
+        <!-- ACTION BUTTONS -->
+        <div class="mt-5 flex gap-2 border-t border-slate-700/60 pt-4">
           <button
             type="button"
+            @click="openEditModal(experience)"
             class="rounded-lg px-3 py-1.5 text-xs font-bold text-slate-400 transition hover:bg-slate-700 hover:text-white"
           >
             Edit Experience
           </button>
           <button
             type="button"
-            class="rounded-lg px-3 py-1.5 text-xs font-bold text-red-400/70 transition hover:bg-red-500/10 hover:text-red-400"
+            @click="deleteExperience(experience.id, experience.position, experience.company)"
+            class="rounded-lg px-3 py-1.5 text-xs font-bold text-red-400/80 transition hover:bg-red-500/10 hover:text-red-400"
           >
             Delete
           </button>
         </div>
       </div>
     </div>
+
+    <!-- EMPTY STATE -->
+    <div
+      v-else
+      class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-slate-800/20 py-16 text-center"
+    >
+      <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-800 text-xl text-slate-400">
+        💼
+      </div>
+      <p class="mt-3 text-base font-medium text-slate-200">ምንም የስራ ልምድ አልተመዘገበም</p>
+      <p class="mt-1 text-sm text-slate-400">አዲስ የስራ ልምድ ለመመዝገብ ከላይ ያለውን "Add Experience" የሚለውን ይጫኑ።</p>
+    </div>
+
+    <!-- =================================================
+         MODAL (ADD / EDIT EXPERIENCE)
+    ================================================== -->
+    <Teleport to="body">
+      <div
+        v-if="isModalOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      >
+        <div class="w-full max-w-lg rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <h3 class="text-lg font-bold text-slate-100">
+              {{ isEditing ? 'Edit Experience' : 'Add Experience' }}
+            </h3>
+            <button
+              @click="closeModal"
+              class="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
+
+          <form @submit.prevent="saveExperience" class="mt-4 space-y-4">
+            <!-- Position -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Position / Role *
+              </label>
+              <input
+                v-model="form.position"
+                type="text"
+                placeholder="e.g. Frontend Developer, Full Stack Engineer"
+                required
+                class="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Company -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Company / Organization *
+              </label>
+              <input
+                v-model="form.company"
+                type="text"
+                placeholder="e.g. Koyehub, Freelance, Google"
+                required
+                class="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Period -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Period / Duration
+              </label>
+              <input
+                v-model="form.period"
+                type="text"
+                placeholder="e.g. 2025 - Present or 2024 - 2025"
+                class="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Description -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Description & Key Responsibilities
+              </label>
+              <textarea
+                v-model="form.description"
+                rows="4"
+                placeholder="Explain the tech stack used, challenges tackled, and outcomes achieved..."
+                class="w-full resize-none rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              ></textarea>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-800">
+              <button
+                type="button"
+                @click="closeModal"
+                class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-400 hover:bg-slate-800 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500"
+              >
+                {{ isEditing ? 'Update Experience' : 'Save Experience' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
 
   </div>
 </template>

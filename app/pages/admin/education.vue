@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { ref, reactive, computed } from 'vue'
+
 definePageMeta({
   layout: 'admin'
 })
 
-// 1. Type Interface ለ ዳታው
+// 1. Type Interface
 interface Education {
   id: number
   institution: string
@@ -13,60 +15,148 @@ interface Education {
   isCurrent: boolean
 }
 
-// 2. Data Fetching (ከ Backend ማምጣት)
+const STORAGE_KEY = 'portfolio_education_records'
+
+const defaultRecords: Education[] = [
+  {
+    id: 1,
+    institution: 'Mekdela Amba University',
+    degree: 'Bachelor Degree',
+    field: 'Computer Science',
+    period: '2023 - Present',
+    isCurrent: true
+  }
+]
+
+// 2. Data Fetching (ከ LocalStorage ወይም Backend ጋር በማገናኘት)
 const { data: education, status, error, refresh } = await useAsyncData<Education[]>(
   'admin-education',
   async () => {
-    // እውነተኛ Backend API Call (Example):
-    // return await $fetch('/api/admin/education')
+    // Simulate Network Delay (ኔትወርክ ለማስመሰል)
+    await new Promise((resolve) => setTimeout(resolve, 500))
 
-    // ኔትወርክ ለማስመሰል የተጨመረ መዘግየት (Simulate network delay)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Mock Response from Database
-    return [
-      {
-        id: 1,
-        institution: 'Mekdela Amba University',
-        degree: 'Bachelor Degree',
-        field: 'Computer Science',
-        period: '2023 - Present',
-        isCurrent: true
+    if (import.meta.client) {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) {
+        try {
+          return JSON.parse(saved) as Education[]
+        } catch {
+          return defaultRecords
+        }
       }
-    ]
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultRecords))
+    }
+
+    return defaultRecords
   }
 )
 
-// 3. Action Functions (ሎጂኮች)
+// Helper: LocalStorage ውስጥ ዳታ ለማስቀመጥ
+const persistData = (items: Education[]) => {
+  if (import.meta.client) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+  }
+}
+
+/* =====================================================
+   MODAL & FORM STATE
+===================================================== */
+const isModalOpen = ref(false)
+const isSubmitting = ref(false)
+const editingId = ref<number | null>(null)
+
+const form = reactive({
+  institution: '',
+  degree: '',
+  field: '',
+  period: '',
+  isCurrent: false
+})
+
+const isEditing = computed(() => editingId.value !== null)
+
+// አዲስ ለመጨመር ፎርም መክፈት
+const handleAdd = () => {
+  editingId.value = null
+  form.institution = ''
+  form.degree = ''
+  form.field = ''
+  form.period = ''
+  form.isCurrent = false
+  isModalOpen.value = true
+}
+
+// ለማስተካከል ፎርም መክፈት
+const handleEdit = (item: Education) => {
+  editingId.value = item.id
+  form.institution = item.institution
+  form.degree = item.degree
+  form.field = item.field
+  form.period = item.period
+  form.isCurrent = item.isCurrent
+  isModalOpen.value = true
+}
+
+const closeModal = () => {
+  isModalOpen.value = false
+  editingId.value = null
+}
+
+// አዲስ ማስቀመጥ ወይም ማስተካከል
+const handleSubmit = async () => {
+  if (!form.institution.trim() || !form.degree.trim()) return
+
+  isSubmitting.value = true
+  await new Promise((resolve) => setTimeout(resolve, 400)) // delay simulation
+
+  const currentList = education.value ? [...education.value] : []
+
+  if (isEditing.value) {
+    // UPDATE
+    const index = currentList.findIndex((item) => item.id === editingId.value)
+    if (index !== -1) {
+      currentList[index] = {
+        id: editingId.value!,
+        institution: form.institution.trim(),
+        degree: form.degree.trim(),
+        field: form.field.trim(),
+        period: form.period.trim() || 'Present',
+        isCurrent: form.isCurrent
+      }
+    }
+  } else {
+    // CREATE
+    const newRecord: Education = {
+      id: Date.now(),
+      institution: form.institution.trim(),
+      degree: form.degree.trim(),
+      field: form.field.trim(),
+      period: form.period.trim() || 'Present',
+      isCurrent: form.isCurrent
+    }
+    currentList.unshift(newRecord)
+  }
+
+  persistData(currentList)
+  await refresh()
+  isSubmitting.value = false
+  closeModal()
+}
+
+/* =====================================================
+   DELETE ACTION
+===================================================== */
 const isDeleting = ref<number | null>(null)
 
-// አዲስ ለመጨመር
-const handleAdd = () => {
-  console.log('Open Add Education Modal')
-  // እዚህ ላይ ሞዳል (Modal) ለመክፈት ሎጂክ ትጽፋለህ
-}
-
-// ለማስተካከል
-const handleEdit = (item: Education) => {
-  console.log('Edit Education:', item.institution)
-  // እዚህ ላይ Edit Modal ትከፍታለህ
-}
-
-// ለማጥፋት (API ጥሪ መመስያ)
 const handleDelete = async (id: number) => {
-  if (!confirm('Are you sure you want to delete this education record?')) return
+  if (!confirm('ይህንን የትምህርት መረጃ ለማጥፋት እርግጠኛ ነዎት? (Delete this record?)')) return
 
   isDeleting.value = id
   try {
-    // እውነተኛ ማጥፊያ ጥሪ (Example):
-    // await $fetch(`/api/admin/education/${id}`, { method: 'DELETE' })
-
-    // Simulate Delay
-    await new Promise((resolve) => setTimeout(resolve, 800))
-
-    // ዳታውን ሪፍሬሽ ማድረግ
+    await new Promise((resolve) => setTimeout(resolve, 600)) // network delay simulation
+    const updatedList = (education.value || []).filter((item) => item.id !== id)
+    persistData(updatedList)
     await refresh()
-    console.log('Deleted successfully!')
   } catch (err) {
     console.error('Failed to delete', err)
   } finally {
@@ -168,7 +258,7 @@ const handleDelete = async (id: number) => {
                   {{ item.institution }}
                   <span
                     v-if="item.isCurrent"
-                    class="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400"
+                    class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400"
                   >
                     Current
                   </span>
@@ -200,7 +290,7 @@ const handleDelete = async (id: number) => {
               <button
                 type="button"
                 @click="handleDelete(item.id)"
-                class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-red-400/70 transition hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+                class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-red-400/80 transition hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
                 :disabled="isDeleting === item.id"
               >
                 <span>{{ isDeleting === item.id ? '⏳' : '🗑️' }}</span>
@@ -212,6 +302,118 @@ const handleDelete = async (id: number) => {
         </div>
       </div>
     </div>
+
+    <!-- =================================================
+         MODAL (ADD / EDIT FORM)
+    ================================================== -->
+    <Teleport to="body">
+      <div
+        v-if="isModalOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      >
+        <div class="w-full max-w-lg rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <h3 class="text-lg font-bold text-slate-100">
+              {{ isEditing ? 'Edit Education Record' : 'Add Education Record' }}
+            </h3>
+            <button
+              @click="closeModal"
+              class="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
+
+          <form @submit.prevent="handleSubmit" class="mt-4 space-y-4">
+            <!-- Institution -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Institution / University *
+              </label>
+              <input
+                v-model="form.institution"
+                type="text"
+                placeholder="e.g. Mekdela Amba University"
+                required
+                class="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Degree & Field -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  Degree / Certificate *
+                </label>
+                <input
+                  v-model="form.degree"
+                  type="text"
+                  placeholder="e.g. Bachelor Degree"
+                  required
+                  class="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  Field of Study
+                </label>
+                <input
+                  v-model="form.field"
+                  type="text"
+                  placeholder="e.g. Computer Science"
+                  class="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <!-- Period -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Period / Years
+              </label>
+              <input
+                v-model="form.period"
+                type="text"
+                placeholder="e.g. 2023 - Present"
+                class="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Current Checkbox -->
+            <label class="flex items-center gap-3 cursor-pointer pt-1">
+              <input
+                v-model="form.isCurrent"
+                type="checkbox"
+                class="h-4 w-4 rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500"
+              />
+              <span class="text-xs font-bold text-slate-300">
+                I am currently studying here (Show 'Current' Badge)
+              </span>
+            </label>
+
+            <!-- Actions -->
+            <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-800">
+              <button
+                type="button"
+                @click="closeModal"
+                class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-400 hover:bg-slate-800 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                :disabled="isSubmitting"
+                class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500 disabled:opacity-50"
+              >
+                <span v-if="isSubmitting" class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                {{ isSubmitting ? 'Saving...' : (isEditing ? 'Update Record' : 'Save Record') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
 
   </div>
 </template>

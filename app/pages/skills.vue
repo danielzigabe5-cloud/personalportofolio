@@ -1,10 +1,29 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 
 definePageMeta({
   layout: 'default'
 })
 
-const skillCategories = [
+useSeoMeta({
+  title: 'Skills & Expertise | Daniel Zigabe',
+  description: 'Technologies, programming languages and tools I use to build modern full-stack applications.',
+  ogTitle: 'Skills & Expertise - Daniel Zigabe'
+})
+
+interface SkillItem {
+  name: string
+  level: number
+}
+
+interface CategoryGroup {
+  title: string
+  icon: string
+  skills: SkillItem[]
+}
+
+// 1. DEFAULT DATA (SSR Fallback)
+const defaultCategories: CategoryGroup[] = [
   {
     title: 'Frontend Development',
     icon: '🎨',
@@ -17,7 +36,6 @@ const skillCategories = [
       { name: 'JavaScript', level: 85 }
     ]
   },
-
   {
     title: 'Backend Development',
     icon: '⚙️',
@@ -29,7 +47,6 @@ const skillCategories = [
       { name: 'Postman', level: 80 }
     ]
   },
-
   {
     title: 'Mobile Development',
     icon: '📱',
@@ -39,7 +56,6 @@ const skillCategories = [
       { name: 'REST API Integration', level: 80 }
     ]
   },
-
   {
     title: 'Tools & Technologies',
     icon: '🛠️',
@@ -53,21 +69,89 @@ const skillCategories = [
   }
 ]
 
+const skillCategories = ref<CategoryGroup[]>(defaultCategories)
+const userRole = ref('Full Stack Developer')
+
+// Category Icon Mapping Helper
+const categoryIcons: Record<string, string> = {
+  'frontend': '🎨',
+  'frontend development': '🎨',
+  'backend': '⚙️',
+  'backend development': '⚙️',
+  'mobile': '📱',
+  'mobile development': '📱',
+  'database': '🗄️',
+  'devops': '☁️',
+  'tools': '🛠️',
+  'tools & technologies': '🛠️',
+  'other': '💻'
+}
+
+// 2. LOAD LIVE DATA FROM ADMIN LOCALSTORAGE
+onMounted(() => {
+  // A. Fetch Skills from Admin
+  const savedSkills = localStorage.getItem('portfolio_skills')
+  if (savedSkills) {
+    try {
+      const parsed = JSON.parse(savedSkills)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const groups: Record<string, CategoryGroup> = {}
+
+        parsed.forEach((skill: any) => {
+          const rawCat = (skill.category || 'Other').trim()
+          const lowerCat = rawCat.toLowerCase()
+
+          // Normalize readable category title
+          let displayTitle = rawCat
+          if (lowerCat === 'frontend') displayTitle = 'Frontend Development'
+          else if (lowerCat === 'backend') displayTitle = 'Backend Development'
+          else if (lowerCat === 'mobile') displayTitle = 'Mobile Development'
+          else if (lowerCat === 'tools') displayTitle = 'Tools & Technologies'
+
+          if (!groups[displayTitle]) {
+            groups[displayTitle] = {
+              title: displayTitle,
+              icon: categoryIcons[lowerCat] || categoryIcons[displayTitle.toLowerCase()] || '💻',
+              skills: []
+            }
+          }
+
+          groups[displayTitle].skills.push({
+            name: skill.name,
+            level: Number(skill.level) || 80
+          })
+        })
+
+        skillCategories.value = Object.values(groups)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // B. Fetch Role from Admin Profile
+  const savedProfile = localStorage.getItem('portfolio_profile')
+  if (savedProfile) {
+    try {
+      const parsedProfile = JSON.parse(savedProfile)
+      if (parsedProfile.role) {
+        userRole.value = parsedProfile.role
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+})
 </script>
 
-
 <template>
-
   <div class="skills-page">
 
     <!-- =========================================
           PAGE HEADER
     ========================================== -->
-
     <section class="page-header">
-
       <div class="page-container">
-
         <span class="eyebrow">
           MY EXPERTISE
         </span>
@@ -79,92 +163,63 @@ const skillCategories = [
         <p>
           Technologies and tools I use to build modern applications.
         </p>
-
       </div>
-
     </section>
-
 
     <!-- =========================================
           SKILLS SECTION
     ========================================== -->
-
     <section class="skills-section">
-
       <div class="page-container">
 
         <div class="skills-grid">
-
           <article
             v-for="category in skillCategories"
             :key="category.title"
             class="skill-card"
           >
-
             <!-- CATEGORY HEADER -->
-
             <div class="skill-card-header">
-
               <div class="skill-icon">
                 {{ category.icon }}
               </div>
-
               <h2>
                 {{ category.title }}
               </h2>
-
             </div>
 
-
             <!-- SKILLS -->
-
             <div class="skills-list">
-
               <div
                 v-for="skill in category.skills"
                 :key="skill.name"
                 class="skill-item"
               >
-
                 <div class="skill-info">
-
                   <span class="skill-name">
                     {{ skill.name }}
                   </span>
-
                   <span class="skill-percentage">
                     {{ skill.level }}%
                   </span>
-
                 </div>
 
-
                 <div class="progress-background">
-
                   <div
                     class="progress-bar"
                     :style="{ width: `${skill.level}%` }"
                   ></div>
-
                 </div>
-
               </div>
-
             </div>
-
           </article>
-
         </div>
-
 
         <!-- =========================================
               TECHNOLOGY SUMMARY
         ========================================== -->
-
         <div class="technology-summary">
-
           <div class="summary-content">
-
             <span class="summary-label">
               TECHNOLOGY STACK
             </span>
@@ -179,65 +234,26 @@ const skillCategories = [
               technologies to create responsive, scalable and
               user-friendly applications.
             </p>
-
           </div>
-
 
           <div class="summary-badge">
-
             <span>🚀</span>
-
             <strong>
-              Full Stack Developer
+              {{ userRole }}
             </strong>
-
           </div>
-
         </div>
 
       </div>
-
     </section>
 
   </div>
-
 </template>
 
-
 <style scoped>
-
-/* =====================================================
-   COLOR SYSTEM (LIGHT / WHITE THEME)
-===================================================== */
-
-/*
-  Main Background:
-  #FFFFFF (Pure White)
-
-  Section Header / Elevated Card:
-  #F8FAFC (Slate 50)
-
-  Text Dark Primary:
-  #0F172A (Slate 900)
-
-  Text Muted / Body:
-  #475569 (Slate 600)
-
-  Primary Blue:
-  #2563EB (Blue 600)
-
-  Accent Blue Light:
-  #EFF6FF (Blue 50) / #DBEAFE (Blue 100)
-
-  Border:
-  #E2E8F0 (Slate 200)
-*/
-
-
 /* =====================================================
    BASE
 ===================================================== */
-
 .skills-page {
   min-height: 100vh;
   background-color: #FFFFFF;
@@ -252,26 +268,15 @@ const skillCategories = [
   padding: 0 20px;
 }
 
-
 /* =====================================================
    PAGE HEADER
 ===================================================== */
-
 .page-header {
-  background: linear-gradient(
-    180deg,
-    #F8FAFC 0%,
-    #FFFFFF 100%
-  );
+  background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
   padding: 80px 20px 50px;
   text-align: center;
   border-bottom: 1px solid #E2E8F0;
 }
-
-
-/* =====================================================
-   EYEBROW
-===================================================== */
 
 .page-header .eyebrow {
   display: inline-block;
@@ -282,11 +287,6 @@ const skillCategories = [
   text-transform: uppercase;
   margin-bottom: 12px;
 }
-
-
-/* =====================================================
-   MAIN TITLE
-===================================================== */
 
 .page-header h1 {
   font-size: 48px;
@@ -300,11 +300,6 @@ const skillCategories = [
   color: #2563EB;
 }
 
-
-/* =====================================================
-   HEADER DESCRIPTION
-===================================================== */
-
 .page-header p {
   color: #475569;
   font-size: 17px;
@@ -312,20 +307,13 @@ const skillCategories = [
   margin: 0;
 }
 
-
 /* =====================================================
    SKILLS SECTION
 ===================================================== */
-
 .skills-section {
   background-color: #FFFFFF;
   padding: 60px 20px 80px;
 }
-
-
-/* =====================================================
-   GRID
-===================================================== */
 
 .skills-grid {
   display: grid;
@@ -333,11 +321,9 @@ const skillCategories = [
   gap: 28px;
 }
 
-
 /* =====================================================
    SKILL CARD
 ===================================================== */
-
 .skill-card {
   background-color: #FFFFFF;
   border: 1px solid #E2E8F0;
@@ -347,21 +333,11 @@ const skillCategories = [
   transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
 }
 
-
-/* =====================================================
-   CARD HOVER
-===================================================== */
-
 .skill-card:hover {
   transform: translateY(-6px);
   border-color: #93C5FD;
   box-shadow: 0 16px 32px rgba(37, 99, 235, 0.08);
 }
-
-
-/* =====================================================
-   CARD HEADER
-===================================================== */
 
 .skill-card-header {
   display: flex;
@@ -371,11 +347,6 @@ const skillCategories = [
   margin-bottom: 22px;
   border-bottom: 1px solid #F1F5F9;
 }
-
-
-/* =====================================================
-   SKILL ICON
-===================================================== */
 
 .skill-icon {
   width: 52px;
@@ -389,22 +360,12 @@ const skillCategories = [
   font-size: 24px;
 }
 
-
-/* =====================================================
-   CATEGORY TITLE
-===================================================== */
-
 .skill-card-header h2 {
   color: #0F172A;
   font-size: 20px;
   font-weight: 800;
   margin: 0;
 }
-
-
-/* =====================================================
-   SKILLS LIST
-===================================================== */
 
 .skills-list {
   display: flex;
@@ -416,11 +377,6 @@ const skillCategories = [
   width: 100%;
 }
 
-
-/* =====================================================
-   SKILL INFO
-===================================================== */
-
 .skill-info {
   display: flex;
   justify-content: space-between;
@@ -428,32 +384,17 @@ const skillCategories = [
   margin-bottom: 8px;
 }
 
-
-/* =====================================================
-   SKILL NAME
-===================================================== */
-
 .skill-name {
   color: #1E293B;
   font-size: 14px;
   font-weight: 600;
 }
 
-
-/* =====================================================
-   PERCENTAGE
-===================================================== */
-
 .skill-percentage {
   color: #2563EB;
   font-size: 13px;
   font-weight: 700;
 }
-
-
-/* =====================================================
-   PROGRESS BACKGROUND
-===================================================== */
 
 .progress-background {
   width: 100%;
@@ -464,37 +405,22 @@ const skillCategories = [
   border: 1px solid #E2E8F0;
 }
 
-
-/* =====================================================
-   PROGRESS BAR
-===================================================== */
-
 .progress-bar {
   height: 100%;
   border-radius: 20px;
-  background: linear-gradient(
-    90deg,
-    #2563EB,
-    #3B82F6
-  );
+  background: linear-gradient(90deg, #2563EB, #3B82F6);
   box-shadow: 0 0 8px rgba(37, 99, 235, 0.25);
-  transition: width 1s ease;
+  transition: width 0.8s ease-in-out;
 }
-
 
 /* =====================================================
    TECHNOLOGY SUMMARY
 ===================================================== */
-
 .technology-summary {
   margin-top: 50px;
   padding: 36px;
   border-radius: 20px;
-  background: linear-gradient(
-    135deg,
-    #EFF6FF 0%,
-    #F8FAFC 100%
-  );
+  background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%);
   border: 1px solid #DBEAFE;
   display: flex;
   align-items: center;
@@ -503,19 +429,9 @@ const skillCategories = [
   box-shadow: 0 8px 24px rgba(37, 99, 235, 0.04);
 }
 
-
-/* =====================================================
-   SUMMARY CONTENT
-===================================================== */
-
 .summary-content {
   max-width: 750px;
 }
-
-
-/* =====================================================
-   SUMMARY LABEL
-===================================================== */
 
 .summary-label {
   display: inline-block;
@@ -525,11 +441,6 @@ const skillCategories = [
   letter-spacing: 2px;
   margin-bottom: 10px;
 }
-
-
-/* =====================================================
-   SUMMARY TITLE
-===================================================== */
 
 .summary-content h2 {
   color: #0F172A;
@@ -542,22 +453,12 @@ const skillCategories = [
   color: #2563EB;
 }
 
-
-/* =====================================================
-   SUMMARY DESCRIPTION
-===================================================== */
-
 .summary-content p {
   color: #475569;
   font-size: 15px;
   line-height: 1.7;
   margin: 0;
 }
-
-
-/* =====================================================
-   SUMMARY BADGE
-===================================================== */
 
 .summary-badge {
   min-width: 210px;
@@ -583,76 +484,56 @@ const skillCategories = [
   color: #1D4ED8;
 }
 
-
 /* =====================================================
-   TABLET
+   RESPONSIVE
 ===================================================== */
-
 @media (max-width: 900px) {
   .page-header h1 {
     font-size: 38px;
   }
-
   .skills-grid {
     grid-template-columns: 1fr;
   }
-
   .technology-summary {
     flex-direction: column;
     align-items: flex-start;
   }
-
   .summary-badge {
     width: 100%;
   }
 }
 
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
 @media (max-width: 600px) {
   .page-header {
     padding: 60px 16px 40px;
   }
-
   .page-header h1 {
     font-size: 30px;
   }
-
   .page-header p {
     font-size: 15px;
   }
-
   .skills-section {
     padding: 40px 16px;
   }
-
   .skills-grid {
     gap: 20px;
   }
-
   .skill-card {
     padding: 22px;
   }
-
   .skill-card-header h2 {
     font-size: 18px;
   }
-
   .technology-summary {
     padding: 24px;
     margin-top: 35px;
   }
-
   .summary-content h2 {
     font-size: 22px;
   }
-
   .summary-content p {
     font-size: 14px;
   }
 }
-
 </style>

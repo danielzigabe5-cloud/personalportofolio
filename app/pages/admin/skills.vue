@@ -1,23 +1,146 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 
 definePageMeta({
   layout: 'admin'
 })
 
+interface Skill {
+  id: string
+  name: string
+  level: number
+  category: string
+}
+
 /* =====================================================
-   SKILLS DATA
+   DEFAULT DATA & STATE
 ===================================================== */
-const skills = ref([
-  { name: 'HTML', level: 95, category: 'Frontend' },
-  { name: 'CSS / Tailwind CSS', level: 90, category: 'Frontend' },
-  { name: 'JavaScript', level: 85, category: 'Frontend' },
-  { name: 'TypeScript', level: 80, category: 'Frontend' },
-  { name: 'Vue.js', level: 88, category: 'Frontend' },
-  { name: 'Nuxt.js', level: 85, category: 'Frontend' },
-  { name: 'Laravel', level: 78, category: 'Backend' },
-  { name: 'Flutter', level: 75, category: 'Mobile' }
-])
+const defaultSkills: Skill[] = [
+  { id: '1', name: 'HTML', level: 95, category: 'Frontend' },
+  { id: '2', name: 'CSS / Tailwind CSS', level: 90, category: 'Frontend' },
+  { id: '3', name: 'JavaScript', level: 85, category: 'Frontend' },
+  { id: '4', name: 'TypeScript', level: 80, category: 'Frontend' },
+  { id: '5', name: 'Vue.js', level: 88, category: 'Frontend' },
+  { id: '6', name: 'Nuxt.js', level: 85, category: 'Frontend' },
+  { id: '7', name: 'Laravel', level: 78, category: 'Backend' },
+  { id: '8', name: 'Flutter', level: 75, category: 'Mobile' }
+]
+
+const skills = ref<Skill[]>([])
+const categories = ['Frontend', 'Backend', 'Mobile', 'Database', 'DevOps', 'Other']
+
+// LocalStorage Persistence
+onMounted(() => {
+  const saved = localStorage.getItem('portfolio_skills')
+  if (saved) {
+    try {
+      skills.value = JSON.parse(saved)
+    } catch {
+      skills.value = defaultSkills
+    }
+  } else {
+    skills.value = defaultSkills
+  }
+})
+
+watch(
+  skills,
+  (newSkills) => {
+    if (import.meta.client) {
+      localStorage.setItem('portfolio_skills', JSON.stringify(newSkills))
+    }
+  },
+  { deep: true }
+)
+
+/* =====================================================
+   COMPUTED STATISTICS
+===================================================== */
+const totalSkills = computed(() => skills.value.length)
+
+const frontendCount = computed(() => {
+  return skills.value.filter(s => s.category.toLowerCase() === 'frontend').length
+})
+
+const averageLevel = computed(() => {
+  if (skills.value.length === 0) return 0
+  const total = skills.value.reduce((acc, curr) => acc + curr.level, 0)
+  return Math.round(total / skills.value.length)
+})
+
+/* =====================================================
+   MODAL & FORM STATE
+===================================================== */
+const isModalOpen = ref(false)
+const editingId = ref<string | null>(null)
+
+const form = ref<{
+  name: string
+  level: number
+  category: string
+}>({
+  name: '',
+  level: 80,
+  category: 'Frontend'
+})
+
+const isEditing = computed(() => editingId.value !== null)
+
+const openAddModal = () => {
+  editingId.value = null
+  form.value = {
+    name: '',
+    level: 75,
+    category: 'Frontend'
+  }
+  isModalOpen.value = true
+}
+
+const openEditModal = (skill: Skill) => {
+  editingId.value = skill.id
+  form.value = {
+    name: skill.name,
+    level: skill.level,
+    category: skill.category
+  }
+  isModalOpen.value = true
+}
+
+const closeModal = () => {
+  isModalOpen.value = false
+  editingId.value = null
+}
+
+const saveSkill = () => {
+  if (!form.value.name.trim()) return
+
+  if (isEditing.value) {
+    const index = skills.value.findIndex(s => s.id === editingId.value)
+    if (index !== -1) {
+      skills.value[index] = {
+        id: editingId.value!,
+        name: form.value.name.trim(),
+        level: Number(form.value.level),
+        category: form.value.category
+      }
+    }
+  } else {
+    skills.value.unshift({
+      id: Date.now().toString(),
+      name: form.value.name.trim(),
+      level: Number(form.value.level),
+      category: form.value.category
+    })
+  }
+
+  closeModal()
+}
+
+const deleteSkill = (id: string, name: string) => {
+  if (confirm(`"${name}" የሚለውን ስኪል ማጥፋት ትፈልጋለህ?`)) {
+    skills.value = skills.value.filter(s => s.id !== id)
+  }
+}
 </script>
 
 <template>
@@ -44,6 +167,7 @@ const skills = ref([
       <!-- ADD BUTTON -->
       <button
         type="button"
+        @click="openAddModal"
         class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
       >
         <span class="text-lg leading-none">+</span>
@@ -62,7 +186,7 @@ const skills = ref([
           Total Skills
         </p>
         <p class="mt-2 text-3xl font-black text-slate-100">
-          {{ skills.length }}
+          {{ totalSkills }}
         </p>
       </div>
 
@@ -72,7 +196,7 @@ const skills = ref([
           Frontend
         </p>
         <p class="mt-2 text-3xl font-black text-blue-400">
-          {{ skills.filter(skill => skill.category === 'Frontend').length }}
+          {{ frontendCount }}
         </p>
       </div>
 
@@ -82,12 +206,7 @@ const skills = ref([
           Average Level
         </p>
         <p class="mt-2 text-3xl font-black text-slate-100">
-          {{
-            Math.round(
-              skills.reduce((total, skill) => total + skill.level, 0)
-              / skills.length
-            )
-          }}%
+          {{ averageLevel }}%
         </p>
       </div>
 
@@ -96,18 +215,17 @@ const skills = ref([
     <!-- =================================================
          SKILLS GRID
     ================================================== -->
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div v-if="skills.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
-      <!-- SKILL CARD -->
       <div
         v-for="skill in skills"
-        :key="skill.name"
+        :key="skill.id"
         class="group rounded-2xl border border-slate-700 bg-slate-800/50 p-5 transition duration-300 hover:-translate-y-1 hover:border-blue-500/30 hover:bg-slate-800 hover:shadow-lg hover:shadow-black/20"
       >
         <!-- TOP -->
         <div class="flex items-center justify-between">
           <div>
-            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {{ skill.category }}
             </span>
             <h2 class="mt-1 font-bold text-slate-100">
@@ -124,7 +242,7 @@ const skills = ref([
         <div class="mt-5">
           <div class="h-2 overflow-hidden rounded-full bg-slate-700">
             <div
-              class="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-700"
+              class="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-500"
               :style="{ width: `${skill.level}%` }"
             ></div>
           </div>
@@ -138,12 +256,14 @@ const skills = ref([
           <div class="flex gap-2">
             <button
               type="button"
+              @click="openEditModal(skill)"
               class="rounded-lg px-3 py-1.5 text-xs font-bold text-slate-400 transition hover:bg-slate-700 hover:text-white"
             >
               Edit
             </button>
             <button
               type="button"
+              @click="deleteSkill(skill.id, skill.name)"
               class="rounded-lg px-3 py-1.5 text-xs font-bold text-red-400/70 transition hover:bg-red-500/10 hover:text-red-400"
             >
               Delete
@@ -153,6 +273,108 @@ const skills = ref([
       </div>
 
     </div>
+
+    <!-- EMPTY STATE -->
+    <div
+      v-else
+      class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-slate-800/20 py-16 text-center"
+    >
+      <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-800 text-slate-400 text-xl">
+        ∅
+      </div>
+      <p class="mt-3 text-base font-medium text-slate-200">ምንም ስኪል አልተገኘም</p>
+      <p class="mt-1 text-sm text-slate-400">አዲስ ስኪል ለመጨመር ከላይ ያለውን "Add Skill" ይጫኑ።</p>
+    </div>
+
+    <!-- =================================================
+         MODAL (ADD / EDIT)
+    ================================================== -->
+    <Teleport to="body">
+      <div
+        v-if="isModalOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      >
+        <div
+          class="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl transition-all"
+        >
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <h3 class="text-lg font-bold text-slate-100">
+              {{ isEditing ? 'Edit Skill' : 'Add New Skill' }}
+            </h3>
+            <button
+              @click="closeModal"
+              class="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
+
+          <form @submit.prevent="saveSkill" class="mt-4 space-y-4">
+            <!-- Skill Name -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Skill Name
+              </label>
+              <input
+                v-model="form.name"
+                type="text"
+                placeholder="e.g. Vue.js, Python, Figma"
+                required
+                class="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Category -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Category
+              </label>
+              <select
+                v-model="form.category"
+                class="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                <option v-for="cat in categories" :key="cat" :value="cat">
+                  {{ cat }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Proficiency Level -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Proficiency ({{ form.level }}%)
+                </label>
+              </div>
+              <input
+                v-model.number="form.level"
+                type="range"
+                min="1"
+                max="100"
+                class="w-full accent-blue-500 cursor-pointer"
+              />
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-800">
+              <button
+                type="button"
+                @click="closeModal"
+                class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-400 hover:bg-slate-800 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500"
+              >
+                {{ isEditing ? 'Update Skill' : 'Save Skill' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
 
     <!-- =================================================
          FOOTER NOTE

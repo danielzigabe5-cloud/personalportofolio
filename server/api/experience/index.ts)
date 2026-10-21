@@ -1,0 +1,27 @@
+// server/api/experience/index.ts
+export default defineEventHandler(async (event) => {
+  const method = getMethod(event)
+  const storage = useStorage('assets:server')
+  const STORAGE_KEY = 'experience.json'
+
+  if (method === 'GET') {
+    return await storage.getItem(STORAGE_KEY) || []
+  }
+
+  if (method === 'POST') {
+    const body = await readBody(event)
+    const items: any = await storage.getItem(STORAGE_KEY) || []
+    
+    const newItem = {
+      id: Date.now(),
+      role: body.role,
+      company: body.company,
+      period: body.period,
+      description: body.description
+    }
+
+    items.unshift(newItem)
+    await storage.setItem(STORAGE_KEY, items)
+    return { success: true, data: newItem }
+  }
+})
