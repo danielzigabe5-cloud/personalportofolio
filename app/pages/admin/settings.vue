@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted, watch } from 'vue'
+import { reactive, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 
 definePageMeta({
   layout: 'admin'
@@ -17,6 +17,7 @@ const defaultSettings = {
 
 const settings = reactive({ ...defaultSettings })
 const isLoaded = ref(false)
+const isSaving = ref(false)
 
 // Toast Alert State
 const toast = reactive({
@@ -37,31 +38,47 @@ const showToast = (message: string, type: 'success' | 'error' | 'info' = 'succes
   }, 3500)
 }
 
-// LocalStorage Persistence
-onMounted(() => {
-  const saved = localStorage.getItem('portfolio_settings')
-  if (saved) {
-    try {
-      Object.assign(settings, JSON.parse(saved))
-    } catch {
-      Object.assign(settings, defaultSettings)
-    }
+let saveTimeout: ReturnType<typeof setTimeout> | null = null
+
+onMounted(async () => {
+  try {
+    const savedSettings = await $fetch<typeof defaultSettings>('/api/settings')
+    Object.assign(settings, savedSettings)
+  } catch {
+    showToast('Could not load settings from the server.', 'error')
+  } finally {
+    isLoaded.value = true
   }
-  isLoaded.value = true
 })
 
-// Auto-save whenever any setting toggle changes
 watch(
   settings,
   (newVal) => {
     if (!isLoaded.value) return
-    if (import.meta.client) {
-      localStorage.setItem('portfolio_settings', JSON.stringify(newVal))
-      showToast('Settings auto-saved successfully!')
-    }
+
+    if (saveTimeout) clearTimeout(saveTimeout)
+    isSaving.value = true
+    const settingsToSave = { ...newVal }
+
+    saveTimeout = setTimeout(async () => {
+      try {
+        await $fetch('/api/settings', { method: 'PUT', body: settingsToSave })
+        showToast('Settings saved successfully!')
+      } catch {
+        showToast('Could not save settings. Please try again.', 'error')
+      } finally {
+        isSaving.value = false
+        saveTimeout = null
+      }
+    }, 250)
   },
   { deep: true }
 )
+
+onBeforeUnmount(() => {
+  if (saveTimeout) clearTimeout(saveTimeout)
+  if (toastTimeout) clearTimeout(toastTimeout)
+})
 
 /* =====================================================
    CHANGE PASSWORD MODAL
@@ -159,9 +176,9 @@ const confirmLogoutAll = () => {
       </div>
 
       <div class="flex items-center gap-2">
-        <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400">
           <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          Auto-saved
+          {{ !isLoaded ? 'Loading settings...' : isSaving ? 'Saving...' : 'Saved' }}
         </span>
       </div>
     </div>

@@ -1,1 +1,246 @@
 @import "tailwindcss";
+
+.default-layout {
+	--portfolio-bg: #ffffff;
+	--portfolio-surface: #ffffff;
+	--portfolio-surface-raised: #f8fafc;
+	--portfolio-accent: #2563eb;
+	--portfolio-text: #111827;
+	--portfolio-muted: #64748b;
+	--portfolio-border: #e2e8f0;
+	background: var(--portfolio-bg);
+	color: var(--portfolio-text);
+}
+
+.default-layout .default-main {
+	background: var(--portfolio-bg);
+}
+
+.default-layout section.bg-white {
+	background-color: var(--portfolio-bg) !important;
+}
+
+.default-layout section.bg-slate-50 {
+	background-color: #f8fafc !important;
+}
+
+.default-layout .bg-white,
+.default-layout .bg-slate-50 {
+	background-color: var(--portfolio-surface) !important;
+}
+
+.default-layout .bg-slate-100,
+.default-layout .bg-slate-200,
+.default-layout .bg-slate-700,
+.default-layout .bg-slate-800 {
+	background-color: var(--portfolio-surface-raised) !important;
+}
+
+.default-layout .bg-slate-900 {
+	background-color: #1e3a8a !important;
+}
+
+.default-layout .bg-blue-50,
+.default-layout .bg-blue-100 {
+	background-color: #eff6ff !important;
+}
+
+.default-layout .bg-blue-600 {
+	background-color: var(--portfolio-accent) !important;
+	color: #ffffff !important;
+}
+
+.default-layout .text-slate-900,
+.default-layout .text-slate-800,
+.default-layout .text-slate-700 {
+	color: var(--portfolio-text) !important;
+}
+
+.default-layout .text-slate-600,
+.default-layout .text-slate-500,
+.default-layout .text-slate-400 {
+	color: var(--portfolio-muted) !important;
+}
+
+.default-layout .text-blue-400,
+.default-layout .text-blue-500,
+.default-layout .text-blue-600,
+.default-layout .text-blue-700 {
+	color: var(--portfolio-accent) !important;
+}
+
+.default-layout .text-blue-50,
+.default-layout .text-blue-100,
+.default-layout .text-blue-50\/90 {
+	color: #dbeafe !important;
+}
+
+.default-layout .bg-green-500,
+.default-layout .text-emerald-600 {
+	color: var(--portfolio-accent) !important;
+}
+
+.default-layout .bg-green-500 {
+	background-color: var(--portfolio-accent) !important;
+}
+
+.default-layout .border-slate-100,
+.default-layout .border-slate-200,
+.default-layout .border-slate-300,
+.default-layout .border-slate-700,
+.default-layout .border-slate-800 {
+	border-color: var(--portfolio-border) !important;
+}
+
+.default-layout .border-blue-100,
+.default-layout .border-blue-200,
+.default-layout .border-blue-300,
+.default-layout .border-blue-400 {
+	border-color: #bfdbfe !important;
+}
+
+.default-layout .border-blue-200\/80 {
+	border-color: rgb(37 99 235 / 25%) !important;
+}
+
+.default-layout .border-white {
+	border-color: var(--portfolio-border) !important;
+}
+
+.default-layout .hover\:bg-blue-700:hover {
+	background-color: #1d4ed8 !important;
+}
+
+.default-layout .hover\:text-blue-600:hover,
+.default-layout .hover\:text-blue-700:hover {
+	color: var(--portfolio-accent) !important;
+}
+
+.default-layout .hover\:border-blue-300:hover,
+.default-layout .hover\:border-blue-400:hover {
+	border-color: #93c5fd !important;
+}
+
+.default-layout #home.bg-gradient-to-br {
+	background-image: linear-gradient(110deg, #2677cf 0%, #362da7 100%) !important;
+}
+
+.default-layout .contact-page {
+	background: var(--portfolio-bg) !important;
+	color: var(--portfolio-text) !important;
+}
+
+.default-layout .contact-page .page-header {
+	background: radial-gradient(circle at 20% 20%, rgb(37 99 235 / 7%), transparent 30%), linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+	border-color: var(--portfolio-border) !important;
+}
+
+.default-layout .contact-page .contact-section,
+.default-layout .contact-page .bottom-section {
+	background: var(--portfolio-bg) !important;
+}
+
+.default-layout .contact-page .hero-content h1,
+.default-layout .contact-page .contact-info h2,
+.default-layout .contact-page .form-header h3,
+.default-layout .contact-page .contact-item-content strong {
+	color: var(--portfolio-text) !important;
+}
+
+.default-layout .contact-page .hero-content h1 span,
+.default-layout .contact-page .eyebrow,
+.default-layout .contact-page .section-label,
+.default-layout .contact-page .contact-info h2 span,
+.default-layout .contact-page .item-arrow:hover,
+.default-layout .contact-page .bottom-box > div > span {
+	color: var(--portfolio-accent) !important;
+}
+
+.default-layout .contact-page .hero-content p,
+.default-layout .contact-page .intro-text,
+.default-layout .contact-page .contact-item-content span,
+.default-layout .contact-page .availability p,
+.default-layout .contact-page .social-section > span,
+.default-layout .contact-page .form-header p,
+.default-layout .contact-page .message-label span,
+.default-layout .contact-page .form-note {
+	color: var(--portfolio-muted) !important;
+}
+
+.default-layout .contact-page .contact-item,
+.default-layout .contact-page .form-wrapper,
+.default-layout .contact-page .availability,
+.default-layout .contact-page .secondary-cv,
+.default-layout .contact-page .social-links a,
+.default-layout .contact-page .contact-form input,
+.default-layout .contact-page .contact-form textarea,
+.default-layout .contact-page .another-button {
+	background: var(--portfolio-surface) !important;
+	border-color: var(--portfolio-border) !important;
+	color: var(--portfolio-text) !important;
+}
+
+.default-layout .contact-page .contact-icon,
+.default-layout .contact-page .form-number {
+	background: rgb(37 99 235 / 8%) !important;
+	color: var(--portfolio-accent) !important;
+}
+
+.default-layout .contact-page .success-message {
+	background: rgb(20 120 75 / 7%) !important;
+	border-color: rgb(20 120 75 / 25%) !important;
+}
+
+.default-layout .contact-page .success-icon {
+	background: #16804f !important;
+	color: #ffffff !important;
+}
+
+.default-layout .contact-page .success-message strong {
+	color: #176c48 !important;
+}
+
+.default-layout .contact-page .success-message p {
+	color: var(--portfolio-muted) !important;
+}
+
+.default-layout .contact-page .availability-dot {
+	background: #d93945 !important;
+	box-shadow: 0 0 0 4px rgb(217 57 69 / 12%) !important;
+}
+
+.default-layout .contact-page .contact-item:hover,
+.default-layout .contact-page .social-links a:hover,
+.default-layout .contact-page .secondary-cv:hover,
+.default-layout .contact-page .another-button:hover {
+	background: #eff6ff !important;
+	border-color: #bfdbfe !important;
+}
+
+.default-layout .contact-page .field label,
+.default-layout .contact-page .message-label label,
+.default-layout .contact-page .availability strong {
+	color: var(--portfolio-text) !important;
+}
+
+.default-layout .contact-page .primary-cv,
+.default-layout .contact-page .send-button,
+.default-layout .contact-page .email-button {
+	background: var(--portfolio-accent) !important;
+	color: var(--portfolio-bg) !important;
+}
+
+.default-layout .contact-page .primary-cv:hover,
+.default-layout .contact-page .send-button:hover:not(:disabled) {
+	background: #1d4ed8 !important;
+}
+
+.default-layout .contact-page .contact-form input:focus,
+.default-layout .contact-page .contact-form textarea:focus {
+	border-color: var(--portfolio-accent) !important;
+	box-shadow: 0 0 0 3px rgb(37 99 235 / 10%) !important;
+}
+
+.default-layout .contact-page .bottom-box {
+	background: #1e3a8a !important;
+}

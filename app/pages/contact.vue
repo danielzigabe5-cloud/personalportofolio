@@ -68,10 +68,9 @@ async function submitForm() {
       subject: form.subject.trim() || 'General Inquiry',
       message: form.message.trim(),
       createdAt: 'Just now',
-      isRead: false // Marked as unread for the admin
+      isRead: false
     }
 
-    // 1. SAVE TO LOCALSTORAGE (Syncs immediately with /admin/messages and /admin/dashboard)
     if (import.meta.client) {
       const existing = localStorage.getItem('portfolio_messages')
       let messageList: ContactMessage[] = []
@@ -86,7 +85,6 @@ async function submitForm() {
       localStorage.setItem('portfolio_messages', JSON.stringify(messageList))
     }
 
-    // 2. OPTIONAL: SEND TO BACKEND API (If Laravel API is active)
     const config = useRuntimeConfig()
     if (config.public?.apiBase) {
       try {
@@ -96,17 +94,14 @@ async function submitForm() {
           body: newMessage
         })
       } catch (apiErr) {
-        // Fallback gracefully without breaking user experience
         console.warn('Backend API offline, saved to local session:', apiErr)
       }
     }
 
-    // Small delay for smooth feedback
     await new Promise(resolve => setTimeout(resolve, 600))
 
     submitted.value = true
 
-    // Reset Form fields
     form.name = ''
     form.email = ''
     form.subject = ''
@@ -126,9 +121,7 @@ function resetFormView() {
 <template>
   <div class="contact-page">
 
-    <!-- =====================================================
-         HERO
-    ====================================================== -->
+    <!-- HERO -->
     <section class="page-header">
       <div class="page-container hero-content">
         <span class="eyebrow">
@@ -147,15 +140,11 @@ function resetFormView() {
       </div>
     </section>
 
-    <!-- =====================================================
-         CONTACT CONTENT
-    ====================================================== -->
+    <!-- CONTACT CONTENT -->
     <section class="contact-section">
       <div class="page-container contact-layout">
 
-        <!-- =================================================
-             LEFT SIDE
-        ================================================== -->
+        <!-- LEFT SIDE -->
         <div class="contact-info">
           <span class="section-label">
             CONTACT ME
@@ -227,6 +216,28 @@ function resetFormView() {
 
           </div>
 
+          <!-- CV DOWNLOAD & VIEW BUTTONS -->
+          <div class="cv-actions">
+            <a
+              href="/Daniel%20Zigabe%20-%20Professional%20CV.pdf"
+              download="Daniel_Zigabe_CV.pdf"
+              class="cv-btn primary-cv"
+            >
+              <span>📥</span>
+              <span>Download CV</span>
+            </a>
+
+            <a
+              href="/Daniel%20Zigabe%20-%20Professional%20CV.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="cv-btn secondary-cv"
+            >
+              <span>👁️</span>
+              <span>View CV</span>
+            </a>
+          </div>
+
           <!-- AVAILABILITY -->
           <div class="availability">
             <span class="availability-dot"></span>
@@ -248,7 +259,7 @@ function resetFormView() {
 
             <div class="social-links">
               <a
-                href="https://github.com"
+                href="https://github.com/danielzigabe"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
@@ -257,7 +268,7 @@ function resetFormView() {
               </a>
 
               <a
-                href="https://linkedin.com"
+                href="https://linkedin.com/in/danielzigabe"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
@@ -266,7 +277,7 @@ function resetFormView() {
               </a>
 
               <a
-                href="https://t.me"
+                href="https://t.me/danielzigabe"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Telegram"
@@ -277,9 +288,7 @@ function resetFormView() {
           </div>
         </div>
 
-        <!-- =================================================
-             FORM
-        ================================================== -->
+        <!-- FORM -->
         <div class="form-wrapper">
           <div class="form-header">
             <span class="form-number">
@@ -432,9 +441,7 @@ function resetFormView() {
       </div>
     </section>
 
-    <!-- =====================================================
-         BOTTOM CTA
-    ====================================================== -->
+    <!-- BOTTOM CTA -->
     <section class="bottom-section">
       <div class="page-container">
         <div class="bottom-box">
@@ -464,9 +471,6 @@ function resetFormView() {
 </template>
 
 <style scoped>
-/* =========================================================
-   BASE
-========================================================= */
 .contact-page {
   min-height: 100vh;
   background: #ffffff;
@@ -480,9 +484,6 @@ function resetFormView() {
   padding: 0 28px;
 }
 
-/* =========================================================
-   HERO
-========================================================= */
 .page-header {
   padding: 110px 20px 95px;
   background:
@@ -527,9 +528,6 @@ function resetFormView() {
   line-height: 1.8;
 }
 
-/* =========================================================
-   CONTACT SECTION
-========================================================= */
 .contact-section {
   padding: 105px 20px;
   background: #ffffff;
@@ -542,9 +540,6 @@ function resetFormView() {
   align-items: start;
 }
 
-/* =========================================================
-   CONTACT INFO
-========================================================= */
 .contact-info {
   max-width: 540px;
 }
@@ -569,9 +564,6 @@ function resetFormView() {
   line-height: 1.85;
 }
 
-/* =========================================================
-   CONTACT ITEMS
-========================================================= */
 .contact-items {
   display: flex;
   flex-direction: column;
@@ -644,14 +636,55 @@ function resetFormView() {
   transform: translateX(3px);
 }
 
-/* =========================================================
-   AVAILABILITY
-========================================================= */
+/* CV ACTIONS */
+.cv-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.cv-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+
+.primary-cv {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+}
+
+.primary-cv:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.secondary-cv {
+  background: #f8fafc;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+
+.secondary-cv:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+}
+
 .availability {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 20px;
   padding: 15px 17px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -680,11 +713,8 @@ function resetFormView() {
   font-size: 11px;
 }
 
-/* =========================================================
-   SOCIAL
-========================================================= */
 .social-section {
-  margin-top: 30px;
+  margin-top: 26px;
 }
 
 .social-section > span {
@@ -698,7 +728,7 @@ function resetFormView() {
   display: flex;
   flex-wrap: wrap;
   gap: 9px;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .social-links a {
@@ -719,9 +749,6 @@ function resetFormView() {
   background: #eff6ff;
 }
 
-/* =========================================================
-   FORM WRAPPER
-========================================================= */
 .form-wrapper {
   padding: 36px;
   background: #ffffff;
@@ -775,9 +802,6 @@ function resetFormView() {
   font-weight: 700;
 }
 
-/* =========================================================
-   FORM
-========================================================= */
 .contact-form {
   display: flex;
   flex-direction: column;
@@ -847,9 +871,6 @@ function resetFormView() {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.09);
 }
 
-/* =========================================================
-   SEND BUTTON
-========================================================= */
 .send-button {
   display: flex;
   align-items: center;
@@ -907,9 +928,6 @@ function resetFormView() {
   text-align: center;
 }
 
-/* =========================================================
-   SUCCESS MESSAGE
-========================================================= */
 .success-wrapper {
   margin-top: 25px;
   display: flex;
@@ -969,9 +987,6 @@ function resetFormView() {
   border-color: #bfdbfe;
 }
 
-/* =========================================================
-   BOTTOM CTA
-========================================================= */
 .bottom-section {
   padding: 20px 20px 100px;
   background: #ffffff;
@@ -1028,9 +1043,6 @@ function resetFormView() {
   transform: translateY(-2px);
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 @media (max-width: 950px) {
   .contact-layout {
     grid-template-columns: 1fr;

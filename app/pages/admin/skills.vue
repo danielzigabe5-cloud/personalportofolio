@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed } from 'vue'
 
 definePageMeta({
   layout: 'admin'
@@ -12,46 +12,12 @@ interface Skill {
   category: string
 }
 
-/* =====================================================
-   DEFAULT DATA & STATE
-===================================================== */
-const defaultSkills: Skill[] = [
-  { id: '1', name: 'HTML', level: 95, category: 'Frontend' },
-  { id: '2', name: 'CSS / Tailwind CSS', level: 90, category: 'Frontend' },
-  { id: '3', name: 'JavaScript', level: 85, category: 'Frontend' },
-  { id: '4', name: 'TypeScript', level: 80, category: 'Frontend' },
-  { id: '5', name: 'Vue.js', level: 88, category: 'Frontend' },
-  { id: '6', name: 'Nuxt.js', level: 85, category: 'Frontend' },
-  { id: '7', name: 'Laravel', level: 78, category: 'Backend' },
-  { id: '8', name: 'Flutter', level: 75, category: 'Mobile' }
-]
-
-const skills = ref<Skill[]>([])
-const categories = ['Frontend', 'Backend', 'Mobile', 'Database', 'DevOps', 'Other']
-
-// LocalStorage Persistence
-onMounted(() => {
-  const saved = localStorage.getItem('portfolio_skills')
-  if (saved) {
-    try {
-      skills.value = JSON.parse(saved)
-    } catch {
-      skills.value = defaultSkills
-    }
-  } else {
-    skills.value = defaultSkills
-  }
+const { data: skills, refresh } = await useFetch<Skill[]>('/api/skills', {
+  default: () => []
 })
-
-watch(
-  skills,
-  (newSkills) => {
-    if (import.meta.client) {
-      localStorage.setItem('portfolio_skills', JSON.stringify(newSkills))
-    }
-  },
-  { deep: true }
-)
+const categories = ['Frontend', 'Backend', 'Mobile', 'Database', 'DevOps', 'Other']
+const actionError = ref('')
+const isSaving = ref(false)
 
 /* =====================================================
    COMPUTED STATISTICS
@@ -87,6 +53,7 @@ const form = ref<{
 const isEditing = computed(() => editingId.value !== null)
 
 const openAddModal = () => {
+  actionError.value = ''
   editingId.value = null
   form.value = {
     name: '',
@@ -97,6 +64,7 @@ const openAddModal = () => {
 }
 
 const openEditModal = (skill: Skill) => {
+  actionError.value = ''
   editingId.value = skill.id
   form.value = {
     name: skill.name,
@@ -111,34 +79,41 @@ const closeModal = () => {
   editingId.value = null
 }
 
-const saveSkill = () => {
+const saveSkill = async () => {
   if (!form.value.name.trim()) return
 
-  if (isEditing.value) {
-    const index = skills.value.findIndex(s => s.id === editingId.value)
-    if (index !== -1) {
-      skills.value[index] = {
-        id: editingId.value!,
-        name: form.value.name.trim(),
-        level: Number(form.value.level),
-        category: form.value.category
-      }
-    }
-  } else {
-    skills.value.unshift({
-      id: Date.now().toString(),
+  actionError.value = ''
+  isSaving.value = true
+  const body = {
       name: form.value.name.trim(),
       level: Number(form.value.level),
       category: form.value.category
-    })
   }
 
-  closeModal()
+  try {
+    if (isEditing.value) {
+      await $fetch(`/api/skills/${editingId.value}`, { method: 'PUT', body })
+    } else {
+      await $fetch('/api/skills', { method: 'POST', body })
+    }
+    await refresh()
+    closeModal()
+  } catch (error) {
+    actionError.value = error instanceof Error ? error.message : 'Unable to save skill.'
+  } finally {
+    isSaving.value = false
+  }
 }
 
-const deleteSkill = (id: string, name: string) => {
+const deleteSkill = async (id: string, name: string) => {
   if (confirm(`"${name}" የሚለውን ስኪል ማጥፋት ትፈልጋለህ?`)) {
-    skills.value = skills.value.filter(s => s.id !== id)
+    actionError.value = ''
+    try {
+      await $fetch(`/api/skills/${id}`, { method: 'DELETE' })
+      await refresh()
+    } catch (error) {
+      actionError.value = error instanceof Error ? error.message : 'Unable to delete skill.'
+    }
   }
 }
 </script>
@@ -174,6 +149,10 @@ const deleteSkill = (id: string, name: string) => {
         Add Skill
       </button>
     </div>
+
+      <p v-if="actionError" role="alert" class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        {{ actionError }}
+      </p>
 
     <!-- =================================================
          SUMMARY
@@ -366,9 +345,10 @@ const deleteSkill = (id: string, name: string) => {
               </button>
               <button
                 type="submit"
-                class="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500"
+                :disabled="isSaving"
+                class="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {{ isEditing ? 'Update Skill' : 'Save Skill' }}
+                {{ isSaving ? 'Saving...' : isEditing ? 'Update Skill' : 'Save Skill' }}
               </button>
             </div>
           </form>

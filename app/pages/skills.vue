@@ -1,539 +1,60 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-
-definePageMeta({
-  layout: 'default'
-})
-
-useSeoMeta({
-  title: 'Skills & Expertise | Daniel Zigabe',
-  description: 'Technologies, programming languages and tools I use to build modern full-stack applications.',
-  ogTitle: 'Skills & Expertise - Daniel Zigabe'
-})
-
-interface SkillItem {
+interface Skill {
+  id: string
   name: string
   level: number
+  category: string
 }
 
-interface CategoryGroup {
-  title: string
-  icon: string
-  skills: SkillItem[]
-}
-
-// 1. DEFAULT DATA (SSR Fallback)
-const defaultCategories: CategoryGroup[] = [
-  {
-    title: 'Frontend Development',
-    icon: '🎨',
-    skills: [
-      { name: 'Vue.js', level: 90 },
-      { name: 'Nuxt.js', level: 90 },
-      { name: 'HTML5', level: 95 },
-      { name: 'CSS3', level: 90 },
-      { name: 'Tailwind CSS', level: 85 },
-      { name: 'JavaScript', level: 85 }
-    ]
-  },
-  {
-    title: 'Backend Development',
-    icon: '⚙️',
-    skills: [
-      { name: 'Laravel', level: 85 },
-      { name: 'PHP', level: 85 },
-      { name: 'MySQL', level: 85 },
-      { name: 'REST API', level: 85 },
-      { name: 'Postman', level: 80 }
-    ]
-  },
-  {
-    title: 'Mobile Development',
-    icon: '📱',
-    skills: [
-      { name: 'Flutter', level: 80 },
-      { name: 'Dart', level: 80 },
-      { name: 'REST API Integration', level: 80 }
-    ]
-  },
-  {
-    title: 'Tools & Technologies',
-    icon: '🛠️',
-    skills: [
-      { name: 'Git', level: 85 },
-      { name: 'GitHub', level: 85 },
-      { name: 'Docker', level: 75 },
-      { name: 'Figma', level: 80 },
-      { name: 'Trello', level: 80 }
-    ]
-  }
-]
-
-const skillCategories = ref<CategoryGroup[]>(defaultCategories)
-const userRole = ref('Full Stack Developer')
-
-// Category Icon Mapping Helper
-const categoryIcons: Record<string, string> = {
-  'frontend': '🎨',
-  'frontend development': '🎨',
-  'backend': '⚙️',
-  'backend development': '⚙️',
-  'mobile': '📱',
-  'mobile development': '📱',
-  'database': '🗄️',
-  'devops': '☁️',
-  'tools': '🛠️',
-  'tools & technologies': '🛠️',
-  'other': '💻'
-}
-
-// 2. LOAD LIVE DATA FROM ADMIN LOCALSTORAGE
-onMounted(() => {
-  // A. Fetch Skills from Admin
-  const savedSkills = localStorage.getItem('portfolio_skills')
-  if (savedSkills) {
-    try {
-      const parsed = JSON.parse(savedSkills)
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const groups: Record<string, CategoryGroup> = {}
-
-        parsed.forEach((skill: any) => {
-          const rawCat = (skill.category || 'Other').trim()
-          const lowerCat = rawCat.toLowerCase()
-
-          // Normalize readable category title
-          let displayTitle = rawCat
-          if (lowerCat === 'frontend') displayTitle = 'Frontend Development'
-          else if (lowerCat === 'backend') displayTitle = 'Backend Development'
-          else if (lowerCat === 'mobile') displayTitle = 'Mobile Development'
-          else if (lowerCat === 'tools') displayTitle = 'Tools & Technologies'
-
-          if (!groups[displayTitle]) {
-            groups[displayTitle] = {
-              title: displayTitle,
-              icon: categoryIcons[lowerCat] || categoryIcons[displayTitle.toLowerCase()] || '💻',
-              skills: []
-            }
-          }
-
-          groups[displayTitle].skills.push({
-            name: skill.name,
-            level: Number(skill.level) || 80
-          })
-        })
-
-        skillCategories.value = Object.values(groups)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  // B. Fetch Role from Admin Profile
-  const savedProfile = localStorage.getItem('portfolio_profile')
-  if (savedProfile) {
-    try {
-      const parsedProfile = JSON.parse(savedProfile)
-      if (parsedProfile.role) {
-        userRole.value = parsedProfile.role
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
+const { data: skills, pending, error } = await useFetch<Skill[]>('/api/skills', {
+  default: () => []
 })
 </script>
 
 <template>
-  <div class="skills-page">
+  <section id="skills" class="py-20 bg-white border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-6">
+      
+      <span class="text-blue-600 font-extrabold text-xs tracking-wider uppercase mb-2 block">MY SKILLS</span>
+      <h2 class="text-3xl sm:text-4xl font-black text-slate-900 mb-3">Technologies & Tools I Work With</h2>
+      <p class="text-slate-600 mb-12 max-w-xl text-sm">
+        I use modern technologies to build fast, secure and scalable applications.
+      </p>
 
-    <!-- =========================================
-          PAGE HEADER
-    ========================================== -->
-    <section class="page-header">
-      <div class="page-container">
-        <span class="eyebrow">
-          MY EXPERTISE
-        </span>
+      <p v-if="pending" class="mb-12 text-sm text-slate-500">Loading skills...</p>
+      <p v-else-if="error" class="mb-12 text-sm text-red-600">Skills could not be loaded.</p>
+      <p v-else-if="skills.length === 0" class="mb-12 text-sm text-slate-500">No skills have been added yet.</p>
 
-        <h1>
-          My <strong>Skills</strong>
-        </h1>
-
-        <p>
-          Technologies and tools I use to build modern applications.
-        </p>
-      </div>
-    </section>
-
-    <!-- =========================================
-          SKILLS SECTION
-    ========================================== -->
-    <section class="skills-section">
-      <div class="page-container">
-
-        <div class="skills-grid">
-          <article
-            v-for="category in skillCategories"
-            :key="category.title"
-            class="skill-card"
-          >
-            <!-- CATEGORY HEADER -->
-            <div class="skill-card-header">
-              <div class="skill-icon">
-                {{ category.icon }}
-              </div>
-              <h2>
-                {{ category.title }}
-              </h2>
-            </div>
-
-            <!-- SKILLS -->
-            <div class="skills-list">
-              <div
-                v-for="skill in category.skills"
-                :key="skill.name"
-                class="skill-item"
-              >
-                <div class="skill-info">
-                  <span class="skill-name">
-                    {{ skill.name }}
-                  </span>
-                  <span class="skill-percentage">
-                    {{ skill.level }}%
-                  </span>
-                </div>
-
-                <div class="progress-background">
-                  <div
-                    class="progress-bar"
-                    :style="{ width: `${skill.level}%` }"
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </article>
+      <div v-else class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-16">
+        <div
+          v-for="skill in skills"
+          :key="skill.id"
+          class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center justify-center text-center shadow-sm hover:border-blue-400 transition"
+        >
+          <span class="text-2xl mb-2 font-black text-blue-600">{{ skill.level }}%</span>
+          <strong class="text-sm font-bold text-slate-900 block">{{ skill.name }}</strong>
+          <span class="text-xs text-slate-400 font-medium">{{ skill.category }}</span>
         </div>
+      </div>
 
-        <!-- =========================================
-              TECHNOLOGY SUMMARY
-        ========================================== -->
-        <div class="technology-summary">
-          <div class="summary-content">
-            <span class="summary-label">
-              TECHNOLOGY STACK
-            </span>
-
-            <h2>
-              Building with
-              <strong>Modern Technologies</strong>
-            </h2>
-
-            <p>
-              I work with modern frontend, backend and mobile
-              technologies to create responsive, scalable and
-              user-friendly applications.
-            </p>
+      <!-- Skill Level Progress Bars -->
+      <h3 class="text-xl font-black text-slate-900 mb-8">Skill Level</h3>
+      
+      <div class="space-y-6 max-w-4xl">
+        <div v-for="skill in skills" :key="skill.id">
+          <div class="flex justify-between items-center text-xs font-bold text-slate-800 mb-2">
+            <span>{{ skill.name }}</span>
+            <span>{{ skill.level }}%</span>
           </div>
-
-          <div class="summary-badge">
-            <span>🚀</span>
-            <strong>
-              {{ userRole }}
-            </strong>
+          <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-blue-600 rounded-full"
+              :style="{ width: `${skill.level}%` }"
+            ></div>
           </div>
         </div>
-
       </div>
-    </section>
 
-  </div>
+    </div>
+  </section>
 </template>
-
-<style scoped>
-/* =====================================================
-   BASE
-===================================================== */
-.skills-page {
-  min-height: 100vh;
-  background-color: #FFFFFF;
-  color: #0F172A;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
-.page-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-/* =====================================================
-   PAGE HEADER
-===================================================== */
-.page-header {
-  background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
-  padding: 80px 20px 50px;
-  text-align: center;
-  border-bottom: 1px solid #E2E8F0;
-}
-
-.page-header .eyebrow {
-  display: inline-block;
-  color: #2563EB;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.page-header h1 {
-  font-size: 48px;
-  font-weight: 800;
-  line-height: 1.2;
-  margin: 0 0 14px;
-  color: #0F172A;
-}
-
-.page-header h1 strong {
-  color: #2563EB;
-}
-
-.page-header p {
-  color: #475569;
-  font-size: 17px;
-  line-height: 1.6;
-  margin: 0;
-}
-
-/* =====================================================
-   SKILLS SECTION
-===================================================== */
-.skills-section {
-  background-color: #FFFFFF;
-  padding: 60px 20px 80px;
-}
-
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px;
-}
-
-/* =====================================================
-   SKILL CARD
-===================================================== */
-.skill-card {
-  background-color: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 18px;
-  padding: 28px;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
-  transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
-}
-
-.skill-card:hover {
-  transform: translateY(-6px);
-  border-color: #93C5FD;
-  box-shadow: 0 16px 32px rgba(37, 99, 235, 0.08);
-}
-
-.skill-card-header {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding-bottom: 22px;
-  margin-bottom: 22px;
-  border-bottom: 1px solid #F1F5F9;
-}
-
-.skill-icon {
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-  background-color: #EFF6FF;
-  border: 1px solid #DBEAFE;
-  font-size: 24px;
-}
-
-.skill-card-header h2 {
-  color: #0F172A;
-  font-size: 20px;
-  font-weight: 800;
-  margin: 0;
-}
-
-.skills-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.skill-item {
-  width: 100%;
-}
-
-.skill-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.skill-name {
-  color: #1E293B;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.skill-percentage {
-  color: #2563EB;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.progress-background {
-  width: 100%;
-  height: 8px;
-  background-color: #F1F5F9;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid #E2E8F0;
-}
-
-.progress-bar {
-  height: 100%;
-  border-radius: 20px;
-  background: linear-gradient(90deg, #2563EB, #3B82F6);
-  box-shadow: 0 0 8px rgba(37, 99, 235, 0.25);
-  transition: width 0.8s ease-in-out;
-}
-
-/* =====================================================
-   TECHNOLOGY SUMMARY
-===================================================== */
-.technology-summary {
-  margin-top: 50px;
-  padding: 36px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%);
-  border: 1px solid #DBEAFE;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.04);
-}
-
-.summary-content {
-  max-width: 750px;
-}
-
-.summary-label {
-  display: inline-block;
-  color: #2563EB;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-}
-
-.summary-content h2 {
-  color: #0F172A;
-  font-size: 28px;
-  font-weight: 800;
-  margin: 0 0 10px;
-}
-
-.summary-content h2 strong {
-  color: #2563EB;
-}
-
-.summary-content p {
-  color: #475569;
-  font-size: 15px;
-  line-height: 1.7;
-  margin: 0;
-}
-
-.summary-badge {
-  min-width: 210px;
-  padding: 18px 22px;
-  border-radius: 14px;
-  background-color: #FFFFFF;
-  border: 1px solid #BFDBFE;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  color: #1D4ED8;
-  white-space: nowrap;
-}
-
-.summary-badge span {
-  font-size: 22px;
-}
-
-.summary-badge strong {
-  font-size: 13px;
-  color: #1D4ED8;
-}
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-@media (max-width: 900px) {
-  .page-header h1 {
-    font-size: 38px;
-  }
-  .skills-grid {
-    grid-template-columns: 1fr;
-  }
-  .technology-summary {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .summary-badge {
-    width: 100%;
-  }
-}
-
-@media (max-width: 600px) {
-  .page-header {
-    padding: 60px 16px 40px;
-  }
-  .page-header h1 {
-    font-size: 30px;
-  }
-  .page-header p {
-    font-size: 15px;
-  }
-  .skills-section {
-    padding: 40px 16px;
-  }
-  .skills-grid {
-    gap: 20px;
-  }
-  .skill-card {
-    padding: 22px;
-  }
-  .skill-card-header h2 {
-    font-size: 18px;
-  }
-  .technology-summary {
-    padding: 24px;
-    margin-top: 35px;
-  }
-  .summary-content h2 {
-    font-size: 22px;
-  }
-  .summary-content p {
-    font-size: 14px;
-  }
-}
-</style>

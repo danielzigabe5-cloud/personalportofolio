@@ -32,11 +32,8 @@
   display: flex;
   flex-direction: column;
 
-  /* White Background */
   background-color: #ffffff;
-
-  /* Dark Slate Text */
-  color: #0f172a;
+  color: #111827;
 }
 
 
@@ -45,9 +42,8 @@
   width: 100%;
 
   /* Navbar space */
-  padding-top: 80px;
+  padding-top: 104px;
 
-  /* White Background */
   background-color: #ffffff;
 }
 

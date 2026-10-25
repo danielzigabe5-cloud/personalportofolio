@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
 definePageMeta({
   layout: 'admin'
@@ -13,52 +13,11 @@ interface ExperienceItem {
   description: string
 }
 
-/* =====================================================
-   DEFAULT DATA & LOCAL STORAGE
-===================================================== */
-const defaultExperiences: ExperienceItem[] = [
-  {
-    id: '1',
-    company: 'Koyehub',
-    position: 'Frontend Developer Intern',
-    period: '2026',
-    description: 'Developed responsive interfaces using Nuxt.js and modern web technologies.'
-  },
-  {
-    id: '2',
-    company: 'Personal Projects',
-    position: 'Full Stack Developer',
-    period: '2025 - Present',
-    description: 'Building web and mobile applications using Nuxt, Laravel and Flutter.'
-  }
-]
-
-const experiences = ref<ExperienceItem[]>([])
-
-// Load from LocalStorage
-onMounted(() => {
-  const saved = localStorage.getItem('portfolio_experiences')
-  if (saved) {
-    try {
-      experiences.value = JSON.parse(saved)
-    } catch {
-      experiences.value = defaultExperiences
-    }
-  } else {
-    experiences.value = defaultExperiences
-  }
+const { data: experiences, refresh } = await useFetch<ExperienceItem[]>('/api/experience', {
+  default: () => []
 })
-
-// Auto-sync to LocalStorage
-watch(
-  experiences,
-  (newVal) => {
-    if (import.meta.client) {
-      localStorage.setItem('portfolio_experiences', JSON.stringify(newVal))
-    }
-  },
-  { deep: true }
-)
+const actionError = ref('')
+const isSaving = ref(false)
 
 /* =====================================================
    MODAL & FORM STATE
@@ -76,6 +35,7 @@ const form = reactive({
 const isEditing = computed(() => editingId.value !== null)
 
 const openAddModal = () => {
+  actionError.value = ''
   editingId.value = null
   form.company = ''
   form.position = ''
@@ -85,6 +45,7 @@ const openAddModal = () => {
 }
 
 const openEditModal = (exp: ExperienceItem) => {
+  actionError.value = ''
   editingId.value = exp.id
   form.company = exp.company
   form.position = exp.position
@@ -98,36 +59,42 @@ const closeModal = () => {
   editingId.value = null
 }
 
-const saveExperience = () => {
+const saveExperience = async () => {
   if (!form.company.trim() || !form.position.trim()) return
 
-  if (isEditing.value) {
-    const index = experiences.value.findIndex(exp => exp.id === editingId.value)
-    if (index !== -1) {
-      experiences.value[index] = {
-        id: editingId.value!,
-        company: form.company.trim(),
-        position: form.position.trim(),
-        period: form.period.trim() || 'Present',
-        description: form.description.trim()
-      }
-    }
-  } else {
-    experiences.value.unshift({
-      id: Date.now().toString(),
-      company: form.company.trim(),
-      position: form.position.trim(),
-      period: form.period.trim() || 'Present',
-      description: form.description.trim()
-    })
+  actionError.value = ''
+  isSaving.value = true
+  const body = {
+    company: form.company.trim(),
+    position: form.position.trim(),
+    period: form.period.trim() || 'Present',
+    description: form.description.trim()
   }
 
-  closeModal()
+  try {
+    if (isEditing.value) {
+      await $fetch(`/api/experience/${editingId.value}`, { method: 'PUT', body })
+    } else {
+      await $fetch('/api/experience', { method: 'POST', body })
+    }
+    await refresh()
+    closeModal()
+  } catch (error) {
+    actionError.value = error instanceof Error ? error.message : 'Unable to save experience.'
+  } finally {
+    isSaving.value = false
+  }
 }
 
-const deleteExperience = (id: string, position: string, company: string) => {
+const deleteExperience = async (id: string, position: string, company: string) => {
   if (confirm(`"${position} at ${company}" የሚለውን የስራ ልምድ ማጥፋት እርግጠኛ ነዎት?`)) {
-    experiences.value = experiences.value.filter(exp => exp.id !== id)
+    actionError.value = ''
+    try {
+      await $fetch(`/api/experience/${id}`, { method: 'DELETE' })
+      await refresh()
+    } catch (error) {
+      actionError.value = error instanceof Error ? error.message : 'Unable to delete experience.'
+    }
   }
 }
 </script>
@@ -155,6 +122,10 @@ const deleteExperience = (id: string, position: string, company: string) => {
         Add Experience
       </button>
     </div>
+
+    <p v-if="actionError" role="alert" class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+      {{ actionError }}
+    </p>
 
     <!-- EXPERIENCE LIST -->
     <div v-if="experiences.length > 0" class="space-y-4">
@@ -304,9 +275,10 @@ const deleteExperience = (id: string, position: string, company: string) => {
               </button>
               <button
                 type="submit"
-                class="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500"
+                :disabled="isSaving"
+                class="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {{ isEditing ? 'Update Experience' : 'Save Experience' }}
+                {{ isSaving ? 'Saving...' : isEditing ? 'Update Experience' : 'Save Experience' }}
               </button>
             </div>
           </form>

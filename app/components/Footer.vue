@@ -49,12 +49,12 @@
 <style scoped>
 /* ===== Footer Base ===== */
 .site-footer {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #cbd5e1;
+  background: linear-gradient(135deg, #2b1744 0%, #190e2b 100%);
+  color: #d6c8e3;
   padding: 60px 20px 0;
   margin-top: 80px;
   font-family: 'Segoe UI', Arial, sans-serif;
-  border-top: 3px solid #42b883;
+  border-top: 3px solid #9827df;
 }
 
 /* ===== Container ===== */
@@ -87,7 +87,7 @@
 }
 
 .footer-logo:hover {
-  color: #42b883;
+  color: #c66bff;
 }
 
 .brand-logo {
@@ -96,24 +96,24 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, #42b883, #347474);
+  background: linear-gradient(135deg, #8b24d4, #b52be8);
   color: #ffffff;
   border-radius: 10px;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 1px;
-  box-shadow: 0 4px 12px rgba(66, 184, 131, 0.3);
+  box-shadow: 0 4px 16px rgba(152, 39, 223, 0.28);
 }
 
 .footer-brand p {
   font-size: 14px;
   line-height: 1.6;
-  color: #94a3b8;
+  color: #a997ba;
   margin: 0;
 }
 
 .footer-brand p:first-of-type {
-  color: #42b883;
+  color: #c66bff;
   font-weight: 600;
   font-size: 15px;
 }
@@ -143,14 +143,14 @@
   bottom: 0;
   width: 40px;
   height: 3px;
-  background: #42b883;
+  background: #a632e8;
   border-radius: 2px;
 }
 
 /* ===== Links ===== */
 .footer-column a,
 .footer-column span {
-  color: #cbd5e1;
+  color: #d6c8e3;
   text-decoration: none;
   font-size: 14px;
   line-height: 1.8;
@@ -160,7 +160,7 @@
 }
 
 .footer-column a:hover {
-  color: #42b883;
+  color: #e2baff;
   transform: translateX(5px);
 }
 
@@ -174,25 +174,25 @@
 
 .footer-socials a {
   padding: 8px 14px;
-  background: rgba(66, 184, 131, 0.1);
-  border: 1px solid rgba(66, 184, 131, 0.3);
+  background: rgba(174, 75, 230, 0.10);
+  border: 1px solid rgba(196, 117, 240, 0.32);
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #42b883;
+  color: #db9cff;
   transition: 0.3s;
 }
 
 .footer-socials a:hover {
-  background: #42b883;
+  background: #a632e8;
   color: #ffffff;
   transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(66, 184, 131, 0.4);
+  box-shadow: 0 6px 16px rgba(166, 50, 232, 0.3);
 }
 
 /* ===== Bottom Bar ===== */
 .footer-bottom {
-  border-top: 1px solid #334155;
+  border-top: 1px solid #49335c;
   padding: 22px 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -202,11 +202,11 @@
   flex-wrap: wrap;
   gap: 12px;
   font-size: 13px;
-  color: #94a3b8;
+  color: #a997ba;
 }
 
 .footer-bottom strong {
-  color: #42b883;
+  color: #c66bff;
 }
 
 /* ===== Responsive ===== */

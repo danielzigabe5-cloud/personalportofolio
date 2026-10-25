@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
 definePageMeta({
   layout: 'admin'
@@ -9,69 +9,20 @@ interface Project {
   id: string
   title: string
   category: string
+  description: string
   tech: string
-  url?: string
+  url: string
+  githubUrl: string
   status: 'Completed' | 'In Progress' | 'Planning'
 }
 
-/* =====================================================
-   DEFAULT DATA & LOCAL STORAGE
-===================================================== */
-const defaultProjects: Project[] = [
-  {
-    id: '1',
-    title: 'CombolojoSPORT',
-    category: 'Sports Platform',
-    tech: 'Nuxt + Laravel + Flutter',
-    url: 'https://example.com',
-    status: 'Completed'
-  },
-  {
-    id: '2',
-    title: 'Internship Attendance System',
-    category: 'Web Application',
-    tech: 'Nuxt + Laravel',
-    url: '',
-    status: 'In Progress'
-  },
-  {
-    id: '3',
-    title: 'Personal Portfolio',
-    category: 'Portfolio',
-    tech: 'Nuxt 4 + Tailwind',
-    url: 'https://example.com',
-    status: 'In Progress'
-  }
-]
-
-const projects = ref<Project[]>([])
+const { data: projects, refresh } = await useFetch<Project[]>('/api/projects', {
+  default: () => []
+})
 const showForm = ref(false)
 const editingId = ref<string | null>(null)
-
-// Load from LocalStorage
-onMounted(() => {
-  const saved = localStorage.getItem('portfolio_projects')
-  if (saved) {
-    try {
-      projects.value = JSON.parse(saved)
-    } catch {
-      projects.value = defaultProjects
-    }
-  } else {
-    projects.value = defaultProjects
-  }
-})
-
-// Auto-sync to LocalStorage
-watch(
-  projects,
-  (newProjects) => {
-    if (import.meta.client) {
-      localStorage.setItem('portfolio_projects', JSON.stringify(newProjects))
-    }
-  },
-  { deep: true }
-)
+const actionError = ref('')
+const isSaving = ref(false)
 
 /* =====================================================
    FORM STATE & ACTIONS
@@ -79,8 +30,10 @@ watch(
 const initialFormState = {
   title: '',
   category: '',
+  description: '',
   tech: '',
   url: '',
+  githubUrl: '',
   status: 'In Progress' as 'Completed' | 'In Progress' | 'Planning'
 }
 
@@ -94,6 +47,7 @@ const resetForm = () => {
 }
 
 const toggleForm = () => {
+  actionError.value = ''
   if (showForm.value) {
     resetForm()
     showForm.value = false
@@ -107,8 +61,10 @@ const openEdit = (project: Project) => {
   editingId.value = project.id
   form.title = project.title
   form.category = project.category
+  form.description = project.description
   form.tech = project.tech
   form.url = project.url || ''
+  form.githubUrl = project.githubUrl || ''
   form.status = project.status
   showForm.value = true
 
@@ -118,44 +74,49 @@ const openEdit = (project: Project) => {
   }
 }
 
-const saveProject = () => {
-  if (!form.title.trim()) return
+const saveProject = async () => {
+  if (!form.title.trim() || !form.description.trim()) return
 
-  if (isEditing.value) {
-    // Update existing project
-    const index = projects.value.findIndex(p => p.id === editingId.value)
-    if (index !== -1) {
-      projects.value[index] = {
-        id: editingId.value!,
-        title: form.title.trim(),
-        category: form.category.trim() || 'General',
-        tech: form.tech.trim() || 'Vue / Nuxt',
-        url: form.url.trim(),
-        status: form.status
-      }
-    }
-  } else {
-    // Add new project
-    projects.value.unshift({
-      id: Date.now().toString(),
-      title: form.title.trim(),
-      category: form.category.trim() || 'General',
-      tech: form.tech.trim() || 'Vue / Nuxt',
-      url: form.url.trim(),
-      status: form.status
-    })
+  actionError.value = ''
+  isSaving.value = true
+  const body = {
+    title: form.title.trim(),
+    category: form.category.trim() || 'General',
+    description: form.description.trim(),
+    tech: form.tech.trim() || 'Vue / Nuxt',
+    url: form.url.trim(),
+    githubUrl: form.githubUrl.trim(),
+    status: form.status
   }
 
-  resetForm()
-  showForm.value = false
+  try {
+    if (isEditing.value) {
+      await $fetch(`/api/projects/${editingId.value}`, { method: 'PUT', body })
+    } else {
+      await $fetch('/api/projects', { method: 'POST', body })
+    }
+    await refresh()
+    resetForm()
+    showForm.value = false
+  } catch (error) {
+    actionError.value = error instanceof Error ? error.message : 'Unable to save project.'
+  } finally {
+    isSaving.value = false
+  }
 }
 
-const deleteProject = (id: string, title: string) => {
+const deleteProject = async (id: string, title: string) => {
   if (confirm(`"${title}" የሚለውን ፕሮጀክት ማጥፋት እርግጠኛ ነዎት?`)) {
-    projects.value = projects.value.filter(p => p.id !== id)
-    if (editingId.value === id) {
-      resetForm()
-      showForm.value = false
+    actionError.value = ''
+    try {
+      await $fetch(`/api/projects/${id}`, { method: 'DELETE' })
+      await refresh()
+      if (editingId.value === id) {
+        resetForm()
+        showForm.value = false
+      }
+    } catch (error) {
+      actionError.value = error instanceof Error ? error.message : 'Unable to delete project.'
     }
   }
 }
@@ -184,6 +145,10 @@ const deleteProject = (id: string, title: string) => {
         {{ showForm ? 'Cancel' : 'Add Project' }}
       </button>
     </div>
+
+    <p v-if="actionError" role="alert" class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+      {{ actionError }}
+    </p>
 
     <!-- ADD / EDIT PROJECT FORM -->
     <Transition
@@ -236,6 +201,19 @@ const deleteProject = (id: string, title: string) => {
             />
           </div>
 
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+              Project Description *
+            </label>
+            <textarea
+              v-model="form.description"
+              required
+              rows="3"
+              placeholder="Describe what the project does"
+              class="w-full resize-y rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            ></textarea>
+          </div>
+
           <!-- Technologies -->
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
@@ -258,6 +236,18 @@ const deleteProject = (id: string, title: string) => {
               v-model="form.url"
               type="url"
               placeholder="https://example.com"
+              class="w-full rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+              GitHub URL (Optional)
+            </label>
+            <input
+              v-model="form.githubUrl"
+              type="url"
+              placeholder="https://github.com/your/project"
               class="w-full rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
@@ -288,9 +278,10 @@ const deleteProject = (id: string, title: string) => {
           </button>
           <button
             type="submit"
-            class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-500"
+            :disabled="isSaving"
+            class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {{ isEditing ? 'Update Project' : 'Save Project' }}
+            {{ isSaving ? 'Saving...' : isEditing ? 'Update Project' : 'Save Project' }}
           </button>
         </div>
       </form>

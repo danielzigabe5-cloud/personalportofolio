@@ -15,48 +15,10 @@ interface Education {
   isCurrent: boolean
 }
 
-const STORAGE_KEY = 'portfolio_education_records'
-
-const defaultRecords: Education[] = [
-  {
-    id: 1,
-    institution: 'Mekdela Amba University',
-    degree: 'Bachelor Degree',
-    field: 'Computer Science',
-    period: '2023 - Present',
-    isCurrent: true
-  }
-]
-
-// 2. Data Fetching (ከ LocalStorage ወይም Backend ጋር በማገናኘት)
-const { data: education, status, error, refresh } = await useAsyncData<Education[]>(
-  'admin-education',
-  async () => {
-    // Simulate Network Delay (ኔትወርክ ለማስመሰል)
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    if (import.meta.client) {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        try {
-          return JSON.parse(saved) as Education[]
-        } catch {
-          return defaultRecords
-        }
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultRecords))
-    }
-
-    return defaultRecords
-  }
-)
-
-// Helper: LocalStorage ውስጥ ዳታ ለማስቀመጥ
-const persistData = (items: Education[]) => {
-  if (import.meta.client) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
-  }
-}
+const { data: education, status, error, refresh } = await useFetch<Education[]>('/api/education', {
+  default: () => []
+})
+const actionError = ref('')
 
 /* =====================================================
    MODAL & FORM STATE
@@ -77,6 +39,7 @@ const isEditing = computed(() => editingId.value !== null)
 
 // አዲስ ለመጨመር ፎርም መክፈት
 const handleAdd = () => {
+  actionError.value = ''
   editingId.value = null
   form.institution = ''
   form.degree = ''
@@ -88,6 +51,7 @@ const handleAdd = () => {
 
 // ለማስተካከል ፎርም መክፈት
 const handleEdit = (item: Education) => {
+  actionError.value = ''
   editingId.value = item.id
   form.institution = item.institution
   form.degree = item.degree
@@ -106,41 +70,29 @@ const closeModal = () => {
 const handleSubmit = async () => {
   if (!form.institution.trim() || !form.degree.trim()) return
 
+  actionError.value = ''
   isSubmitting.value = true
-  await new Promise((resolve) => setTimeout(resolve, 400)) // delay simulation
-
-  const currentList = education.value ? [...education.value] : []
-
-  if (isEditing.value) {
-    // UPDATE
-    const index = currentList.findIndex((item) => item.id === editingId.value)
-    if (index !== -1) {
-      currentList[index] = {
-        id: editingId.value!,
-        institution: form.institution.trim(),
-        degree: form.degree.trim(),
-        field: form.field.trim(),
-        period: form.period.trim() || 'Present',
-        isCurrent: form.isCurrent
-      }
-    }
-  } else {
-    // CREATE
-    const newRecord: Education = {
-      id: Date.now(),
-      institution: form.institution.trim(),
-      degree: form.degree.trim(),
-      field: form.field.trim(),
-      period: form.period.trim() || 'Present',
-      isCurrent: form.isCurrent
-    }
-    currentList.unshift(newRecord)
+  const body = {
+    institution: form.institution.trim(),
+    degree: form.degree.trim(),
+    field: form.field.trim(),
+    period: form.period.trim() || 'Present',
+    isCurrent: form.isCurrent
   }
 
-  persistData(currentList)
-  await refresh()
-  isSubmitting.value = false
-  closeModal()
+  try {
+    if (isEditing.value) {
+      await $fetch(`/api/education/${editingId.value}`, { method: 'PUT', body })
+    } else {
+      await $fetch('/api/education', { method: 'POST', body })
+    }
+    await refresh()
+    closeModal()
+  } catch (err) {
+    actionError.value = err instanceof Error ? err.message : 'Unable to save education record.'
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
 /* =====================================================
@@ -153,12 +105,11 @@ const handleDelete = async (id: number) => {
 
   isDeleting.value = id
   try {
-    await new Promise((resolve) => setTimeout(resolve, 600)) // network delay simulation
-    const updatedList = (education.value || []).filter((item) => item.id !== id)
-    persistData(updatedList)
+    actionError.value = ''
+    await $fetch(`/api/education/${id}`, { method: 'DELETE' })
     await refresh()
   } catch (err) {
-    console.error('Failed to delete', err)
+    actionError.value = err instanceof Error ? err.message : 'Unable to delete education record.'
   } finally {
     isDeleting.value = null
   }
@@ -188,6 +139,10 @@ const handleDelete = async (id: number) => {
         Add Education
       </button>
     </div>
+
+    <p v-if="actionError" role="alert" class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+      {{ actionError }}
+    </p>
 
     <!-- ERROR STATE -->
     <div v-if="error" class="rounded-2xl border border-red-900/50 bg-red-950/20 p-5">
@@ -278,7 +233,7 @@ const handleDelete = async (id: number) => {
             </p>
 
             <!-- ACTION BUTTONS -->
-            <div class="mt-5 flex items-center gap-2 border-t border-slate-700 pt-4 sm:absolute sm:bottom-6 sm:right-6 sm:mt-0 sm:border-0 sm:pt-0 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
+            <div class="mt-5 flex items-center gap-2 border-t border-slate-700 pt-4">
               <button
                 type="button"
                 @click="handleEdit(item)"

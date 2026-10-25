@@ -11,17 +11,21 @@ interface ProfileData {
   phone: string
   role: string
   location: string
+  aboutHeadline: string
   bio: string
+  aboutDetails: string
   avatarUrl: string | null
 }
 
 const defaultProfile: ProfileData = {
   name: 'Daniel Zigabe',
-  email: 'daniel@example.com',
-  phone: '+251 900 000 000',
-  role: 'Frontend Developer',
+  email: 'danielzigabe5@gmail.com',
+  phone: '+251 945 800 348',
+  role: 'Full-Stack & Mobile Developer',
   location: 'Ethiopia',
-  bio: 'Frontend developer focused on building modern web and mobile applications.',
+  aboutHeadline: 'Thoughtful software, built for people.',
+  bio: "I'm a computer science student and software developer focused on useful, reliable web and mobile products.",
+  aboutDetails: 'I enjoy turning complex ideas into functional, user-friendly applications. I work closely with teams to build meaningful digital solutions and care about the details that make software dependable and easy to use. My core tools include Nuxt.js, Laravel, and Flutter. I keep learning new technologies to improve performance and make better products.',
   avatarUrl: null
 }
 
@@ -276,15 +280,39 @@ const resetChanges = () => {
             />
           </div>
 
-          <!-- Bio -->
+          <!-- About headline -->
           <div class="md:col-span-2">
             <label class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-400">
-              Bio
+              About Page Headline
+            </label>
+            <input
+              v-model="profile.aboutHeadline"
+              type="text"
+              class="w-full rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 transition focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          <!-- About introduction -->
+          <div class="md:col-span-2">
+            <label class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-400">
+              About Introduction
             </label>
             <textarea
               v-model="profile.bio"
-              rows="4"
+              rows="3"
               class="w-full resize-none rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 transition focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            ></textarea>
+          </div>
+
+          <!-- About details -->
+          <div class="md:col-span-2">
+            <label class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-400">
+              About Details
+            </label>
+            <textarea
+              v-model="profile.aboutDetails"
+              rows="5"
+              class="w-full resize-y rounded-xl border border-slate-700 bg-slate-900/50 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 transition focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             ></textarea>
           </div>
 
