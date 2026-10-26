@@ -1,47 +1,13 @@
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted } from 'vue'
+import { reactive, ref, computed } from 'vue'
+import type { ProfileData } from '~~/shared/utils/profile'
 
 definePageMeta({
   layout: 'admin'
 })
 
-interface ProfileData {
-  name: string
-  email: string
-  phone: string
-  role: string
-  location: string
-  aboutHeadline: string
-  bio: string
-  aboutDetails: string
-  avatarUrl: string | null
-}
-
-const defaultProfile: ProfileData = {
-  name: 'Daniel Zigabe',
-  email: 'danielzigabe5@gmail.com',
-  phone: '+251 945 800 348',
-  role: 'Full-Stack & Mobile Developer',
-  location: 'Ethiopia',
-  aboutHeadline: 'Thoughtful software, built for people.',
-  bio: "I'm a computer science student and software developer focused on useful, reliable web and mobile products.",
-  aboutDetails: 'I enjoy turning complex ideas into functional, user-friendly applications. I work closely with teams to build meaningful digital solutions and care about the details that make software dependable and easy to use. My core tools include Nuxt.js, Laravel, and Flutter. I keep learning new technologies to improve performance and make better products.',
-  avatarUrl: null
-}
-
-const profile = reactive<ProfileData>({ ...defaultProfile })
-
-// Local Storage & Init
-onMounted(() => {
-  const saved = localStorage.getItem('portfolio_profile')
-  if (saved) {
-    try {
-      Object.assign(profile, JSON.parse(saved))
-    } catch {
-      Object.assign(profile, defaultProfile)
-    }
-  }
-})
+const { data: savedProfile, error: profileLoadError } = await useProfile()
+const profile = reactive<ProfileData>({ ...savedProfile.value })
 
 /* =====================================================
    COMPUTED INITIALS & FILE UPLOAD
@@ -61,16 +27,38 @@ const triggerFileUpload = () => {
   fileInput.value?.click()
 }
 
-const handleFileUpload = (event: Event) => {
+const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
-  if (file) {
-    // Read file as base64 string
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      profile.avatarUrl = e.target?.result as string
+  if (!file) return
+
+  errorMessage.value = ''
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 10 * 1024 * 1024) {
+    errorMessage.value = 'Choose a JPG, PNG, or WebP photo smaller than 10 MB.'
+    target.value = ''
+    return
+  }
+
+  try {
+    const image = await createImageBitmap(file)
+    const scale = Math.min(1, 1000 / Math.max(image.width, image.height))
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.round(image.width * scale)
+    canvas.height = Math.round(image.height * scale)
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('Your browser could not process this photo.')
+
+    context.drawImage(image, 0, 0, canvas.width, canvas.height)
+    image.close()
+    const avatarUrl = canvas.toDataURL('image/jpeg', 0.82)
+    if (avatarUrl.length > 1_200_000) {
+      throw new Error('This photo is too large after processing. Choose a smaller image.')
     }
-    reader.readAsDataURL(file)
+    profile.avatarUrl = avatarUrl
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'Could not process this photo.'
+  } finally {
+    target.value = ''
   }
 }
 
@@ -86,7 +74,7 @@ const isSaving = ref(false)
 const saved = ref(false)
 const errorMessage = ref('')
 
-const saveProfile = () => {
+const saveProfile = async () => {
   errorMessage.value = ''
 
   if (!profile.name.trim()) {
@@ -95,31 +83,27 @@ const saveProfile = () => {
   }
 
   isSaving.value = true
-
-  setTimeout(() => {
-    if (import.meta.client) {
-      localStorage.setItem('portfolio_profile', JSON.stringify(profile))
-    }
-    isSaving.value = false
+  try {
+    const updatedProfile = await $fetch<ProfileData>('/api/profile', {
+      method: 'PUT',
+      body: { ...profile }
+    })
+    Object.assign(profile, updatedProfile)
+    savedProfile.value = updatedProfile
     saved.value = true
 
     setTimeout(() => {
       saved.value = false
     }, 2500)
-  }, 400)
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'Could not save your profile.'
+  } finally {
+    isSaving.value = false
+  }
 }
 
 const resetChanges = () => {
-  const saved = localStorage.getItem('portfolio_profile')
-  if (saved) {
-    try {
-      Object.assign(profile, JSON.parse(saved))
-    } catch {
-      Object.assign(profile, defaultProfile)
-    }
-  } else {
-    Object.assign(profile, defaultProfile)
-  }
+  Object.assign(profile, savedProfile.value)
   errorMessage.value = ''
 }
 </script>
@@ -186,7 +170,7 @@ const resetChanges = () => {
             <input
               ref="fileInput"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               class="hidden"
               @change="handleFileUpload"
             />
@@ -210,8 +194,8 @@ const resetChanges = () => {
       </div>
 
       <!-- ERROR MESSAGE -->
-      <div v-if="errorMessage" class="mb-5 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-semibold text-red-400">
-        {{ errorMessage }}
+      <div v-if="profileLoadError || errorMessage" class="mb-5 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-semibold text-red-400">
+        {{ errorMessage || 'Could not load the saved profile. You can retry by refreshing this page.' }}
       </div>
 
       <!-- FORM GRID -->

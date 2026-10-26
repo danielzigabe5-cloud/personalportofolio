@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 .default-layout {
-	--portfolio-bg: #ffffff;
-	--portfolio-surface: #ffffff;
-	--portfolio-surface-raised: #f8fafc;
-	--portfolio-accent: #2563eb;
-	--portfolio-text: #111827;
-	--portfolio-muted: #64748b;
-	--portfolio-border: #e2e8f0;
+	--portfolio-bg: #dcefed;
+	--portfolio-surface: #f3f9f8;
+	--portfolio-surface-raised: #e8f4f2;
+	--portfolio-accent: #168b7d;
+	--portfolio-text: #174b45;
+	--portfolio-muted: #66827e;
+	--portfolio-border: #c2ded9;
 	background: var(--portfolio-bg);
 	color: var(--portfolio-text);
 }
@@ -21,7 +21,7 @@
 }
 
 .default-layout section.bg-slate-50 {
-	background-color: #f8fafc !important;
+	background-color: var(--portfolio-surface) !important;
 }
 
 .default-layout .bg-white,
@@ -37,12 +37,12 @@
 }
 
 .default-layout .bg-slate-900 {
-	background-color: #1e3a8a !important;
+	background-color: #1d6b65 !important;
 }
 
 .default-layout .bg-blue-50,
 .default-layout .bg-blue-100 {
-	background-color: #eff6ff !important;
+	background-color: var(--portfolio-surface-raised) !important;
 }
 
 .default-layout .bg-blue-600 {
@@ -72,7 +72,7 @@
 .default-layout .text-blue-50,
 .default-layout .text-blue-100,
 .default-layout .text-blue-50\/90 {
-	color: #dbeafe !important;
+	color: #e5f8f4 !important;
 }
 
 .default-layout .bg-green-500,
@@ -96,11 +96,11 @@
 .default-layout .border-blue-200,
 .default-layout .border-blue-300,
 .default-layout .border-blue-400 {
-	border-color: #bfdbfe !important;
+	border-color: var(--portfolio-border) !important;
 }
 
 .default-layout .border-blue-200\/80 {
-	border-color: rgb(37 99 235 / 25%) !important;
+	border-color: rgb(22 139 125 / 25%) !important;
 }
 
 .default-layout .border-white {
@@ -108,7 +108,19 @@
 }
 
 .default-layout .hover\:bg-blue-700:hover {
-	background-color: #1d4ed8 !important;
+	background-color: #11776c !important;
+}
+
+.default-layout [class~="bg-white/90"] {
+	background-color: rgb(243 249 248 / 94%) !important;
+}
+
+.default-layout .bg-orange-500 {
+	background-color: #1d6b65 !important;
+}
+
+.default-layout .hover\\:text-orange-100:hover {
+	color: #dff7f1 !important;
 }
 
 .default-layout .hover\:text-blue-600:hover,
@@ -118,11 +130,15 @@
 
 .default-layout .hover\:border-blue-300:hover,
 .default-layout .hover\:border-blue-400:hover {
-	border-color: #93c5fd !important;
+	border-color: #81c7bb !important;
 }
 
 .default-layout #home.bg-gradient-to-br {
-	background-image: linear-gradient(110deg, #2677cf 0%, #362da7 100%) !important;
+	background-image: linear-gradient(110deg, #1d6b65 0%, #2b9d8c 58%, #42bca3 100%) !important;
+}
+
+.default-layout #home .bg-gradient-to-tr {
+	background-image: linear-gradient(45deg, #a9dcd2 0%, #5bb8a5 100%) !important;
 }
 
 .default-layout .contact-page {
@@ -131,7 +147,7 @@
 }
 
 .default-layout .contact-page .page-header {
-	background: radial-gradient(circle at 20% 20%, rgb(37 99 235 / 7%), transparent 30%), linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+	background: radial-gradient(circle at 20% 20%, rgb(22 139 125 / 9%), transparent 30%), linear-gradient(180deg, #f3f9f8 0%, #dcefed 100%) !important;
 	border-color: var(--portfolio-border) !important;
 }
 
@@ -182,7 +198,7 @@
 
 .default-layout .contact-page .contact-icon,
 .default-layout .contact-page .form-number {
-	background: rgb(37 99 235 / 8%) !important;
+	background: rgb(22 139 125 / 10%) !important;
 	color: var(--portfolio-accent) !important;
 }
 
@@ -205,16 +221,16 @@
 }
 
 .default-layout .contact-page .availability-dot {
-	background: #d93945 !important;
-	box-shadow: 0 0 0 4px rgb(217 57 69 / 12%) !important;
+	background: #168b7d !important;
+	box-shadow: 0 0 0 4px rgb(22 139 125 / 12%) !important;
 }
 
 .default-layout .contact-page .contact-item:hover,
 .default-layout .contact-page .social-links a:hover,
 .default-layout .contact-page .secondary-cv:hover,
 .default-layout .contact-page .another-button:hover {
-	background: #eff6ff !important;
-	border-color: #bfdbfe !important;
+	background: #e8f4f2 !important;
+	border-color: #a8d2ca !important;
 }
 
 .default-layout .contact-page .field label,
@@ -232,15 +248,21 @@
 
 .default-layout .contact-page .primary-cv:hover,
 .default-layout .contact-page .send-button:hover:not(:disabled) {
-	background: #1d4ed8 !important;
+	background: #11776c !important;
 }
 
 .default-layout .contact-page .contact-form input:focus,
 .default-layout .contact-page .contact-form textarea:focus {
 	border-color: var(--portfolio-accent) !important;
-	box-shadow: 0 0 0 3px rgb(37 99 235 / 10%) !important;
+	box-shadow: 0 0 0 3px rgb(22 139 125 / 12%) !important;
 }
 
 .default-layout .contact-page .bottom-box {
-	background: #1e3a8a !important;
+	background: linear-gradient(120deg, #1d6b65 0%, #2b9d8c 100%) !important;
+}
+
+.default-layout footer {
+	background-color: #1d6b65 !important;
+	border-color: var(--portfolio-border) !important;
+	color: #f1fffb !important;
 }

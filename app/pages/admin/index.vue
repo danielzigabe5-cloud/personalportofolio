@@ -25,7 +25,8 @@ interface Activity {
 /* =====================================================
    DYNAMIC STATE (CONNECTED TO OTHER PAGES)
 ===================================================== */
-const adminName = ref('Daniel')
+const { data: profile } = await useProfile()
+const adminName = computed(() => profile.value.name.trim().split(/\s+/)[0] || 'Admin')
 const projectsCount = ref(0)
 const skillsCount = ref(0)
 const visitorCount = ref('1.4K')
@@ -103,20 +104,7 @@ const activities = ref<Activity[]>([
    FETCH DATA FROM LOCALSTORAGE
 ===================================================== */
 onMounted(() => {
-  // 1. Fetch Profile Name
-  const savedProfile = localStorage.getItem('portfolio_profile')
-  if (savedProfile) {
-    try {
-      const parsed = JSON.parse(savedProfile)
-      if (parsed.name) {
-        adminName.value = parsed.name.split(' ')[0]
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  // 2. Fetch Projects Count
+  // Fetch Projects Count
   const savedProjects = localStorage.getItem('portfolio_projects')
   if (savedProjects) {
     try {

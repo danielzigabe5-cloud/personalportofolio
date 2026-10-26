@@ -1,5 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import heroImg from '~/assets/images/photo.jpg'
+
+const { data: profile } = await useProfile()
+const profileNameParts = computed(() => profile.value.name.trim().split(/\s+/))
+const firstName = computed(() => profileNameParts.value[0] || '')
+const remainingName = computed(() => profileNameParts.value.slice(1).join(' '))
 
 // የቴክኖሎጂ ክህሎቶች ዝርዝር
 const techStack = [
@@ -31,7 +37,7 @@ const featuredProjects = [
 <template>
   <div class="bg-white">
     <!-- HERO SECTION -->
-    <section id="home" class="relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 pt-12 pb-20 text-white">
+    <section id="home" class="relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 pt-6 pb-20 text-white">
       <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
         <!-- LEFT CONTENT (Col 7) -->
@@ -46,21 +52,21 @@ const featuredProjects = [
           <p class="text-white font-bold text-lg mb-1">Hello, I'm</p>
 
           <h1 class="text-4xl sm:text-6xl font-black text-white leading-tight tracking-tight mb-4">
-            Daniel <span class="text-blue-100">Zigabe Minda</span>
+            {{ firstName }} <span class="text-blue-100">{{ remainingName }}</span>
           </h1>
 
           <h2 class="text-xl sm:text-2xl font-bold text-blue-50 mb-6">
-            Full-Stack & Mobile Developer
+            {{ profile.role }}
           </h2>
 
           <p class="text-blue-50/90 text-base sm:text-lg leading-relaxed max-w-xl mb-8">
-            I build modern web and mobile applications using Nuxt.js, Laravel and Flutter. Passionate about solving real-world problems with clean, scalable code.
+            {{ profile.bio }}
           </p>
 
           <!-- CTA Buttons -->
           <div class="flex flex-wrap items-center gap-4 mb-10">
             <a
-              href="#projects"
+              href="/projects"
               class="inline-flex items-center gap-2 bg-white hover:bg-blue-50 text-blue-700 font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-blue-950/20 transition transform hover:-translate-y-0.5"
             >
               <span>View My Projects</span>
@@ -92,7 +98,7 @@ const featuredProjects = [
             <a href="https://github.com/danielzigabe" target="_blank" class="hover:text-blue-100 transition">🐙</a>
             <a href="https://linkedin.com/in/danielzigabe" target="_blank" class="hover:text-blue-100 transition">💼</a>
             <a href="https://t.me/danielzigabe" target="_blank" class="hover:text-blue-100 transition">✈</a>
-            <a href="mailto:danielzigabe5@gmail.com" class="hover:text-blue-100 transition">✉</a>
+            <a :href="`mailto:${profile.email}`" class="hover:text-blue-100 transition">✉</a>
           </div>
 
         </div>
@@ -102,8 +108,8 @@ const featuredProjects = [
           
           <div class="relative w-80 h-96 sm:w-96 sm:h-[430px] rounded-[40px] bg-gradient-to-tr from-blue-300 to-indigo-400 overflow-hidden flex items-end justify-center shadow-2xl shadow-blue-950/30">
             <img
-              :src="heroImg"
-              alt="Daniel Zigabe"
+              :src="profile.avatarUrl || heroImg"
+              :alt="profile.name"
               class="w-full h-full object-cover object-top"
             />
           </div>

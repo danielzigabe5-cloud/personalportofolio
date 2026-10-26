@@ -1,39 +1,7 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue'
 import heroImg from '~/assets/images/photo.jpg'
 
-interface AboutProfile {
-  name: string
-  email: string
-  role: string
-  location: string
-  aboutHeadline: string
-  bio: string
-  aboutDetails: string
-  avatarUrl: string | null
-}
-
-const profile = reactive<AboutProfile>({
-  name: 'Daniel Zigabe',
-  email: 'danielzigabe5@gmail.com',
-  role: 'Full-Stack & Mobile Developer',
-  location: 'Ethiopia',
-  aboutHeadline: 'Thoughtful software, built for people.',
-  bio: "I'm a computer science student and software developer focused on useful, reliable web and mobile products.",
-  aboutDetails: 'I enjoy turning complex ideas into functional, user-friendly applications. I work closely with teams to build meaningful digital solutions and care about the details that make software dependable and easy to use. My core tools include Nuxt.js, Laravel, and Flutter. I keep learning new technologies to improve performance and make better products.',
-  avatarUrl: null
-})
-
-onMounted(() => {
-  const savedProfile = localStorage.getItem('portfolio_profile')
-  if (!savedProfile) return
-
-  try {
-    Object.assign(profile, JSON.parse(savedProfile))
-  } catch {
-    return
-  }
-})
+const { data: profile } = await useProfile()
 
 const values = [
   { icon: '</>', title: 'Clean Code', desc: 'Maintainable & Scalable' },

@@ -16,7 +16,7 @@ export const defaultProjects: Project[] = [
     category: 'Web & Mobile Platform',
     description: 'A sports venue booking and event platform that helps users discover sports facilities and connect with venue services across Ethiopia.',
     tech: 'Nuxt.js + Laravel + Flutter + MySQL',
-    url: 'https://combolojosport.etsgood.com',
+    url: 'https://combolojo.etsgood.com',
     githubUrl: 'https://github.com/danielzigabe',
     status: 'Completed'
   },

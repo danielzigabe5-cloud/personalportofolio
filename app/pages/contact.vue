@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref } from 'vue'
+import heroImg from '~/assets/images/photo.jpg'
 
 definePageMeta({
   layout: 'default'
@@ -27,27 +28,7 @@ const submitted = ref(false)
 const loading = ref(false)
 const errorMessage = ref('')
 
-// 2. CONTACT DETAILS (Loads from Admin Profile if updated)
-const contactDetails = reactive({
-  email: 'danielzigabe5@gmail.com',
-  phone: '+251 945 800 348',
-  location: 'Ethiopia'
-})
-
-onMounted(() => {
-  // Sync contact info with Admin Profile settings
-  const savedProfile = localStorage.getItem('portfolio_profile')
-  if (savedProfile) {
-    try {
-      const parsed = JSON.parse(savedProfile)
-      if (parsed.email) contactDetails.email = parsed.email
-      if (parsed.phone) contactDetails.phone = parsed.phone
-      if (parsed.location) contactDetails.location = parsed.location
-    } catch (e) {
-      console.error(e)
-    }
-  }
-})
+const { data: contactDetails } = await useProfile()
 
 // 3. REAL SUBMIT FUNCTION
 async function submitForm() {
@@ -123,20 +104,44 @@ function resetFormView() {
 
     <!-- HERO -->
     <section class="page-header">
-      <div class="page-container hero-content">
-        <span class="eyebrow">
-          GET IN TOUCH
-        </span>
+      <div class="page-container hero-layout">
+        <div class="hero-content">
+          <span class="eyebrow">
+            LET'S CONNECT
+          </span>
 
-        <h1>
-          Let's start a
-          <span>conversation.</span>
-        </h1>
+          <h1>
+            Let's start a
+            <span>conversation.</span>
+          </h1>
 
-        <p>
-          Have a project, opportunity or idea in mind?
-          I'd love to hear from you.
-        </p>
+          <p>
+            Have a project, opportunity or idea in mind? I’m {{ contactDetails.name }},
+            a {{ contactDetails.role.toLowerCase() }}, and I'd love to hear from you.
+          </p>
+
+          <a class="hero-email" :href="`mailto:${contactDetails.email}`">
+            <span class="hero-email__icon" aria-hidden="true">✉</span>
+            <span>
+              <small>EMAIL ME DIRECTLY</small>
+              <strong>{{ contactDetails.email }}</strong>
+            </span>
+            <span class="hero-email__arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+
+        <aside class="hero-profile">
+          <img
+            :src="contactDetails.avatarUrl || heroImg"
+            :alt="contactDetails.name"
+            fetchpriority="high"
+          >
+          <div class="hero-profile__caption">
+            <span class="hero-profile__status"><span /> OPEN TO OPPORTUNITIES</span>
+            <strong>{{ contactDetails.name }}</strong>
+            <span>{{ contactDetails.role }}</span>
+          </div>
+        </aside>
       </div>
     </section>
 
@@ -259,7 +264,7 @@ function resetFormView() {
 
             <div class="social-links">
               <a
-                href="https://github.com/danielzigabe"
+                href="https://github.com/danielzigabe5cloud"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
@@ -268,7 +273,7 @@ function resetFormView() {
               </a>
 
               <a
-                href="https://linkedin.com/in/danielzigabe"
+                href="https://www.linkedin.com/in/danielzigabe5"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
@@ -277,7 +282,7 @@ function resetFormView() {
               </a>
 
               <a
-                href="https://t.me/danielzigabe"
+                href="https://t.me/+251945800348"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Telegram"
@@ -485,22 +490,29 @@ function resetFormView() {
 }
 
 .page-header {
-  padding: 110px 20px 95px;
+  padding: 42px 20px 64px;
   background:
-    radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.07), transparent 30%),
-    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border-bottom: 1px solid #e2e8f0;
+    radial-gradient(circle at 20% 20%, rgb(22 139 125 / 10%), transparent 32%),
+    linear-gradient(180deg, #f8fdfc 0%, #f3f9f8 100%);
+  border-bottom: 1px solid #dbe9e6;
+}
+
+.hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+  align-items: center;
+  gap: 4rem;
 }
 
 .hero-content {
-  max-width: 850px;
-  text-align: center;
+  max-width: 700px;
+  text-align: left;
 }
 
 .eyebrow,
 .section-label {
   display: inline-block;
-  color: #2563eb;
+  color: #168b7d;
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 3px;
@@ -517,15 +529,138 @@ function resetFormView() {
 
 .hero-content h1 span {
   display: block;
-  color: #2563eb;
+  color: #168b7d;
 }
 
 .hero-content p {
-  max-width: 650px;
-  margin: 0 auto;
+  max-width: 620px;
+  margin: 0;
   color: #64748b;
   font-size: 17px;
   line-height: 1.8;
+}
+
+.hero-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  max-width: 100%;
+  margin-top: 27px;
+  padding: 12px 16px;
+  border: 1px solid #d3e5e1;
+  border-radius: 14px;
+  background: #fff;
+  color: #174b45;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgb(23 75 69 / 7%);
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.hero-email:hover {
+  transform: translateY(-2px);
+  border-color: #82c5b9;
+  box-shadow: 0 14px 34px rgb(23 75 69 / 12%);
+}
+
+.hero-email__icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 12px;
+  background: #e8f4f2;
+  color: #168b7d;
+  font-size: 18px;
+}
+
+.hero-email small,
+.hero-email strong {
+  display: block;
+}
+
+.hero-email small {
+  color: #7c9691;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1.3px;
+}
+
+.hero-email strong {
+  overflow: hidden;
+  margin-top: 3px;
+  font-size: 13px;
+  text-overflow: ellipsis;
+}
+
+.hero-email__arrow {
+  margin-left: 8px;
+  color: #168b7d;
+  font-size: 18px;
+}
+
+.hero-profile {
+  position: relative;
+  min-height: 300px;
+  overflow: hidden;
+  border: 5px solid rgb(255 255 255 / 85%);
+  border-radius: 24px;
+  background: #dcefed;
+  box-shadow: 0 22px 55px rgb(23 75 69 / 16%);
+}
+
+.hero-profile > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 32%;
+}
+
+.hero-profile__caption {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 15px;
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: 14px;
+  background: rgb(15 43 39 / 78%);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.hero-profile__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 3px;
+  color: #c9e8e1;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.hero-profile__status > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 3px rgb(74 222 128 / 18%);
+}
+
+.hero-profile__caption strong {
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.hero-profile__caption > span:last-child {
+  color: #d1e0dd;
+  font-size: 11px;
 }
 
 .contact-section {
@@ -1044,6 +1179,11 @@ function resetFormView() {
 }
 
 @media (max-width: 950px) {
+  .hero-layout {
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 2rem;
+  }
+
   .contact-layout {
     grid-template-columns: 1fr;
     gap: 60px;
@@ -1063,10 +1203,22 @@ function resetFormView() {
     padding: 0 20px;
   }
   .page-header {
-    padding: 75px 16px 65px;
+    padding: 24px 16px 55px;
   }
+
+  .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .hero-profile {
+    width: min(100%, 330px);
+    min-height: 260px;
+    margin: 0 auto;
+  }
+
   .hero-content h1 {
-    font-size: 40px;
+    font-size: 38px;
     letter-spacing: -1.5px;
   }
   .hero-content p {

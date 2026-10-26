@@ -41,9 +41,6 @@
   flex: 1;
   width: 100%;
 
-  /* Navbar space */
-  padding-top: 104px;
-
   background-color: #ffffff;
 }
 
