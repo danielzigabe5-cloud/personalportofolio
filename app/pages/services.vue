@@ -195,7 +195,9 @@ const { data: profile } = await useProfile()
 
 .service-card {
   position: relative;
-  min-height: 330px;
+  display: flex;
+  min-height: 430px;
+  flex-direction: column;
   overflow: hidden;
   border: 1px solid #c2ded9;
   background: #f3f9f8;
@@ -206,7 +208,6 @@ const { data: profile } = await useProfile()
 .service-card:hover {
   transform: translateY(-5px);
   border-color: rgb(22 139 125 / 55%);
-  background: #101312;
   box-shadow: 0 22px 45px rgb(23 75 69 / 13%);
 }
 
@@ -218,50 +219,39 @@ const { data: profile } = await useProfile()
 }
 
 .service-card__image {
-  position: absolute;
-  inset: 50% 0 0;
+  position: relative;
+  flex: 0 0 180px;
   display: grid;
   place-items: center;
   overflow: hidden;
-  opacity: 0;
   background: #173f3a;
-  transform: translateY(100%);
-  transition: opacity 300ms ease, transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .service-card__image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(0.96);
-  transition: transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: transform 500ms ease;
 }
 
 .service-card__image span {
   display: none;
 }
 
-.service-card:hover .service-card__image,
-.service-card:focus-within .service-card__image {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.service-card:hover .service-card__image img,
-.service-card:focus-within .service-card__image img {
-  transform: scale(1);
+.service-card:hover .service-card__image img {
+  transform: scale(1.04);
 }
 
 .service-card__content {
   position: relative;
   z-index: 1;
   display: flex;
-  min-height: 323px;
+  flex: 1;
+  min-height: 0;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 1.75rem 2.5rem;
+  padding: 1.75rem 1.75rem 4rem;
   text-align: center;
-  transition: min-height 300ms ease, padding 300ms ease;
 }
 
 .service-card__icon {
@@ -279,61 +269,6 @@ const { data: profile } = await useProfile()
 .service-card__icon svg {
   width: 43px;
   height: 43px;
-}
-
-.service-card:hover .service-card__icon {
-  display: none;
-}
-
-.service-card:focus-within .service-card__icon {
-  display: none;
-}
-
-.service-card:hover .service-card__content,
-.service-card:focus-within .service-card__content {
-  min-height: 50%;
-  padding-top: 1.75rem;
-  padding-bottom: 1rem;
-}
-
-.service-card:hover h2,
-.service-card:focus-within h2 {
-  color: #fff;
-  margin-top: 0.9rem;
-}
-
-.service-card:hover p,
-.service-card:focus-within p {
-  display: none;
-}
-
-.service-card:hover .service-card__divider,
-.service-card:focus-within .service-card__divider {
-  display: none;
-}
-
-.service-card:hover .service-card__action,
-.service-card:focus-within .service-card__action {
-  top: 96px;
-  right: auto;
-  bottom: auto;
-  left: 50%;
-  width: 58px;
-  height: 58px;
-  background: #fff;
-  color: #101312;
-  transform: translateX(-50%);
-}
-
-.service-card:hover .service-card__action:hover,
-.service-card:focus-within .service-card__action:hover {
-  background: #e8f4f2;
-  color: var(--service-accent);
-}
-
-.service-card:hover .service-card__action span,
-.service-card:focus-within .service-card__action span {
-  font-size: 2rem;
 }
 
 .service-card h2 {
@@ -466,9 +401,12 @@ const { data: profile } = await useProfile()
     aspect-ratio: 16 / 10;
   }
 
-  .service-card,
+  .service-card {
+    min-height: 0;
+  }
+
   .service-card__content {
-    min-height: 300px;
+    min-height: 280px;
   }
 
   .services-cta {

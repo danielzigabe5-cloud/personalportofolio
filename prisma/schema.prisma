@@ -1,19 +1,109 @@
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name            String
+  email           String    @unique
+  emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamp(0)
+  password        String
+  rememberToken   String?   @map("remember_token") @db.VarChar(100)
+  createdAt       DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt       DateTime? @map("updated_at") @db.Timestamp(0)
+
+  @@map("users")
+}
+
+model Profile {
+  id           Int      @id @default(1)
+  name         String
+  email        String
+  phone        String
+  role         String
+  location     String
+  aboutHeadline String
+  bio          String   @db.Text
+  aboutDetails String   @db.Text
+  avatarUrl    String?
+  resumeUrl    String?
+  socialLinks  Json?
+  updatedAt    DateTime @updatedAt
+
+  @@map("profile")
+}
+
 model Project {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @db.VarChar(64)
   title       String
-  description String
-  imageUrl    String?
-  demoUrl     String?
-  githubUrl   String?
-  tags        String?
+  category    String
+  description String   @db.Text
+  tech        String   @db.Text
+  url         String   @default("")
+  githubUrl   String   @default("")
+  status      String   @default("In Progress")
   createdAt   DateTime @default(now())
+
+  @@map("projects")
+}
+
+model Skill {
+  id       String @id @db.VarChar(64)
+  name     String
+  level    Int
+  category String
+
+  @@map("skills")
+}
+
+model Service {
+  id          String @id @db.VarChar(64)
+  title       String
+  description String @db.Text
+  image       String
+  to          String @default("/contact")
+  icon        String @db.Text
+
+  @@map("services")
+}
+
+model Experience {
+  id          String @id @db.VarChar(64)
+  company     String
+  position    String
+  period      String
+  description String @db.Text
+
+  @@map("experience")
+}
+
+model Education {
+  id          Int     @id
+  institution String
+  degree      String
+  field       String
+  period      String
+  isCurrent   Boolean @default(false)
+
+  @@map("education")
+}
+
+model SiteSetting {
+  id                  Int     @id @default(1)
+  siteName            String?
+  contactEmail        String?
+  footerText          String? @db.Text
+  theme               String?
+  emailNotifications  Boolean @default(true)
+  messageNotifications Boolean @default(true)
+  publicProfile       Boolean @default(true)
+  maintenanceMode     Boolean @default(false)
+  updatedAt           DateTime @updatedAt
+
+  @@map("site_settings")
 }
