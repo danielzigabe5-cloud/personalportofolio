@@ -50,13 +50,13 @@ const login = () => {
 
 
 <template>
-  <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#dcefed] px-6 py-16">
+  <div class="relative flex min-h-dvh items-center justify-center overflow-x-hidden overflow-y-auto bg-[#dcefed] px-6 py-16">
     <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <div class="absolute -left-24 -top-28 h-80 w-80 rounded-full bg-[#42bca3]/20 blur-3xl" />
       <div class="absolute -bottom-32 -right-20 h-96 w-96 rounded-full bg-[#168b7d]/15 blur-3xl" />
     </div>
 
-    <div class="relative w-full max-w-md rounded-3xl border border-[#c2ded9] bg-[#f3f9f8] p-8 shadow-2xl shadow-[#174b45]/10 sm:p-10">
+    <div class="relative z-10 w-full max-w-md rounded-3xl border border-[#c2ded9] bg-[#f3f9f8] p-8 shadow-2xl shadow-[#174b45]/10 sm:p-10">
       <!-- TITLE -->
       <div class="mb-8 text-center">
         <div

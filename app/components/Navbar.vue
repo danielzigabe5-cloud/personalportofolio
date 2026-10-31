@@ -4,7 +4,8 @@ import { useRoute } from 'vue-router'
 import heroImg from '~/assets/images/photo.jpg'
 
 const menuOpen = ref(false)
-const topBarHidden = ref(false)
+const aboutMenuOpen = ref(false)
+const mobileAboutMenuOpen = ref(false)
 const route = useRoute()
 const { data: profile } = await useProfile()
 const authToken = useCookie('auth_token')
@@ -12,16 +13,25 @@ const phoneHref = computed(() => `tel:${profile.value.phone.replace(/[^\d+]/g, '
 const adminDestination = computed(() => authToken.value ? '/admin' : '/admin/login')
 const adminLinkLabel = computed(() => authToken.value ? 'Admin Dashboard' : 'Login')
 
+const homeItem = { name: 'Home', path: '/' }
 const navItems = [
-  { name: 'Home', path: '/' },
-  { name: 'About', path: '/about' },
-  { name: 'Services', path: '/services' },
   { name: 'Skills', path: '/skills' },
   { name: 'Projects', path: '/projects' },
   { name: 'Experience', path: '/experience' },
   { name: 'Education', path: '/education' },
   { name: 'Contact', path: '/contact' }
 ]
+
+const aboutItems = [
+  { name: 'About', path: '/about' },
+  { name: 'Blogs', path: '/blogs' },
+  { name: 'Services', path: '/services' }
+]
+const isAboutItemActive = (path: string) =>
+  route.path === path || route.path.startsWith(`${path}/`)
+const activeAboutItem = computed(() => aboutItems.find(item => isAboutItemActive(item.path)))
+const currentAboutItem = computed(() => activeAboutItem.value ?? aboutItems[0]!)
+const aboutSectionActive = computed(() => Boolean(activeAboutItem.value))
 
 const socialLinks = [
   {
@@ -58,20 +68,24 @@ const socialLinks = [
 
 const closeMenu = () => {
   menuOpen.value = false
+  mobileAboutMenuOpen.value = false
+  mobileAboutMenuOpen.value = false
 }
 
 const toggleMenu = () => {
-  menuOpen.value = !menuOpen.value
+  if (menuOpen.value) {
+    closeMenu()
+    return
+  }
+
+  menuOpen.value = true
 }
 
 const handleEscape = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
     closeMenu()
+    aboutMenuOpen.value = false
   }
-}
-
-const handleScroll = () => {
-  topBarHidden.value = window.scrollY > 24
 }
 
 // ✅ Menu በ route ሲቀየር ይዘጋል
@@ -79,6 +93,7 @@ watch(
   () => route.fullPath,
   () => {
     closeMenu()
+    aboutMenuOpen.value = false
   }
 )
 
@@ -91,13 +106,10 @@ watch(menuOpen, (open) => {
 
 onMounted(() => {
   window.addEventListener('keydown', handleEscape)
-  window.addEventListener('scroll', handleScroll, { passive: true })
-  handleScroll()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleEscape)
-  window.removeEventListener('scroll', handleScroll)
   if (import.meta.client) {
     document.body.style.overflow = ''
   }
@@ -108,79 +120,10 @@ onBeforeUnmount(() => {
   <!-- =====================================================
        NAVBAR
   ====================================================== -->
-  <header
-    class="fixed inset-x-0 top-0 z-50 border-b border-[#c2ded9] bg-[#f3f9f8]/95 shadow-lg shadow-[#174b45]/5 backdrop-blur-xl"
-  >
-    <!-- TOP CONTACT BAR -->
-    <div
-      class="overflow-hidden border-b border-white/10 bg-[#174b45] text-[#e8f4f2] shadow-sm transition-[max-height,opacity] duration-300 ease-in-out"
-      :class="topBarHidden ? 'max-h-0 opacity-0' : 'max-h-[46px] opacity-100'"
-    >
-      <div
-        class="mx-auto flex h-[46px] max-w-[1400px] items-center justify-between gap-3 px-5 text-xs font-semibold sm:px-6 lg:px-8"
-      >
-        <div class="flex min-w-0 items-center gap-3 sm:gap-6">
-          <a
-            :href="`mailto:${profile.email}`"
-            class="flex min-w-0 items-center gap-2 transition-colors duration-200 hover:text-[#9be8dc]"
-            :aria-label="`Email ${profile.name}`"
-          >
-            <svg
-              class="h-3.5 w-3.5 shrink-0 text-[#9be8dc]"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              aria-hidden="true"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6" />
-            </svg>
-            <span class="hidden truncate sm:inline">{{ profile.email }}</span>
-          </a>
-
-          <a
-            :href="phoneHref"
-            class="hidden items-center gap-2 transition-colors duration-200 hover:text-[#9be8dc] md:flex"
-            :aria-label="`Call ${profile.name}`"
-          >
-            <svg
-              class="h-3.5 w-3.5 text-[#9be8dc]"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z"
-              />
-            </svg>
-            {{ profile.phone }}
-          </a>
-
-          <span class="hidden items-center gap-2 lg:flex">
-            <svg
-              class="h-3.5 w-3.5 text-[#9be8dc]"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
-              />
-              <circle cx="12" cy="10" r="2.5" />
-            </svg>
-            {{ profile.location }}
-          </span>
-        </div>
-
+  <header class="border-b border-[#c2ded9] bg-white shadow-lg shadow-[#174b45]/5">
+    <div class="bg-[#174b45] text-white">
+      <div class="mx-auto flex h-11 max-w-[1400px] items-center justify-between gap-3 px-5 text-xs font-semibold sm:px-6 lg:px-8">
+        <span class="truncate">Welcome to {{ profile.name }}’s portfolio</span>
         <div class="flex shrink-0 items-center gap-1" aria-label="Social media links">
           <a
             v-for="social in socialLinks"
@@ -190,7 +133,7 @@ onBeforeUnmount(() => {
             :title="social.name"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-200 hover:bg-[#9be8dc] hover:text-[#174b45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9be8dc]"
+            class="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#174b45] transition-colors duration-200 hover:bg-[#168b7d] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path :d="social.iconPath" />
@@ -200,37 +143,133 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <!-- MAIN NAV -->
-    <nav
-      class="relative mx-auto flex h-[74px] max-w-[1400px] items-center justify-between px-5 sm:px-6 lg:px-8"
-      aria-label="Main navigation"
-    >
-      <NuxtLink to="/" class="group z-10 flex min-w-0 items-center gap-3" :aria-label="`${profile.name} — Home`">
-        <div
-          class="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-[#e8f4f2] shadow-md shadow-[#174b45]/10 ring-2 ring-[#c2ded9] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg"
-        >
-          <img :src="profile.avatarUrl || heroImg" alt="" class="h-full w-full object-cover object-top" />
-          <span
-            class="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-white bg-[#168b7d]"
-            aria-hidden="true"
-          />
-        </div>
-
-        <div class="min-w-0 max-w-[190px]">
-          <div class="truncate whitespace-nowrap text-sm font-extrabold leading-tight tracking-tight text-[#174b45] transition-colors group-hover:text-[#168b7d] sm:text-lg">
+    <div class="bg-white">
+      <div class="mx-auto flex min-h-[104px] max-w-[1400px] items-center justify-between gap-6 px-5 py-4 sm:px-6 lg:px-8">
+        <NuxtLink to="/" class="group flex min-w-0 shrink-0 items-center gap-3" :aria-label="`${profile.name} — Home`">
+          <div class="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-[#e8f4f2] shadow-md shadow-[#174b45]/10 ring-2 ring-[#c2ded9] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
+            <img :src="profile.avatarUrl || heroImg" alt="" class="h-full w-full object-cover object-top" />
+            <span class="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-white bg-[#168b7d]" aria-hidden="true" />
+          </div>
+          <span class="max-w-[190px] truncate text-base font-extrabold tracking-tight text-[#174b45] transition-colors group-hover:text-[#168b7d] sm:text-lg">
             {{ profile.name }}
+          </span>
+        </NuxtLink>
+
+        <div class="hidden items-center divide-x divide-[#d8e3e1] lg:flex">
+          <a :href="phoneHref" class="flex items-center gap-3 px-5 text-[#174b45] transition-colors hover:text-[#168b7d]" :aria-label="`Call ${profile.name}`">
+            <svg class="h-8 w-8 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />
+            </svg>
+            <span class="flex flex-col gap-1">
+              <strong class="text-sm font-extrabold">Call me</strong>
+              <span class="text-sm text-[#66827e]">{{ profile.phone }}</span>
+            </span>
+          </a>
+          <a :href="`mailto:${profile.email}`" class="flex items-center gap-3 px-5 text-[#174b45] transition-colors hover:text-[#168b7d]" :aria-label="`Email ${profile.name}`">
+            <svg class="h-8 w-8 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6" />
+            </svg>
+            <span class="flex min-w-0 flex-col gap-1">
+              <strong class="text-sm font-extrabold">Email me</strong>
+              <span class="max-w-[220px] truncate text-sm text-[#66827e]">{{ profile.email }}</span>
+            </span>
+          </a>
+          <div class="flex items-center gap-3 px-5 text-[#174b45]">
+            <svg class="h-8 w-8 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+              <circle cx="12" cy="10" r="2.5" />
+            </svg>
+            <span class="flex max-w-[210px] flex-col gap-1">
+              <strong class="text-sm font-extrabold">Location</strong>
+              <span class="text-sm text-[#66827e]">{{ profile.location }}</span>
+            </span>
           </div>
         </div>
-      </NuxtLink>
+      </div>
+    </div>
+  </header>
 
-      <div class="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 xl:flex 2xl:gap-2">
+    <!-- MAIN NAV -->
+    <nav
+      class="sticky top-0 z-50 bg-[#168b7d] text-white shadow-md shadow-[#174b45]/10"
+      aria-label="Main navigation"
+    >
+      <div class="relative mx-auto flex h-[74px] max-w-[1400px] items-center justify-between px-5 sm:px-6 lg:px-8">
+      <div class="ml-auto hidden items-center gap-1 xl:flex 2xl:gap-2">
+        <NuxtLink
+          :to="homeItem.path"
+          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-white/95 transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
+          active-class="bg-white/20 text-white"
+          exact-active-class="bg-white/20 text-white"
+        >
+          {{ homeItem.name }}
+        </NuxtLink>
+        <div class="relative inline-flex items-center">
+          <NuxtLink
+            :to="currentAboutItem.path"
+            class="relative whitespace-nowrap rounded-l-full py-2 pl-3 pr-1 text-sm font-semibold text-white/95 transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
+            :class="aboutSectionActive ? 'bg-white/20 text-white' : ''"
+            active-class="bg-white/20 text-white"
+          >
+            {{ currentAboutItem.name }}
+          </NuxtLink>
+          <button
+            type="button"
+            class="relative inline-flex items-center rounded-r-full py-2 pl-1 pr-3 text-sm font-semibold text-white/95 transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
+            :class="aboutSectionActive ? 'bg-white/20 text-white' : ''"
+            :aria-expanded="aboutMenuOpen"
+            aria-haspopup="true"
+            aria-controls="about-dropdown"
+            :aria-label="`Toggle ${currentAboutItem.name} menu`"
+            @click="aboutMenuOpen = !aboutMenuOpen"
+          >
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14" />
+              <path v-if="!aboutMenuOpen" d="M12 5v14" />
+            </svg>
+          </button>
+          <Transition
+            enter-active-class="transition duration-150 ease-out"
+            enter-from-class="-translate-y-1 opacity-0"
+            enter-to-class="translate-y-0 opacity-100"
+            leave-active-class="transition duration-100 ease-in"
+            leave-from-class="translate-y-0 opacity-100"
+            leave-to-class="-translate-y-1 opacity-0"
+          >
+            <div
+              v-if="aboutMenuOpen"
+              id="about-dropdown"
+              class="absolute left-0 top-full z-50 mt-2 min-w-44 rounded-xl border border-[#c2ded9] bg-white p-2 text-[#174b45] shadow-xl shadow-[#174b45]/10"
+            >
+              <NuxtLink
+                v-for="item in aboutItems"
+                :key="item.path"
+                :to="item.path"
+                class="block rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
+                :class="isAboutItemActive(item.path) ? 'bg-[#e8f4f2] text-[#168b7d]' : 'text-[#66827e]'"
+                :aria-current="isAboutItemActive(item.path) ? 'page' : undefined"
+              >
+                {{ item.name }}
+              </NuxtLink>
+            </div>
+          </Transition>
+        </div>
         <NuxtLink
           v-for="item in navItems"
           :key="item.path"
           :to="item.path"
-          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-[#66827e] transition-colors duration-200 hover:bg-[#e8f4f2] hover:text-[#168b7d] 2xl:text-[0.95rem]"
-          active-class="bg-[#e8f4f2] text-[#168b7d]"
-          exact-active-class="bg-[#e8f4f2] text-[#168b7d]"
+          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-white/95 transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
+          active-class="bg-white/20 text-white"
+          exact-active-class="bg-white/20 text-white"
         >
           {{ item.name }}
         </NuxtLink>
@@ -238,7 +277,7 @@ onBeforeUnmount(() => {
 
       <NuxtLink
         :to="adminDestination"
-        class="absolute right-5 hidden h-10 items-center justify-center gap-2 rounded-full bg-[#168b7d] px-5 text-sm font-semibold text-white shadow-md shadow-[#168b7d]/20 transition-colors duration-200 hover:bg-[#11776c] xl:flex sm:right-6 lg:right-8"
+        class="ml-6 hidden h-10 items-center justify-center gap-2 rounded-full bg-[#174b45] px-5 text-sm font-semibold text-white shadow-md shadow-[#174b45]/20 transition-colors duration-200 hover:bg-[#103b36] xl:inline-flex"
         :aria-label="adminLinkLabel"
       >
         <svg
@@ -259,9 +298,9 @@ onBeforeUnmount(() => {
       <!-- MOBILE MENU TOGGLE -->
       <button
         type="button"
-        class="ml-auto flex h-11 w-11 items-center justify-center rounded-xl border border-[#c2ded9] bg-white text-[#174b45] shadow-sm transition-colors duration-200 hover:bg-[#e8f4f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#168b7d] xl:hidden"
+        class="ml-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/70 bg-[#168b7d] text-white shadow-md shadow-[#174b45]/20 transition-colors duration-200 hover:bg-[#11776c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white xl:ml-4"
         :aria-expanded="menuOpen"
-        aria-controls="mobile-menu"
+        aria-controls="site-menu-drawer"
         :aria-label="menuOpen ? 'Close navigation menu' : 'Open navigation menu'"
         @click="toggleMenu"
       >
@@ -288,114 +327,288 @@ onBeforeUnmount(() => {
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-    </nav>
+      </div>
 
-    <!-- MOBILE NAVIGATION (smooth max-height) -->
+    <!-- MOBILE OFF-CANVAS MENU -->
     <Transition
-      enter-active-class="overflow-hidden transition-all duration-300 ease-out"
-      enter-from-class="max-h-0 opacity-0"
-      enter-to-class="max-h-[1000px] opacity-100"
-      leave-active-class="overflow-hidden transition-all duration-200 ease-in"
-      leave-from-class="max-h-[1000px] opacity-100"
-      leave-to-class="max-h-0 opacity-0"
+      enter-active-class="transition-opacity duration-300 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-opacity duration-300 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
     >
-      <div
-        v-if="menuOpen"
-        id="mobile-menu"
-        class="max-h-[calc(100dvh-7.5rem)] overflow-y-auto border-t border-[#c2ded9] bg-[#f3f9f8] shadow-lg xl:hidden"
-      >
-        <div class="mx-auto max-w-7xl px-5 pb-6 pt-4">
-          <!-- MOBILE LINKS -->
-          <div class="space-y-1">
-            <NuxtLink
-              v-for="item in navItems"
-              :key="item.path"
-              :to="item.path"
-              class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-medium text-[#66827e] transition-colors duration-200 hover:bg-[#e8f4f2] hover:text-[#168b7d]"
-              active-class="bg-[#e8f4f2] text-[#168b7d]"
-            >
-              <span>{{ item.name }}</span>
-              <svg
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
+      <div v-if="menuOpen" class="fixed inset-0 z-[60]">
+        <button
+          type="button"
+          class="absolute inset-0 h-full w-full bg-transparent xl:bg-slate-950/70 xl:backdrop-blur-[2px]"
+          aria-label="Close navigation menu"
+          @click="closeMenu"
+        />
+        <Transition
+          appear
+          enter-active-class="transition-transform duration-300 ease-out"
+          enter-from-class="translate-x-full"
+          enter-to-class="translate-x-0"
+          leave-active-class="transition-transform duration-250 ease-in"
+          leave-from-class="translate-x-0"
+          leave-to-class="translate-x-full"
+        >
+          <aside
+            id="site-menu-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Contact and navigation menu"
+            class="absolute inset-y-0 right-0 flex w-[min(84vw,340px)] flex-col overflow-y-auto bg-white text-[#174b45] shadow-2xl xl:w-[min(90vw,420px)]"
+          >
+            <div class="flex justify-end px-6 pt-5">
+              <button
+                type="button"
+                class="flex h-10 w-10 items-center justify-center rounded-full text-[#174b45] transition hover:bg-[#e8f4f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#168b7d]"
+                aria-label="Close navigation menu"
+                @click="closeMenu"
               >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </NuxtLink>
-          </div>
-
-          <!-- SOCIALS -->
-          <div class="mt-5 border-t border-[#c2ded9] pt-4">
-            <p class="mb-3 px-4 text-xs font-bold uppercase tracking-wider text-[#66827e]">
-              Find me online
-            </p>
-            <div class="flex flex-wrap gap-2 px-4">
-              <a
-                v-for="social in socialLinks"
-                :key="social.name"
-                :href="social.href"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 rounded-lg border border-[#c2ded9] px-3 py-2 text-sm font-semibold text-[#66827e] transition-colors duration-200 hover:border-[#a8d2ca] hover:bg-[#e8f4f2] hover:text-[#168b7d]"
-              >
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path :d="social.iconPath" />
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6 6 18" />
                 </svg>
-                {{ social.name }}
-              </a>
+              </button>
             </div>
-          </div>
 
-          <!-- LET'S TALK -->
-          <NuxtLink
-            to="/contact"
-            class="mt-4 flex items-center justify-center gap-2 rounded-xl bg-[#168b7d] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-teal-900/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#11776c]"
-          >
-            <span>Let's Talk</span>
-            <svg
-              class="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </NuxtLink>
+            <div class="flex items-center gap-4 px-8 pt-3">
+              <img
+                :src="profile.avatarUrl || heroImg"
+                :alt="profile.name"
+                class="h-16 w-16 shrink-0 rounded-xl object-cover object-top ring-2 ring-[#c2ded9]"
+              >
+              <div class="min-w-0">
+                <p class="truncate font-extrabold text-[#174b45]">{{ profile.name }}</p>
+                <p class="mt-1 text-sm text-[#66827e]">{{ profile.role }}</p>
+              </div>
+            </div>
 
-          <!-- LOGIN -->
-          <NuxtLink
-            :to="adminDestination"
-            class="mt-3 flex items-center justify-center gap-2 rounded-xl border border-[#c2ded9] bg-[#f3f9f8] px-5 py-3.5 text-sm font-semibold text-[#168b7d] transition-colors duration-200 hover:bg-[#e8f4f2]"
-          >
-            <svg
-              class="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10 17l5-5-5-5" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3" />
-            </svg>
-            <span>{{ adminLinkLabel }}</span>
-          </NuxtLink>
-        </div>
+            <div class="hidden px-8 pb-7 pt-8 xl:block">
+              <p class="text-sm leading-7 text-[#66827e]">{{ profile.bio }}</p>
+              <div class="mt-8 space-y-6">
+                <div class="flex items-center gap-4">
+                  <svg class="h-7 w-7 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                    <circle cx="12" cy="10" r="2.5" />
+                  </svg>
+                  <div class="min-w-0">
+                    <p class="text-sm font-bold text-[#174b45]">Location</p>
+                    <p class="text-sm text-[#66827e]">{{ profile.location }}</p>
+                  </div>
+                </div>
+                <a :href="phoneHref" class="flex items-center gap-4 hover:text-[#168b7d]">
+                  <svg class="h-7 w-7 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />
+                  </svg>
+                  <span class="min-w-0">
+                    <span class="block text-sm font-bold text-[#174b45]">Call me</span>
+                    <span class="block text-sm text-[#66827e]">{{ profile.phone }}</span>
+                  </span>
+                </a>
+                <a :href="`mailto:${profile.email}`" class="flex items-center gap-4 hover:text-[#168b7d]">
+                  <svg class="h-7 w-7 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6" />
+                  </svg>
+                  <span class="min-w-0">
+                    <span class="block text-sm font-bold text-[#174b45]">Email me</span>
+                    <span class="block truncate text-sm text-[#66827e]">{{ profile.email }}</span>
+                  </span>
+                </a>
+              </div>
+            </div>
+
+            <nav class="flex-1 space-y-1 border-t border-[#c2ded9] px-4 py-4 xl:hidden" aria-label="Mobile navigation">
+              <NuxtLink
+                :to="homeItem.path"
+                class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
+                active-class="bg-[#e8f4f2] text-[#168b7d]"
+                exact-active-class="bg-[#e8f4f2] text-[#168b7d]"
+              >
+                {{ homeItem.name }} <span aria-hidden="true">→</span>
+              </NuxtLink>
+
+              <div class="flex items-center rounded-xl text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]" :class="aboutSectionActive ? 'bg-[#e8f4f2] text-[#168b7d]' : ''">
+                <NuxtLink :to="currentAboutItem.path" class="flex-1 rounded-l-xl px-4 py-3.5" active-class="text-[#168b7d]">
+                  {{ currentAboutItem.name }}
+                </NuxtLink>
+                <button
+                  type="button"
+                  class="rounded-r-xl px-4 py-3.5"
+                  :aria-expanded="mobileAboutMenuOpen"
+                  aria-controls="mobile-about-dropdown"
+                  :aria-label="`Toggle ${currentAboutItem.name} menu`"
+                  @click="mobileAboutMenuOpen = !mobileAboutMenuOpen"
+                >
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 12h14" />
+                    <path v-if="!mobileAboutMenuOpen" d="M12 5v14" />
+                  </svg>
+                </button>
+              </div>
+              <Transition
+                enter-active-class="overflow-hidden transition-all duration-200 ease-out"
+                enter-from-class="max-h-0 opacity-0"
+                enter-to-class="max-h-64 opacity-100"
+                leave-active-class="overflow-hidden transition-all duration-150 ease-in"
+                leave-from-class="max-h-64 opacity-100"
+                leave-to-class="max-h-0 opacity-0"
+              >
+                <div v-if="mobileAboutMenuOpen" id="mobile-about-dropdown" class="ml-4 space-y-1 border-l border-[#c2ded9] pl-3">
+                  <NuxtLink
+                    v-for="item in aboutItems"
+                    :key="item.path"
+                    :to="item.path"
+                    class="block rounded-xl px-4 py-3 text-sm font-medium transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
+                    :class="isAboutItemActive(item.path) ? 'bg-[#e8f4f2] text-[#168b7d]' : 'text-[#66827e]'"
+                    :aria-current="isAboutItemActive(item.path) ? 'page' : undefined"
+                  >
+                    {{ item.name }}
+                  </NuxtLink>
+                </div>
+              </Transition>
+
+              <NuxtLink
+                v-for="item in navItems"
+                :key="item.path"
+                :to="item.path"
+                class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
+                active-class="bg-[#e8f4f2] text-[#168b7d]"
+              >
+                {{ item.name }} <span aria-hidden="true">→</span>
+              </NuxtLink>
+            </nav>
+
+            <section class="space-y-5 border-t border-[#c2ded9] px-6 py-5 xl:hidden" aria-label="Contact details">
+              <a :href="phoneHref" class="flex items-center gap-4 text-sm hover:text-[#168b7d]">
+                <svg class="h-6 w-6 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />
+                </svg>
+                <span class="min-w-0">
+                  <span class="block font-bold text-[#174b45]">Call me</span>
+                  <span class="text-[#66827e]">{{ profile.phone }}</span>
+                </span>
+              </a>
+              <a :href="`mailto:${profile.email}`" class="flex items-center gap-4 text-sm hover:text-[#168b7d]">
+                <svg class="h-6 w-6 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6" />
+                </svg>
+                <span class="min-w-0">
+                  <span class="block font-bold text-[#174b45]">Email me</span>
+                  <span class="block truncate text-[#66827e]">{{ profile.email }}</span>
+                </span>
+              </a>
+              <div class="flex items-center gap-4 text-sm">
+                <svg class="h-6 w-6 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                  <circle cx="12" cy="10" r="2.5" />
+                </svg>
+                <span class="min-w-0">
+                  <span class="block font-bold text-[#174b45]">Location</span>
+                  <span class="text-[#66827e]">{{ profile.location }}</span>
+                </span>
+              </div>
+            </section>
+
+            <nav class="flex-1 space-y-1 border-t border-[#c2ded9] px-4 py-4" aria-label="Mobile navigation">
+              <NuxtLink
+                :to="homeItem.path"
+                class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
+                active-class="bg-[#e8f4f2] text-[#168b7d]"
+                exact-active-class="bg-[#e8f4f2] text-[#168b7d]"
+              >
+                {{ homeItem.name }} <span aria-hidden="true">→</span>
+              </NuxtLink>
+
+              <div class="flex items-center rounded-xl text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]" :class="aboutSectionActive ? 'bg-[#e8f4f2] text-[#168b7d]' : ''">
+                <NuxtLink :to="currentAboutItem.path" class="flex-1 rounded-l-xl px-4 py-3.5" active-class="text-[#168b7d]">
+                  {{ currentAboutItem.name }}
+                </NuxtLink>
+                <button
+                  type="button"
+                  class="rounded-r-xl px-4 py-3.5"
+                  :aria-expanded="mobileAboutMenuOpen"
+                  aria-controls="mobile-about-dropdown"
+                  :aria-label="`Toggle ${currentAboutItem.name} menu`"
+                  @click="mobileAboutMenuOpen = !mobileAboutMenuOpen"
+                >
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 12h14" />
+                    <path v-if="!mobileAboutMenuOpen" d="M12 5v14" />
+                  </svg>
+                </button>
+              </div>
+              <Transition
+                enter-active-class="overflow-hidden transition-all duration-200 ease-out"
+                enter-from-class="max-h-0 opacity-0"
+                enter-to-class="max-h-64 opacity-100"
+                leave-active-class="overflow-hidden transition-all duration-150 ease-in"
+                leave-from-class="max-h-64 opacity-100"
+                leave-to-class="max-h-0 opacity-0"
+              >
+                <div v-if="mobileAboutMenuOpen" id="mobile-about-dropdown" class="ml-4 space-y-1 border-l border-[#c2ded9] pl-3">
+                  <NuxtLink
+                    v-for="item in aboutItems"
+                    :key="item.path"
+                    :to="item.path"
+                    class="block rounded-xl px-4 py-3 text-sm font-medium transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
+                    :class="isAboutItemActive(item.path) ? 'bg-[#e8f4f2] text-[#168b7d]' : 'text-[#66827e]'"
+                    :aria-current="isAboutItemActive(item.path) ? 'page' : undefined"
+                  >
+                    {{ item.name }}
+                  </NuxtLink>
+                </div>
+              </Transition>
+
+              <NuxtLink
+                v-for="item in navItems"
+                :key="item.path"
+                :to="item.path"
+                class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
+                active-class="bg-[#e8f4f2] text-[#168b7d]"
+              >
+                {{ item.name }} <span aria-hidden="true">→</span>
+              </NuxtLink>
+            </nav>
+
+            <div class="space-y-5 border-t border-[#c2ded9] bg-[#f3f9f8] p-5">
+              <NuxtLink
+                to="/contact"
+                class="flex items-center justify-center gap-2 rounded-xl bg-[#168b7d] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-teal-900/20 transition hover:bg-[#11776c]"
+              >
+                Contact me <span aria-hidden="true">→</span>
+              </NuxtLink>
+              <div class="flex flex-wrap justify-center gap-3" aria-label="Social media links">
+                <a
+                  v-for="social in socialLinks"
+                  :key="social.name"
+                  :href="social.href"
+                  :aria-label="social.name"
+                  :title="social.name"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex h-10 w-10 items-center justify-center rounded-full bg-[#168b7d] text-white transition-colors hover:bg-[#174b45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#168b7d] focus-visible:ring-offset-2"
+                >
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path :d="social.iconPath" />
+                  </svg>
+                </a>
+              </div>
+              <NuxtLink
+                :to="adminDestination"
+                class="flex items-center justify-center gap-2 rounded-xl border border-[#c2ded9] bg-white px-5 py-3 text-sm font-semibold text-[#168b7d] transition-colors hover:bg-[#e8f4f2]"
+              >
+                {{ adminLinkLabel }}
+              </NuxtLink>
+            </div>
+          </aside>
+        </Transition>
       </div>
     </Transition>
-  </header>
+    </nav>
 
-  <!-- Spacer: fixed header ገጹን እንዳይሸፍን -->
-  <div
-    class="transition-[height] duration-300"
-    :class="topBarHidden ? 'h-[74px]' : 'h-[120px]'"
-    aria-hidden="true"
-  />
 </template>

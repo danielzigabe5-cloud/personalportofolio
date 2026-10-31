@@ -219,27 +219,39 @@ const { data: profile } = await useProfile()
 }
 
 .service-card__image {
-  position: relative;
-  flex: 0 0 180px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
   display: grid;
+  height: 58%;
   place-items: center;
   overflow: hidden;
-  background: #173f3a;
+  background: #f3f9f8;
+  opacity: 0;
+  transition: opacity 300ms ease;
 }
 
 .service-card__image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform 500ms ease;
+  object-fit: contain;
+  transition: transform 400ms ease;
 }
 
 .service-card__image span {
   display: none;
 }
 
-.service-card:hover .service-card__image img {
-  transform: scale(1.04);
+.service-card:hover .service-card__image,
+.service-card:focus-within .service-card__image {
+  opacity: 1;
+}
+
+.service-card:hover .service-card__image img,
+.service-card:focus-within .service-card__image img {
+  transform: scale(1.03);
 }
 
 .service-card__content {
@@ -254,6 +266,15 @@ const { data: profile } = await useProfile()
   text-align: center;
 }
 
+.service-card:hover .service-card__content,
+.service-card:focus-within .service-card__content {
+  flex: 0 0 42%;
+  justify-content: center;
+  padding: 1.5rem 1.75rem;
+  background: #101010;
+  color: #fff;
+}
+
 .service-card__icon {
   display: grid;
   width: 76px;
@@ -264,6 +285,15 @@ const { data: profile } = await useProfile()
   background: #e8f4f2;
   color: #168b7d;
   transition: background 220ms ease, color 220ms ease, transform 220ms ease;
+}
+
+.service-card:hover .service-card__icon,
+.service-card:focus-within .service-card__icon,
+.service-card:hover .service-card__divider,
+.service-card:focus-within .service-card__divider,
+.service-card:hover .service-card__content p,
+.service-card:focus-within .service-card__content p {
+  display: none;
 }
 
 .service-card__icon svg {
@@ -277,6 +307,11 @@ const { data: profile } = await useProfile()
   font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: -0.035em;
+}
+
+.service-card:hover h2,
+.service-card:focus-within h2 {
+  color: #fff;
 }
 
 .service-card__divider {
@@ -321,6 +356,15 @@ const { data: profile } = await useProfile()
   transform: rotate(90deg);
   background: var(--service-accent);
   color: #fff;
+}
+
+.service-card:hover .service-card__action,
+.service-card:focus-within .service-card__action {
+  top: calc(42% - 3.5rem);
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .services-cta {

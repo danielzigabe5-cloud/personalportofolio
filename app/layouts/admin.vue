@@ -97,13 +97,15 @@ const navItems = [
         
         <div>
           <!-- Brand Logo -->
-          <div class="flex items-center gap-3 px-2 py-3 mb-6">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-600 font-bold text-white shadow-lg shadow-purple-600/30">
-              {{ userInitials }}
+          <div class="admin-brand-lockup mb-7 flex items-center gap-3 px-2 py-3">
+            <div class="admin-logo-mark relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-black text-white" aria-hidden="true">
+              <span class="relative z-10 tracking-tight">DZ</span>
+              <span class="admin-logo-glint absolute right-1.5 top-1.5 h-2 w-2 rounded-full"></span>
             </div>
-            <div>
-              <h1 class="text-sm font-bold text-white tracking-wide">DZ Admin</h1>
-              <p class="text-[11px] text-slate-400">Panel</p>
+            <div class="min-w-0">
+              <p class="admin-brand-caption mb-0.5 text-[9px] font-bold uppercase tracking-[0.2em]">Daniel Zigabe</p>
+              <h1 class="truncate text-sm font-extrabold tracking-wide text-white">Admin Portal</h1>
+              <p class="mt-0.5 text-[10px] font-medium text-white/65">Portfolio workspace</p>
             </div>
           </div>
 
@@ -299,6 +301,36 @@ const navItems = [
   color: #f1fffb;
 }
 
+.admin-logo-mark {
+  isolation: isolate;
+  background: linear-gradient(145deg, #43c9aa 0%, #168b7d 58%, #116b68 100%);
+  border: 1px solid rgb(255 255 255 / 28%);
+  box-shadow: 0 8px 18px rgb(5 57 53 / 28%), inset 0 1px 0 rgb(255 255 255 / 25%);
+  letter-spacing: -0.06em;
+}
+
+.admin-logo-mark::after {
+  position: absolute;
+  z-index: 0;
+  right: -3px;
+  bottom: -3px;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #2b9d8c;
+  border-radius: 7px;
+  background: linear-gradient(145deg, #d5fff0, #7be2c4);
+  content: "";
+}
+
+.admin-logo-glint {
+  background: #d5fff0;
+  box-shadow: 0 0 8px rgb(213 255 240 / 85%);
+}
+
+.admin-brand-caption {
+  color: rgb(221 255 247 / 74%);
+}
+
 .admin-shell .admin-sidebar :deep([class*="text-slate-"]),
 .admin-shell .admin-sidebar :deep([class*="text-indigo-"]) {
   color: rgb(241 255 251 / 82%) !important;
@@ -316,8 +348,8 @@ const navItems = [
 }
 
 .admin-topbar {
-  border-color: #eab308;
-  background: #facc15;
+  border-color: var(--admin-border);
+  background: var(--admin-surface);
   color: var(--admin-ink);
 }
 
