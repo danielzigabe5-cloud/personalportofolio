@@ -3,6 +3,8 @@
 const token = useCookie('auth_token')
 const user = useCookie('user')
 const isLoggingOut = ref(false)
+const isSidebarCollapsed = ref(false)
+const isMobileSidebarOpen = ref(false)
 
 // 2. Dynamic Admin Profile State (በቀላሉ በሁሉም ገጽ የሚገናኝ)
 const { data: profile } = await useProfile()
@@ -93,16 +95,31 @@ const navItems = [
     <div class="flex min-h-screen">
 
       <!-- ================= SIDEBAR ================= -->
-      <aside class="admin-sidebar fixed inset-y-0 left-0 z-40 flex w-64 flex-col justify-between border-r border-indigo-900/40 bg-slate-950/95 p-4 backdrop-blur">
+      <button
+        v-if="isMobileSidebarOpen"
+        type="button"
+        class="fixed inset-0 z-30 bg-slate-950/50 lg:hidden"
+        aria-label="Close navigation menu"
+        @click="isMobileSidebarOpen = false"
+      />
+
+      <aside
+        id="admin-sidebar"
+        class="admin-sidebar fixed inset-y-0 left-0 z-40 flex h-dvh w-64 flex-col justify-between overflow-y-auto border-r border-indigo-900/40 bg-slate-950/95 p-4 backdrop-blur transition-[width,transform] duration-300 ease-in-out"
+        :class="[
+          isSidebarCollapsed ? 'lg:w-20' : 'lg:w-64',
+          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        ]"
+      >
         
         <div>
           <!-- Brand Logo -->
-          <div class="admin-brand-lockup mb-7 flex items-center gap-3 px-2 py-3">
+          <div class="admin-brand-lockup mb-7 flex items-center gap-3 px-2 py-3" :class="isSidebarCollapsed ? 'lg:justify-center lg:px-0' : ''">
             <div class="admin-logo-mark relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-black text-white" aria-hidden="true">
               <span class="relative z-10 tracking-tight">DZ</span>
               <span class="admin-logo-glint absolute right-1.5 top-1.5 h-2 w-2 rounded-full"></span>
             </div>
-            <div class="min-w-0">
+            <div v-if="!isSidebarCollapsed" class="min-w-0">
               <p class="admin-brand-caption mb-0.5 text-[9px] font-bold uppercase tracking-[0.2em]">Daniel Zigabe</p>
               <h1 class="truncate text-sm font-extrabold tracking-wide text-white">Admin Portal</h1>
               <p class="mt-0.5 text-[10px] font-medium text-white/65">Portfolio workspace</p>
@@ -110,7 +127,7 @@ const navItems = [
           </div>
 
           <!-- Section Label -->
-          <div class="px-3 mb-2">
+          <div v-if="!isSidebarCollapsed" class="px-3 mb-2">
             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">MANAGEMENT</span>
           </div>
 
@@ -121,39 +138,73 @@ const navItems = [
               :key="item.name"
               :to="item.to"
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 transition hover:bg-indigo-950/60 hover:text-white"
+              :class="isSidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"
+              :aria-label="item.name"
+              :title="isSidebarCollapsed ? item.name : undefined"
+              @click="isMobileSidebarOpen = false"
               active-class="bg-indigo-900/50 text-purple-300 font-semibold border border-indigo-500/30"
             >
               <span class="text-base">{{ item.icon }}</span>
-              <span>{{ item.name }}</span>
+              <span v-if="!isSidebarCollapsed">{{ item.name }}</span>
             </NuxtLink>
           </nav>
         </div>
 
         <!-- Sidebar Bottom Logout -->
-        <div class="border-t border-indigo-900/40 pt-4 px-2">
+        <div class="border-t border-indigo-900/40 pt-4 px-2" :class="isSidebarCollapsed ? 'lg:px-0' : ''">
           <button
             @click="handleLogout"
             :disabled="isLoggingOut"
             type="button"
             class="flex w-full items-center gap-3 px-3 py-2.5 text-xs font-medium text-rose-500 hover:bg-rose-500/10 hover:text-rose-400 rounded-xl transition cursor-pointer disabled:opacity-50"
+            :class="isSidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"
+            :title="isSidebarCollapsed ? 'Logout' : undefined"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            <span>{{ isLoggingOut ? 'Logging out...' : 'Logout' }}</span>
+            <span v-if="!isSidebarCollapsed">{{ isLoggingOut ? 'Logging out...' : 'Logout' }}</span>
           </button>
         </div>
 
       </aside>
 
       <!-- ================= MAIN SECTION ================= -->
-      <div class="flex min-w-0 flex-1 flex-col lg:ml-64">
+      <div class="flex min-w-0 flex-1 flex-col transition-[margin] duration-300 ease-in-out" :class="isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'">
 
         <!-- HEADER WITH DYNAMIC PROFILE -->
         <header class="admin-topbar sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b px-4 backdrop-blur sm:px-6">
-          <p class="min-w-0 truncate text-sm font-bold text-[#174b45] sm:text-base">
-            Welcome to {{ adminProfile.name }}'s Portfolio Admin Page
-          </p>
+          <div class="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              class="admin-topbar-control flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition lg:hidden"
+              aria-label="Open navigation menu"
+              aria-controls="admin-sidebar"
+              :aria-expanded="isMobileSidebarOpen"
+              @click="isMobileSidebarOpen = true"
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="admin-topbar-control hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition lg:flex"
+              :aria-label="isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+              aria-controls="admin-sidebar"
+              :aria-expanded="!isSidebarCollapsed"
+              @click="isSidebarCollapsed = !isSidebarCollapsed"
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" />
+                <path v-if="isSidebarCollapsed" stroke-linecap="round" stroke-linejoin="round" d="m9 15 3-3-3-3" />
+                <path v-else stroke-linecap="round" stroke-linejoin="round" d="m15 15-3-3 3-3" />
+              </svg>
+            </button>
+            <p class="min-w-0 truncate text-sm font-bold text-[var(--admin-ink)] sm:text-base">
+              Welcome to {{ adminProfile.name }}'s Portfolio Admin Page
+            </p>
+          </div>
 
           <div class="flex shrink-0 items-center gap-2 sm:gap-3">
             <NuxtLink
@@ -284,28 +335,32 @@ const navItems = [
 
 <style scoped>
 .admin-shell {
-  --admin-canvas: #dcefed;
-  --admin-surface: #f3f9f8;
-  --admin-surface-raised: #e8f4f2;
-  --admin-border: #c2ded9;
-  --admin-ink: #174b45;
-  --admin-muted: #66827e;
-  --admin-accent: #168b7d;
+  --admin-canvas: #eef4ff;
+  --admin-surface: #f8faff;
+  --admin-surface-raised: #e3ebfa;
+  --admin-border: #cbd9ee;
+  --admin-ink: #172b4d;
+  --admin-muted: #60708a;
+  --admin-accent: #0ea5e9;
+  --admin-accent-hover: #0284c7;
+  --admin-deep: #102a56;
+  --admin-highlight: #7dd3fc;
+  --admin-on-dark: #e8f4ff;
   background: var(--admin-canvas);
   color: var(--admin-ink);
 }
 
 .admin-sidebar {
-  background: linear-gradient(180deg, #1d6b65 0%, #2b9d8c 58%, #42bca3 100%);
-  border-color: rgb(222 255 248 / 24%);
-  color: #f1fffb;
+  background: linear-gradient(180deg, var(--admin-deep) 0%, #123f70 58%, #155e9a 100%);
+  border-color: rgb(232 244 255 / 24%);
+  color: var(--admin-on-dark);
 }
 
 .admin-logo-mark {
   isolation: isolate;
-  background: linear-gradient(145deg, #43c9aa 0%, #168b7d 58%, #116b68 100%);
+  background: linear-gradient(145deg, var(--admin-highlight) 0%, var(--admin-accent) 58%, #0369a1 100%);
   border: 1px solid rgb(255 255 255 / 28%);
-  box-shadow: 0 8px 18px rgb(5 57 53 / 28%), inset 0 1px 0 rgb(255 255 255 / 25%);
+  box-shadow: 0 8px 18px rgb(16 42 86 / 28%), inset 0 1px 0 rgb(255 255 255 / 25%);
   letter-spacing: -0.06em;
 }
 
@@ -316,34 +371,34 @@ const navItems = [
   bottom: -3px;
   width: 18px;
   height: 18px;
-  border: 2px solid #2b9d8c;
+  border: 2px solid var(--admin-accent);
   border-radius: 7px;
-  background: linear-gradient(145deg, #d5fff0, #7be2c4);
+  background: linear-gradient(145deg, #e8f4ff, var(--admin-highlight));
   content: "";
 }
 
 .admin-logo-glint {
-  background: #d5fff0;
-  box-shadow: 0 0 8px rgb(213 255 240 / 85%);
+  background: var(--admin-on-dark);
+  box-shadow: 0 0 8px rgb(232 244 255 / 85%);
 }
 
 .admin-brand-caption {
-  color: rgb(221 255 247 / 74%);
+  color: rgb(232 244 255 / 74%);
 }
 
 .admin-shell .admin-sidebar :deep([class*="text-slate-"]),
 .admin-shell .admin-sidebar :deep([class*="text-indigo-"]) {
-  color: rgb(241 255 251 / 82%) !important;
+  color: rgb(232 244 255 / 82%) !important;
 }
 
 .admin-sidebar :deep(a.router-link-active) {
-  border-color: rgb(225 255 248 / 24%);
-  background: rgb(225 255 248 / 20%);
+  border-color: rgb(232 244 255 / 24%);
+  background: rgb(232 244 255 / 20%);
   color: #ffffff !important;
 }
 
 .admin-sidebar :deep(a:hover) {
-  background: rgb(225 255 248 / 14%);
+  background: rgb(232 244 255 / 14%);
   color: #ffffff !important;
 }
 
@@ -365,8 +420,8 @@ const navItems = [
 
 .admin-avatar {
   background: var(--admin-accent);
-  --tw-ring-color: rgb(22 139 125 / 24%);
-  box-shadow: 0 6px 16px rgb(22 139 125 / 18%);
+  --tw-ring-color: rgb(14 165 233 / 24%);
+  box-shadow: 0 6px 16px rgb(14 165 233 / 18%);
 }
 
 .admin-profile-menu {
@@ -391,6 +446,10 @@ const navItems = [
   background-color: var(--admin-surface) !important;
 }
 
+.admin-shell :deep([class~="bg-white"]) {
+  background-color: var(--admin-surface) !important;
+}
+
 .admin-shell :deep([class~="bg-slate-800"]),
 .admin-shell :deep([class~="bg-indigo-950/30"]),
 .admin-shell :deep([class~="bg-indigo-950/40"]) {
@@ -408,7 +467,7 @@ const navItems = [
 .admin-shell :deep([class~="bg-emerald-500/10"]),
 .admin-shell :deep([class~="bg-indigo-900/50"]),
 .admin-shell :deep([class~="bg-indigo-950/80"]) {
-  background-color: rgb(22 139 125 / 10%) !important;
+  background-color: rgb(14 165 233 / 10%) !important;
 }
 
 .admin-shell :deep([class*="border-slate-"]),
@@ -440,6 +499,6 @@ const navItems = [
 
 .admin-shell :deep([class*="shadow-purple-"]),
 .admin-shell :deep([class*="shadow-violet-"]) {
-  box-shadow: 0 8px 20px rgb(22 139 125 / 16%) !important;
+  box-shadow: 0 8px 20px rgb(14 165 233 / 16%) !important;
 }
 </style>

@@ -32,8 +32,8 @@
   display: flex;
   flex-direction: column;
 
-  background-color: #ffffff;
-  color: #111827;
+  background-color: var(--portfolio-bg);
+  color: var(--portfolio-text);
 }
 
 
@@ -41,7 +41,7 @@
   flex: 1;
   width: 100%;
 
-  background-color: #ffffff;
+  background-color: var(--portfolio-bg);
 }
 
 </style>

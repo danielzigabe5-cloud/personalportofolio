@@ -120,8 +120,8 @@ onBeforeUnmount(() => {
   <!-- =====================================================
        NAVBAR
   ====================================================== -->
-  <header class="border-b border-[#c2ded9] bg-white shadow-lg shadow-[#174b45]/5">
-    <div class="bg-[#174b45] text-white">
+  <header class="border-b border-[var(--portfolio-border)] bg-white shadow-lg shadow-[#172b4d]/5">
+    <div class="bg-[var(--portfolio-deep)] text-white">
       <div class="mx-auto flex h-11 max-w-[1400px] items-center justify-between gap-3 px-5 text-xs font-semibold sm:px-6 lg:px-8">
         <span class="truncate">Welcome to {{ profile.name }}’s portfolio</span>
         <div class="flex shrink-0 items-center gap-1" aria-label="Social media links">
@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
             :title="social.name"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#174b45] transition-colors duration-200 hover:bg-[#168b7d] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            class="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[var(--portfolio-deep)] transition-colors duration-200 hover:bg-[var(--portfolio-accent)] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path :d="social.iconPath" />
@@ -146,43 +146,43 @@ onBeforeUnmount(() => {
     <div class="bg-white">
       <div class="mx-auto flex min-h-[104px] max-w-[1400px] items-center justify-between gap-6 px-5 py-4 sm:px-6 lg:px-8">
         <NuxtLink to="/" class="group flex min-w-0 shrink-0 items-center gap-3" :aria-label="`${profile.name} — Home`">
-          <div class="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-[#e8f4f2] shadow-md shadow-[#174b45]/10 ring-2 ring-[#c2ded9] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
+          <div class="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-[var(--portfolio-surface-raised)] shadow-md shadow-[#172b4d]/10 ring-2 ring-[var(--portfolio-border)] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
             <img :src="profile.avatarUrl || heroImg" alt="" class="h-full w-full object-cover object-top" />
-            <span class="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-white bg-[#168b7d]" aria-hidden="true" />
+            <span class="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-white bg-[var(--portfolio-accent)]" aria-hidden="true" />
           </div>
-          <span class="max-w-[190px] truncate text-base font-extrabold tracking-tight text-[#174b45] transition-colors group-hover:text-[#168b7d] sm:text-lg">
+          <span class="max-w-[190px] truncate text-base font-extrabold tracking-tight text-[var(--portfolio-text)] transition-colors group-hover:text-[var(--portfolio-accent)] sm:text-lg">
             {{ profile.name }}
           </span>
         </NuxtLink>
 
-        <div class="hidden items-center divide-x divide-[#d8e3e1] lg:flex">
-          <a :href="phoneHref" class="flex items-center gap-3 px-5 text-[#174b45] transition-colors hover:text-[#168b7d]" :aria-label="`Call ${profile.name}`">
-            <svg class="h-8 w-8 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <div class="hidden items-center divide-x divide-[var(--portfolio-border)] lg:flex">
+          <a :href="phoneHref" class="flex items-center gap-3 px-5 text-[var(--portfolio-text)] transition-colors hover:text-[var(--portfolio-accent)]" :aria-label="`Call ${profile.name}`">
+            <svg class="h-8 w-8 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />
             </svg>
             <span class="flex flex-col gap-1">
               <strong class="text-sm font-extrabold">Call me</strong>
-              <span class="text-sm text-[#66827e]">{{ profile.phone }}</span>
+              <span class="text-sm text-[var(--portfolio-muted)]">{{ profile.phone }}</span>
             </span>
           </a>
-          <a :href="`mailto:${profile.email}`" class="flex items-center gap-3 px-5 text-[#174b45] transition-colors hover:text-[#168b7d]" :aria-label="`Email ${profile.name}`">
-            <svg class="h-8 w-8 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <a :href="`mailto:${profile.email}`" class="flex items-center gap-3 px-5 text-[var(--portfolio-text)] transition-colors hover:text-[var(--portfolio-accent)]" :aria-label="`Email ${profile.name}`">
+            <svg class="h-8 w-8 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6" />
             </svg>
             <span class="flex min-w-0 flex-col gap-1">
               <strong class="text-sm font-extrabold">Email me</strong>
-              <span class="max-w-[220px] truncate text-sm text-[#66827e]">{{ profile.email }}</span>
+              <span class="max-w-[220px] truncate text-sm text-[var(--portfolio-muted)]">{{ profile.email }}</span>
             </span>
           </a>
-          <div class="flex items-center gap-3 px-5 text-[#174b45]">
-            <svg class="h-8 w-8 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <div class="flex items-center gap-3 px-5 text-[var(--portfolio-text)]">
+            <svg class="h-8 w-8 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
               <circle cx="12" cy="10" r="2.5" />
             </svg>
             <span class="flex max-w-[210px] flex-col gap-1">
               <strong class="text-sm font-extrabold">Location</strong>
-              <span class="text-sm text-[#66827e]">{{ profile.location }}</span>
+              <span class="text-sm text-[var(--portfolio-muted)]">{{ profile.location }}</span>
             </span>
           </div>
         </div>
@@ -192,7 +192,7 @@ onBeforeUnmount(() => {
 
     <!-- MAIN NAV -->
     <nav
-      class="sticky top-0 z-50 bg-[#168b7d] text-white shadow-md shadow-[#174b45]/10"
+      class="sticky top-0 z-50 bg-[var(--portfolio-accent)] text-white shadow-md shadow-[#172b4d]/10"
       aria-label="Main navigation"
     >
       <div class="relative mx-auto flex h-[74px] max-w-[1400px] items-center justify-between px-5 sm:px-6 lg:px-8">
@@ -248,14 +248,14 @@ onBeforeUnmount(() => {
             <div
               v-if="aboutMenuOpen"
               id="about-dropdown"
-              class="absolute left-0 top-full z-50 mt-2 min-w-44 rounded-xl border border-[#c2ded9] bg-white p-2 text-[#174b45] shadow-xl shadow-[#174b45]/10"
+              class="absolute left-0 top-full z-50 mt-2 min-w-44 rounded-xl border border-[var(--portfolio-border)] bg-white p-2 text-[var(--portfolio-text)] shadow-xl shadow-[#172b4d]/10"
             >
               <NuxtLink
                 v-for="item in aboutItems"
                 :key="item.path"
                 :to="item.path"
-                class="block rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
-                :class="isAboutItemActive(item.path) ? 'bg-[#e8f4f2] text-[#168b7d]' : 'text-[#66827e]'"
+                class="block rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-[var(--portfolio-surface-raised)] hover:text-[var(--portfolio-accent)]"
+                :class="isAboutItemActive(item.path) ? 'bg-[var(--portfolio-surface-raised)] text-[var(--portfolio-accent)]' : 'text-[var(--portfolio-muted)]'"
                 :aria-current="isAboutItemActive(item.path) ? 'page' : undefined"
               >
                 {{ item.name }}
@@ -277,7 +277,7 @@ onBeforeUnmount(() => {
 
       <NuxtLink
         :to="adminDestination"
-        class="ml-6 hidden h-10 items-center justify-center gap-2 rounded-full bg-[#174b45] px-5 text-sm font-semibold text-white shadow-md shadow-[#174b45]/20 transition-colors duration-200 hover:bg-[#103b36] xl:inline-flex"
+        class="ml-6 hidden h-10 items-center justify-center gap-2 rounded-full bg-[var(--portfolio-deep)] px-5 text-sm font-semibold text-white shadow-md shadow-[#172b4d]/20 transition-colors duration-200 hover:bg-[var(--portfolio-accent-hover)] xl:inline-flex"
         :aria-label="adminLinkLabel"
       >
         <svg
@@ -298,7 +298,7 @@ onBeforeUnmount(() => {
       <!-- MOBILE MENU TOGGLE -->
       <button
         type="button"
-        class="ml-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/70 bg-[#168b7d] text-white shadow-md shadow-[#174b45]/20 transition-colors duration-200 hover:bg-[#11776c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white xl:ml-4"
+        class="ml-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/70 bg-[var(--portfolio-accent)] text-white shadow-md shadow-[#172b4d]/20 transition-colors duration-200 hover:bg-[var(--portfolio-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white xl:flex"
         :aria-expanded="menuOpen"
         aria-controls="site-menu-drawer"
         :aria-label="menuOpen ? 'Close navigation menu' : 'Open navigation menu'"
@@ -341,7 +341,7 @@ onBeforeUnmount(() => {
       <div v-if="menuOpen" class="fixed inset-0 z-[60]">
         <button
           type="button"
-          class="absolute inset-0 h-full w-full bg-transparent xl:bg-slate-950/70 xl:backdrop-blur-[2px]"
+          class="absolute inset-0 h-full w-full bg-slate-950/60"
           aria-label="Close navigation menu"
           @click="closeMenu"
         />
@@ -359,12 +359,12 @@ onBeforeUnmount(() => {
             role="dialog"
             aria-modal="true"
             aria-label="Contact and navigation menu"
-            class="absolute inset-y-0 right-0 flex w-[min(84vw,340px)] flex-col overflow-y-auto bg-white text-[#174b45] shadow-2xl xl:w-[min(90vw,420px)]"
+            class="absolute inset-y-0 right-0 flex w-[min(84vw,340px)] flex-col overflow-y-auto bg-[var(--portfolio-surface)] text-[var(--portfolio-text)] shadow-2xl xl:w-[min(90vw,420px)]"
           >
             <div class="flex justify-end px-6 pt-5">
               <button
                 type="button"
-                class="flex h-10 w-10 items-center justify-center rounded-full text-[#174b45] transition hover:bg-[#e8f4f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#168b7d]"
+                class="flex h-10 w-10 items-center justify-center rounded-full text-[var(--portfolio-text)] transition hover:bg-[var(--portfolio-surface-raised)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--portfolio-accent)]"
                 aria-label="Close navigation menu"
                 @click="closeMenu"
               >
@@ -374,65 +374,133 @@ onBeforeUnmount(() => {
               </button>
             </div>
 
-            <div class="flex items-center gap-4 px-8 pt-3">
+            <div class="flex items-center gap-4 px-8 pt-3 xl:hidden">
               <img
                 :src="profile.avatarUrl || heroImg"
                 :alt="profile.name"
-                class="h-16 w-16 shrink-0 rounded-xl object-cover object-top ring-2 ring-[#c2ded9]"
+                class="h-16 w-16 shrink-0 rounded-xl object-cover object-top ring-2 ring-[var(--portfolio-border)]"
               >
               <div class="min-w-0">
-                <p class="truncate font-extrabold text-[#174b45]">{{ profile.name }}</p>
-                <p class="mt-1 text-sm text-[#66827e]">{{ profile.role }}</p>
+                <p class="truncate font-extrabold text-[var(--portfolio-text)]">{{ profile.name }}</p>
+                <p class="mt-1 text-sm text-[var(--portfolio-muted)]">{{ profile.role }}</p>
               </div>
             </div>
 
-            <div class="hidden px-8 pb-7 pt-8 xl:block">
-              <p class="text-sm leading-7 text-[#66827e]">{{ profile.bio }}</p>
+            <div class="hidden px-8 pb-7 pt-8">
+              <p class="text-sm leading-7 text-[var(--portfolio-muted)]">{{ profile.bio }}</p>
               <div class="mt-8 space-y-6">
                 <div class="flex items-center gap-4">
-                  <svg class="h-7 w-7 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <svg class="h-7 w-7 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
                     <circle cx="12" cy="10" r="2.5" />
                   </svg>
                   <div class="min-w-0">
-                    <p class="text-sm font-bold text-[#174b45]">Location</p>
-                    <p class="text-sm text-[#66827e]">{{ profile.location }}</p>
+                    <p class="text-sm font-bold text-[var(--portfolio-text)]">Location</p>
+                    <p class="text-sm text-[var(--portfolio-muted)]">{{ profile.location }}</p>
                   </div>
                 </div>
-                <a :href="phoneHref" class="flex items-center gap-4 hover:text-[#168b7d]">
-                  <svg class="h-7 w-7 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <a :href="phoneHref" class="flex items-center gap-4 hover:text-[var(--portfolio-accent)]">
+                  <svg class="h-7 w-7 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />
                   </svg>
                   <span class="min-w-0">
-                    <span class="block text-sm font-bold text-[#174b45]">Call me</span>
-                    <span class="block text-sm text-[#66827e]">{{ profile.phone }}</span>
+                    <span class="block text-sm font-bold text-[var(--portfolio-text)]">Call me</span>
+                    <span class="block text-sm text-[var(--portfolio-muted)]">{{ profile.phone }}</span>
                   </span>
                 </a>
-                <a :href="`mailto:${profile.email}`" class="flex items-center gap-4 hover:text-[#168b7d]">
-                  <svg class="h-7 w-7 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <a :href="`mailto:${profile.email}`" class="flex items-center gap-4 hover:text-[var(--portfolio-accent)]">
+                  <svg class="h-7 w-7 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6" />
                   </svg>
                   <span class="min-w-0">
-                    <span class="block text-sm font-bold text-[#174b45]">Email me</span>
-                    <span class="block truncate text-sm text-[#66827e]">{{ profile.email }}</span>
+                    <span class="block text-sm font-bold text-[var(--portfolio-text)]">Email me</span>
+                    <span class="block truncate text-sm text-[var(--portfolio-muted)]">{{ profile.email }}</span>
                   </span>
                 </a>
               </div>
             </div>
 
-            <nav class="flex-1 space-y-1 border-t border-[#c2ded9] px-4 py-4 xl:hidden" aria-label="Mobile navigation">
+            <section class="hidden flex-1 flex-col items-center overflow-y-auto px-8 pb-8 pt-2 text-center xl:flex" aria-label="Profile and contact information">
+              <img
+                :src="profile.avatarUrl || heroImg"
+                :alt="profile.name"
+                class="h-28 w-28 rounded-2xl object-cover object-top ring-2 ring-[var(--portfolio-border)]"
+              >
+              <h2 class="mt-5 text-lg font-extrabold text-[var(--portfolio-text)]">{{ profile.name }}</h2>
+              <p class="mt-1 text-sm text-[var(--portfolio-muted)]">{{ profile.role }}</p>
+              <p class="mt-6 text-left text-sm leading-6 text-[var(--portfolio-muted)]">{{ profile.bio }}</p>
+
+              <div class="mt-8 w-full space-y-6 text-left">
+                <div class="flex items-center gap-4">
+                  <svg class="h-7 w-7 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                    <circle cx="12" cy="10" r="2.5" />
+                  </svg>
+                  <span class="min-w-0">
+                    <span class="block font-bold text-[var(--portfolio-text)]">Location</span>
+                    <span class="text-sm text-[var(--portfolio-muted)]">{{ profile.location }}</span>
+                  </span>
+                </div>
+                <a :href="phoneHref" class="flex items-center gap-4 hover:text-[var(--portfolio-accent)]">
+                  <svg class="h-7 w-7 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />
+                  </svg>
+                  <span class="min-w-0">
+                    <span class="block font-bold text-[var(--portfolio-text)]">Call me</span>
+                    <span class="text-sm text-[var(--portfolio-muted)]">{{ profile.phone }}</span>
+                  </span>
+                </a>
+                <a :href="`mailto:${profile.email}`" class="flex items-center gap-4 hover:text-[var(--portfolio-accent)]">
+                  <svg class="h-7 w-7 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6" />
+                  </svg>
+                  <span class="min-w-0">
+                    <span class="block font-bold text-[var(--portfolio-text)]">Email me</span>
+                    <span class="block truncate text-sm text-[var(--portfolio-muted)]">{{ profile.email }}</span>
+                  </span>
+                </a>
+              </div>
+
+              <div class="mt-8 w-full space-y-6">
+                <NuxtLink
+                  to="/contact"
+                  class="flex items-center justify-center gap-2 rounded-xl bg-[var(--portfolio-accent)] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-teal-900/20 transition hover:bg-[var(--portfolio-accent-hover)]"
+                >
+                  Contact me <span aria-hidden="true">→</span>
+                </NuxtLink>
+                <div class="flex flex-wrap justify-center gap-3" aria-label="Social media links">
+                  <a
+                    v-for="social in socialLinks"
+                    :key="social.name"
+                    :href="social.href"
+                    :aria-label="social.name"
+                    :title="social.name"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--portfolio-accent)] text-white transition-colors hover:bg-[var(--portfolio-deep)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--portfolio-accent)] focus-visible:ring-offset-2"
+                  >
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path :d="social.iconPath" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            <nav class="flex-1 space-y-1 border-t border-[var(--portfolio-border)] px-4 py-4 xl:hidden" aria-label="Drawer navigation">
               <NuxtLink
                 :to="homeItem.path"
-                class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
-                active-class="bg-[#e8f4f2] text-[#168b7d]"
-                exact-active-class="bg-[#e8f4f2] text-[#168b7d]"
+                class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold text-[var(--portfolio-muted)] transition-colors hover:bg-[var(--portfolio-surface-raised)] hover:text-[var(--portfolio-accent)]"
+                active-class="bg-[var(--portfolio-surface-raised)] text-[var(--portfolio-accent)]"
+                exact-active-class="bg-[var(--portfolio-surface-raised)] text-[var(--portfolio-accent)]"
               >
                 {{ homeItem.name }} <span aria-hidden="true">→</span>
               </NuxtLink>
 
-              <div class="flex items-center rounded-xl text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]" :class="aboutSectionActive ? 'bg-[#e8f4f2] text-[#168b7d]' : ''">
-                <NuxtLink :to="currentAboutItem.path" class="flex-1 rounded-l-xl px-4 py-3.5" active-class="text-[#168b7d]">
+              <div class="flex items-center rounded-xl text-sm font-semibold text-[var(--portfolio-muted)] transition-colors hover:bg-[var(--portfolio-surface-raised)] hover:text-[var(--portfolio-accent)]" :class="aboutSectionActive ? 'bg-[var(--portfolio-surface-raised)] text-[var(--portfolio-accent)]' : ''">
+                <NuxtLink :to="currentAboutItem.path" class="flex-1 rounded-l-xl px-4 py-3.5" active-class="text-[var(--portfolio-accent)]">
                   {{ currentAboutItem.name }}
                 </NuxtLink>
                 <button
@@ -457,13 +525,13 @@ onBeforeUnmount(() => {
                 leave-from-class="max-h-64 opacity-100"
                 leave-to-class="max-h-0 opacity-0"
               >
-                <div v-if="mobileAboutMenuOpen" id="mobile-about-dropdown" class="ml-4 space-y-1 border-l border-[#c2ded9] pl-3">
+                <div v-if="mobileAboutMenuOpen" id="mobile-about-dropdown" class="ml-4 space-y-1 border-l border-[var(--portfolio-border)] pl-3">
                   <NuxtLink
                     v-for="item in aboutItems"
                     :key="item.path"
                     :to="item.path"
-                    class="block rounded-xl px-4 py-3 text-sm font-medium transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
-                    :class="isAboutItemActive(item.path) ? 'bg-[#e8f4f2] text-[#168b7d]' : 'text-[#66827e]'"
+                    class="block rounded-xl px-4 py-3 text-sm font-medium transition-colors hover:bg-[var(--portfolio-surface-raised)] hover:text-[var(--portfolio-accent)]"
+                    :class="isAboutItemActive(item.path) ? 'bg-[var(--portfolio-surface-raised)] text-[var(--portfolio-accent)]' : 'text-[var(--portfolio-muted)]'"
                     :aria-current="isAboutItemActive(item.path) ? 'page' : undefined"
                   >
                     {{ item.name }}
@@ -475,110 +543,49 @@ onBeforeUnmount(() => {
                 v-for="item in navItems"
                 :key="item.path"
                 :to="item.path"
-                class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
-                active-class="bg-[#e8f4f2] text-[#168b7d]"
+                class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold text-[var(--portfolio-muted)] transition-colors hover:bg-[var(--portfolio-surface-raised)] hover:text-[var(--portfolio-accent)]"
+                active-class="bg-[var(--portfolio-surface-raised)] text-[var(--portfolio-accent)]"
               >
                 {{ item.name }} <span aria-hidden="true">→</span>
               </NuxtLink>
             </nav>
 
-            <section class="space-y-5 border-t border-[#c2ded9] px-6 py-5 xl:hidden" aria-label="Contact details">
-              <a :href="phoneHref" class="flex items-center gap-4 text-sm hover:text-[#168b7d]">
-                <svg class="h-6 w-6 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <section class="space-y-5 border-t border-[var(--portfolio-border)] px-6 py-5 xl:hidden" aria-label="Contact details">
+              <a :href="phoneHref" class="flex items-center gap-4 text-sm hover:text-[var(--portfolio-accent)]">
+                <svg class="h-6 w-6 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />
                 </svg>
                 <span class="min-w-0">
-                  <span class="block font-bold text-[#174b45]">Call me</span>
-                  <span class="text-[#66827e]">{{ profile.phone }}</span>
+                  <span class="block font-bold text-[var(--portfolio-text)]">Call me</span>
+                  <span class="text-[var(--portfolio-muted)]">{{ profile.phone }}</span>
                 </span>
               </a>
-              <a :href="`mailto:${profile.email}`" class="flex items-center gap-4 text-sm hover:text-[#168b7d]">
-                <svg class="h-6 w-6 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <a :href="`mailto:${profile.email}`" class="flex items-center gap-4 text-sm hover:text-[var(--portfolio-accent)]">
+                <svg class="h-6 w-6 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6" />
                 </svg>
                 <span class="min-w-0">
-                  <span class="block font-bold text-[#174b45]">Email me</span>
-                  <span class="block truncate text-[#66827e]">{{ profile.email }}</span>
+                  <span class="block font-bold text-[var(--portfolio-text)]">Email me</span>
+                  <span class="block truncate text-[var(--portfolio-muted)]">{{ profile.email }}</span>
                 </span>
               </a>
               <div class="flex items-center gap-4 text-sm">
-                <svg class="h-6 w-6 shrink-0 text-[#168b7d]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <svg class="h-6 w-6 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
                   <circle cx="12" cy="10" r="2.5" />
                 </svg>
                 <span class="min-w-0">
-                  <span class="block font-bold text-[#174b45]">Location</span>
-                  <span class="text-[#66827e]">{{ profile.location }}</span>
+                  <span class="block font-bold text-[var(--portfolio-text)]">Location</span>
+                  <span class="text-[var(--portfolio-muted)]">{{ profile.location }}</span>
                 </span>
               </div>
             </section>
 
-            <nav class="flex-1 space-y-1 border-t border-[#c2ded9] px-4 py-4" aria-label="Mobile navigation">
-              <NuxtLink
-                :to="homeItem.path"
-                class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
-                active-class="bg-[#e8f4f2] text-[#168b7d]"
-                exact-active-class="bg-[#e8f4f2] text-[#168b7d]"
-              >
-                {{ homeItem.name }} <span aria-hidden="true">→</span>
-              </NuxtLink>
-
-              <div class="flex items-center rounded-xl text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]" :class="aboutSectionActive ? 'bg-[#e8f4f2] text-[#168b7d]' : ''">
-                <NuxtLink :to="currentAboutItem.path" class="flex-1 rounded-l-xl px-4 py-3.5" active-class="text-[#168b7d]">
-                  {{ currentAboutItem.name }}
-                </NuxtLink>
-                <button
-                  type="button"
-                  class="rounded-r-xl px-4 py-3.5"
-                  :aria-expanded="mobileAboutMenuOpen"
-                  aria-controls="mobile-about-dropdown"
-                  :aria-label="`Toggle ${currentAboutItem.name} menu`"
-                  @click="mobileAboutMenuOpen = !mobileAboutMenuOpen"
-                >
-                  <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M5 12h14" />
-                    <path v-if="!mobileAboutMenuOpen" d="M12 5v14" />
-                  </svg>
-                </button>
-              </div>
-              <Transition
-                enter-active-class="overflow-hidden transition-all duration-200 ease-out"
-                enter-from-class="max-h-0 opacity-0"
-                enter-to-class="max-h-64 opacity-100"
-                leave-active-class="overflow-hidden transition-all duration-150 ease-in"
-                leave-from-class="max-h-64 opacity-100"
-                leave-to-class="max-h-0 opacity-0"
-              >
-                <div v-if="mobileAboutMenuOpen" id="mobile-about-dropdown" class="ml-4 space-y-1 border-l border-[#c2ded9] pl-3">
-                  <NuxtLink
-                    v-for="item in aboutItems"
-                    :key="item.path"
-                    :to="item.path"
-                    class="block rounded-xl px-4 py-3 text-sm font-medium transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
-                    :class="isAboutItemActive(item.path) ? 'bg-[#e8f4f2] text-[#168b7d]' : 'text-[#66827e]'"
-                    :aria-current="isAboutItemActive(item.path) ? 'page' : undefined"
-                  >
-                    {{ item.name }}
-                  </NuxtLink>
-                </div>
-              </Transition>
-
-              <NuxtLink
-                v-for="item in navItems"
-                :key="item.path"
-                :to="item.path"
-                class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold text-[#66827e] transition-colors hover:bg-[#e8f4f2] hover:text-[#168b7d]"
-                active-class="bg-[#e8f4f2] text-[#168b7d]"
-              >
-                {{ item.name }} <span aria-hidden="true">→</span>
-              </NuxtLink>
-            </nav>
-
-            <div class="space-y-5 border-t border-[#c2ded9] bg-[#f3f9f8] p-5">
+            <div class="space-y-5 border-t border-[var(--portfolio-border)] bg-[var(--portfolio-surface)] p-5 xl:hidden">
               <NuxtLink
                 to="/contact"
-                class="flex items-center justify-center gap-2 rounded-xl bg-[#168b7d] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-teal-900/20 transition hover:bg-[#11776c]"
+                class="flex items-center justify-center gap-2 rounded-xl bg-[var(--portfolio-accent)] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-teal-900/20 transition hover:bg-[var(--portfolio-accent-hover)]"
               >
                 Contact me <span aria-hidden="true">→</span>
               </NuxtLink>
@@ -591,7 +598,7 @@ onBeforeUnmount(() => {
                   :title="social.name"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="flex h-10 w-10 items-center justify-center rounded-full bg-[#168b7d] text-white transition-colors hover:bg-[#174b45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#168b7d] focus-visible:ring-offset-2"
+                  class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--portfolio-accent)] text-white transition-colors hover:bg-[var(--portfolio-deep)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--portfolio-accent)] focus-visible:ring-offset-2"
                 >
                   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path :d="social.iconPath" />
@@ -600,7 +607,7 @@ onBeforeUnmount(() => {
               </div>
               <NuxtLink
                 :to="adminDestination"
-                class="flex items-center justify-center gap-2 rounded-xl border border-[#c2ded9] bg-white px-5 py-3 text-sm font-semibold text-[#168b7d] transition-colors hover:bg-[#e8f4f2]"
+                class="flex items-center justify-center gap-2 rounded-xl border border-[var(--portfolio-border)] bg-white px-5 py-3 text-sm font-semibold text-[var(--portfolio-accent)] transition-colors hover:bg-[var(--portfolio-surface-raised)]"
               >
                 {{ adminLinkLabel }}
               </NuxtLink>

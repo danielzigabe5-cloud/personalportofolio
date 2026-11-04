@@ -1,13 +1,17 @@
 @import "tailwindcss";
 
 .default-layout {
-	--portfolio-bg: #dcefed;
-	--portfolio-surface: #f3f9f8;
-	--portfolio-surface-raised: #e8f4f2;
-	--portfolio-accent: #168b7d;
-	--portfolio-text: #174b45;
-	--portfolio-muted: #66827e;
-	--portfolio-border: #c2ded9;
+	--portfolio-bg: #eef4ff;
+	--portfolio-surface: #f8faff;
+	--portfolio-surface-raised: #e3ebfa;
+	--portfolio-accent: #0ea5e9;
+	--portfolio-accent-hover: #0284c7;
+	--portfolio-deep: #102a56;
+	--portfolio-highlight: #7dd3fc;
+	--portfolio-on-dark: #e8f4ff;
+	--portfolio-text: #172b4d;
+	--portfolio-muted: #60708a;
+	--portfolio-border: #cbd9ee;
 	background: var(--portfolio-bg);
 	color: var(--portfolio-text);
 }
@@ -37,7 +41,7 @@
 }
 
 .default-layout .bg-slate-900 {
-	background-color: #1d6b65 !important;
+	background-color: var(--portfolio-deep) !important;
 }
 
 .default-layout .bg-blue-50,
@@ -72,7 +76,7 @@
 .default-layout .text-blue-50,
 .default-layout .text-blue-100,
 .default-layout .text-blue-50\/90 {
-	color: #e5f8f4 !important;
+	color: var(--portfolio-on-dark) !important;
 }
 
 .default-layout .bg-green-500,
@@ -100,7 +104,7 @@
 }
 
 .default-layout .border-blue-200\/80 {
-	border-color: rgb(22 139 125 / 25%) !important;
+	border-color: rgb(14 165 233 / 25%) !important;
 }
 
 .default-layout .border-white {
@@ -108,19 +112,19 @@
 }
 
 .default-layout .hover\:bg-blue-700:hover {
-	background-color: #11776c !important;
+	background-color: var(--portfolio-accent-hover) !important;
 }
 
 .default-layout [class~="bg-white/90"] {
-	background-color: rgb(243 249 248 / 94%) !important;
+	background-color: rgb(248 250 255 / 94%) !important;
 }
 
 .default-layout .bg-orange-500 {
-	background-color: #1d6b65 !important;
+	background-color: var(--portfolio-deep) !important;
 }
 
-.default-layout .hover\\:text-orange-100:hover {
-	color: #dff7f1 !important;
+.default-layout .hover\:text-orange-100:hover {
+	color: var(--portfolio-on-dark) !important;
 }
 
 .default-layout .hover\:text-blue-600:hover,
@@ -130,15 +134,15 @@
 
 .default-layout .hover\:border-blue-300:hover,
 .default-layout .hover\:border-blue-400:hover {
-	border-color: #81c7bb !important;
+	border-color: var(--portfolio-accent) !important;
 }
 
 .default-layout #home.bg-gradient-to-br {
-	background-image: linear-gradient(110deg, #1d6b65 0%, #2b9d8c 58%, #42bca3 100%) !important;
+	background-image: linear-gradient(110deg, var(--portfolio-deep) 0%, #155e9a 58%, var(--portfolio-accent) 100%) !important;
 }
 
 .default-layout #home .bg-gradient-to-tr {
-	background-image: linear-gradient(45deg, #a9dcd2 0%, #5bb8a5 100%) !important;
+	background-image: linear-gradient(45deg, #93c5fd 0%, #38bdf8 100%) !important;
 }
 
 .default-layout .contact-page {
@@ -147,7 +151,7 @@
 }
 
 .default-layout .contact-page .page-header {
-	background: radial-gradient(circle at 20% 20%, rgb(22 139 125 / 9%), transparent 30%), linear-gradient(180deg, #f3f9f8 0%, #dcefed 100%) !important;
+	background: radial-gradient(circle at 20% 20%, rgb(14 165 233 / 9%), transparent 30%), linear-gradient(180deg, var(--portfolio-surface) 0%, var(--portfolio-bg) 100%) !important;
 	border-color: var(--portfolio-border) !important;
 }
 
@@ -198,7 +202,7 @@
 
 .default-layout .contact-page .contact-icon,
 .default-layout .contact-page .form-number {
-	background: rgb(22 139 125 / 10%) !important;
+	background: rgb(14 165 233 / 10%) !important;
 	color: var(--portfolio-accent) !important;
 }
 
@@ -221,16 +225,16 @@
 }
 
 .default-layout .contact-page .availability-dot {
-	background: #168b7d !important;
-	box-shadow: 0 0 0 4px rgb(22 139 125 / 12%) !important;
+	background: var(--portfolio-accent) !important;
+	box-shadow: 0 0 0 4px rgb(14 165 233 / 12%) !important;
 }
 
 .default-layout .contact-page .contact-item:hover,
 .default-layout .contact-page .social-links a:hover,
 .default-layout .contact-page .secondary-cv:hover,
 .default-layout .contact-page .another-button:hover {
-	background: #e8f4f2 !important;
-	border-color: #a8d2ca !important;
+	background: var(--portfolio-surface-raised) !important;
+	border-color: var(--portfolio-border) !important;
 }
 
 .default-layout .contact-page .field label,
@@ -248,21 +252,21 @@
 
 .default-layout .contact-page .primary-cv:hover,
 .default-layout .contact-page .send-button:hover:not(:disabled) {
-	background: #11776c !important;
+	background: var(--portfolio-accent-hover) !important;
 }
 
 .default-layout .contact-page .contact-form input:focus,
 .default-layout .contact-page .contact-form textarea:focus {
 	border-color: var(--portfolio-accent) !important;
-	box-shadow: 0 0 0 3px rgb(22 139 125 / 12%) !important;
+	box-shadow: 0 0 0 3px rgb(14 165 233 / 12%) !important;
 }
 
 .default-layout .contact-page .bottom-box {
-	background: linear-gradient(120deg, #1d6b65 0%, #2b9d8c 100%) !important;
+	background: linear-gradient(120deg, var(--portfolio-deep) 0%, #155e9a 100%) !important;
 }
 
 .default-layout footer {
-	background-color: #1d6b65 !important;
+	background-color: var(--portfolio-deep) !important;
 	border-color: var(--portfolio-border) !important;
-	color: #f1fffb !important;
+	color: var(--portfolio-on-dark) !important;
 }

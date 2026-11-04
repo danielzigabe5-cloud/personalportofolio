@@ -35,11 +35,11 @@ const trendStyleClass = computed(() => trendStyles[trendClass.value])
     class="
       group relative cursor-pointer overflow-hidden
       rounded-2xl border border-slate-800
-      bg-[#0e1420]
+      bg-white
       p-5
       transition-all duration-300
       hover:-translate-y-1
-      hover:border-emerald-500/30
+      hover:border-cyan-500/30
       hover:shadow-[0_12px_32px_rgba(0,0,0,0.35)]
     "
   >
@@ -47,7 +47,7 @@ const trendStyleClass = computed(() => trendStyles[trendClass.value])
     <div
       class="
         pointer-events-none absolute inset-0
-        bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.08),transparent_60%)]
+        bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.08),transparent_60%)]
         opacity-0 transition-opacity duration-300
         group-hover:opacity-100
       "

@@ -261,43 +261,43 @@ const resetChanges = () => {
 
 <style scoped>
 .profile-page {
-  color: #174b45;
+  color: var(--admin-ink);
 }
 
 .profile-page-header,
 .profile-form-card {
-  border-color: #c2ded9;
-  background: #f8fbfa;
-  box-shadow: 0 8px 26px rgb(23 75 69 / 4%);
+  border-color: var(--admin-border);
+  background: var(--admin-surface);
+  box-shadow: 0 8px 26px rgb(23 43 77 / 4%);
 }
 
 .profile-eyebrow {
-  color: #168b7d;
+  color: var(--admin-accent);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.14em;
 }
 
 .profile-muted {
-  color: #66827e;
+  color: var(--admin-muted);
 }
 
 .profile-secondary-button,
 .profile-reset-button {
-  border-color: #c2ded9;
+  border-color: var(--admin-border);
   background: #fff;
-  color: #315e58;
+  color: var(--admin-ink);
 }
 
 .profile-secondary-button:hover,
 .profile-reset-button:hover {
-  border-color: #8fc5ba;
-  background: #eff8f6;
+  border-color: var(--admin-accent);
+  background: var(--admin-surface-raised);
 }
 
 .profile-overview {
-  background: linear-gradient(115deg, #14283a, #174b45 72%, #236c61);
-  box-shadow: 0 18px 38px rgb(20 40 58 / 16%);
+  background: linear-gradient(115deg, var(--admin-deep), #123f70 72%, #155e9a);
+  box-shadow: 0 18px 38px rgb(16 42 86 / 16%);
 }
 
 .profile-overview-main {
@@ -306,18 +306,18 @@ const resetChanges = () => {
 
 .profile-initials {
   border: 1px solid rgb(255 255 255 / 18%);
-  background: linear-gradient(145deg, #36b79c, #11786e);
+  background: linear-gradient(145deg, var(--admin-highlight), var(--admin-accent-hover));
   color: #fff;
   box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
 }
 
 .profile-admin-badge {
-  background: rgb(90 226 184 / 14%);
-  color: #8af0cb;
+  background: rgb(125 211 252 / 14%);
+  color: var(--admin-highlight);
 }
 
 .profile-role {
-  color: #6de0bd;
+  color: var(--admin-highlight);
 }
 
 .profile-visibility {
@@ -349,11 +349,11 @@ const resetChanges = () => {
 
 .profile-form-heading,
 .profile-form-actions {
-  border-color: #e0ece9;
+  border-color: var(--admin-border);
 }
 
 .profile-field {
-  color: #315e58;
+  color: var(--admin-ink);
 }
 
 .profile-required {
@@ -362,29 +362,29 @@ const resetChanges = () => {
 
 .profile-input {
   width: 100%;
-  border: 1px solid #d2e3df;
+  border: 1px solid var(--admin-border);
   border-radius: 0.8rem;
   background: #fff;
   padding: 0.8rem 0.95rem;
-  color: #174b45;
+  color: var(--admin-ink);
   font-size: 0.9rem;
   line-height: 1.5;
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .profile-input:focus {
-  border-color: #168b7d;
+  border-color: var(--admin-accent);
   outline: none;
-  box-shadow: 0 0 0 3px rgb(22 139 125 / 12%);
+  box-shadow: 0 0 0 3px rgb(14 165 233 / 12%);
 }
 
 .profile-save-button {
-  background: linear-gradient(110deg, #168b7d, #12a985);
-  box-shadow: 0 7px 16px rgb(22 139 125 / 18%);
+  background: linear-gradient(110deg, var(--admin-accent-hover), var(--admin-accent));
+  box-shadow: 0 7px 16px rgb(14 165 233 / 18%);
 }
 
 .profile-save-button:hover:not(:disabled) {
-  box-shadow: 0 10px 20px rgb(22 139 125 / 25%);
+  box-shadow: 0 10px 20px rgb(14 165 233 / 25%);
   transform: translateY(-1px);
 }
 
