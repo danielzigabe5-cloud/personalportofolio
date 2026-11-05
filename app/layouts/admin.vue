@@ -86,6 +86,7 @@ const navItems = [
   { name: 'Experience', to: '/admin/experience', icon: '💼' },
   { name: 'Education', to: '/admin/education', icon: '🎓' },
   { name: 'Messages', to: '/admin/messages', icon: '📬' },
+  { name: 'Media', to: '/admin/media', icon: '🗂️' },
 ]
 </script>
 

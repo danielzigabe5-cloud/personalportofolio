@@ -72,15 +72,17 @@ const { data: profile } = await useProfile()
 
 <style scoped>
 .services-page {
-  --service-ink: #174b45;
-  --service-muted: #66827e;
-  --service-accent: #168b7d;
+  --service-ink: #172b4d;
+  --service-muted: #60708a;
+  --service-accent: #0ea5e9;
+  --service-accent-strong: #0284c7;
+  --service-deep: #102a56;
   min-height: 70vh;
   padding: 2rem max(1.5rem, calc((100vw - 1320px) / 2)) 5rem;
   color: var(--service-ink);
   background:
-    radial-gradient(ellipse at 50% 0, rgb(22 139 125 / 9%), transparent 42%),
-    #dcefed;
+    radial-gradient(ellipse at 50% 0, rgb(14 165 233 / 10%), transparent 42%),
+    #eef4ff;
 }
 
 .services-intro {
@@ -141,7 +143,7 @@ const { data: profile } = await useProfile()
   aspect-ratio: 4 / 3;
   border: 5px solid rgb(255 255 255 / 75%);
   border-radius: 1.5rem;
-  background: #cfe5e1;
+  background: #dfeefb;
   box-shadow: 0 18px 40px rgb(23 75 69 / 16%);
 }
 
@@ -199,23 +201,23 @@ const { data: profile } = await useProfile()
   min-height: 430px;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid #c2ded9;
-  background: #f3f9f8;
-  box-shadow: 0 14px 35px rgb(23 75 69 / 7%);
+  border: 1px solid #cbd9ee;
+  background: #f8faff;
+  box-shadow: 0 14px 35px rgb(23 43 77 / 7%);
   transition: border-color 220ms ease, background-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
 }
 
 .service-card:hover {
   transform: translateY(-5px);
-  border-color: rgb(22 139 125 / 55%);
-  box-shadow: 0 22px 45px rgb(23 75 69 / 13%);
+  border-color: rgb(14 165 233 / 52%);
+  box-shadow: 0 22px 45px rgb(16 76 129 / 12%);
 }
 
 .service-card__topline {
   position: relative;
   z-index: 2;
   height: 7px;
-  background: linear-gradient(90deg, #168b7d, #42bca3);
+  background: linear-gradient(90deg, var(--service-accent), #7dd3fc);
 }
 
 .service-card__image {
@@ -271,7 +273,7 @@ const { data: profile } = await useProfile()
   flex: 0 0 42%;
   justify-content: center;
   padding: 1.5rem 1.75rem;
-  background: #101010;
+  background: var(--service-deep);
   color: #fff;
 }
 
@@ -282,8 +284,8 @@ const { data: profile } = await useProfile()
   place-items: center;
   margin-bottom: 1.25rem;
   border-radius: 22px;
-  background: #e8f4f2;
-  color: #168b7d;
+  background: var(--service-accent-soft, #e0f2fe);
+  color: var(--service-accent);
   transition: background 220ms ease, color 220ms ease, transform 220ms ease;
 }
 
@@ -318,7 +320,7 @@ const { data: profile } = await useProfile()
   width: 70px;
   height: 4px;
   margin: 1rem 0;
-  background: linear-gradient(90deg, var(--service-accent) 0 35%, #42bca3 35% 100%);
+  background: linear-gradient(90deg, var(--service-accent) 0 35%, #7dd3fc 35% 100%);
 }
 
 .service-card p {
@@ -338,9 +340,9 @@ const { data: profile } = await useProfile()
   height: 42px;
   place-items: center;
   border-radius: 50%;
-  background: #f3f9f8;
+  background: #f8faff;
   color: var(--service-ink);
-  box-shadow: 0 4px 18px rgb(23 75 69 / 12%);
+  box-shadow: 0 4px 18px rgb(16 76 129 / 12%);
   text-decoration: none;
   transition: color 220ms ease, background 220ms ease, transform 220ms ease, top 300ms ease, width 300ms ease, height 300ms ease;
   z-index: 3;
@@ -374,13 +376,13 @@ const { data: profile } = await useProfile()
   gap: 1.5rem;
   margin-top: 3rem;
   padding: 2rem 2.25rem;
-  background: var(--service-ink);
+  background: var(--service-deep);
   color: #fff;
 }
 
 .services-cta p {
   margin: 0 0 0.4rem;
-  color: #9be8dc;
+  color: #bfdbfe;
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -399,7 +401,7 @@ const { data: profile } = await useProfile()
   align-items: center;
   gap: 0.75rem;
   padding: 0.9rem 1.25rem;
-  background: linear-gradient(90deg, #168b7d, #42bca3);
+  background: linear-gradient(90deg, var(--service-accent), var(--service-accent-strong));
   color: #ffffff;
   font-size: 0.9rem;
   font-weight: 800;
@@ -409,7 +411,7 @@ const { data: profile } = await useProfile()
 
 .services-cta > a:hover {
   transform: translateY(-2px);
-  background: linear-gradient(90deg, #11776c, #168b7d);
+  background: linear-gradient(90deg, var(--service-accent-strong), var(--service-accent));
 }
 
 @media (max-width: 950px) {

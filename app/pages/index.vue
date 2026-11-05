@@ -37,7 +37,17 @@ const featuredProjects = [
 <template>
   <div class="bg-white">
     <!-- HERO SECTION -->
-    <section id="home" class="relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 pt-6 pb-20 text-white">
+    <section
+      id="home"
+      class="relative overflow-hidden pt-6 pb-20 text-white"
+      :style="{
+        backgroundImage: `linear-gradient(120deg, rgba(11, 18, 35, 0.58), rgba(14, 76, 146, 0.44)), url(${heroImg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        boxShadow: '0 24px 50px rgba(15, 23, 42, 0.28)'
+      }"
+    >
       <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
         <!-- LEFT CONTENT (Col 7) -->

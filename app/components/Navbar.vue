@@ -144,9 +144,9 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="bg-white">
-      <div class="mx-auto flex min-h-[104px] max-w-[1400px] items-center justify-between gap-6 px-5 py-4 sm:px-6 lg:px-8">
+      <div class="mx-auto flex min-h-[80px] max-w-[1400px] items-center justify-between gap-6 px-5 py-3 sm:px-6 lg:px-8">
         <NuxtLink to="/" class="group flex min-w-0 shrink-0 items-center gap-3" :aria-label="`${profile.name} — Home`">
-          <div class="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-[var(--portfolio-surface-raised)] shadow-md shadow-[#172b4d]/10 ring-2 ring-[var(--portfolio-border)] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
+          <div class="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-[var(--portfolio-surface-raised)] shadow-md shadow-[#172b4d]/10 ring-2 ring-[var(--portfolio-border)] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
             <img :src="profile.avatarUrl || heroImg" alt="" class="h-full w-full object-cover object-top" />
             <span class="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-white bg-[var(--portfolio-accent)]" aria-hidden="true" />
           </div>
@@ -157,7 +157,7 @@ onBeforeUnmount(() => {
 
         <div class="hidden items-center divide-x divide-[var(--portfolio-border)] lg:flex">
           <a :href="phoneHref" class="flex items-center gap-3 px-5 text-[var(--portfolio-text)] transition-colors hover:text-[var(--portfolio-accent)]" :aria-label="`Call ${profile.name}`">
-            <svg class="h-8 w-8 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="h-7 w-7 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 3h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />
             </svg>
             <span class="flex flex-col gap-1">
@@ -166,7 +166,7 @@ onBeforeUnmount(() => {
             </span>
           </a>
           <a :href="`mailto:${profile.email}`" class="flex items-center gap-3 px-5 text-[var(--portfolio-text)] transition-colors hover:text-[var(--portfolio-accent)]" :aria-label="`Email ${profile.name}`">
-            <svg class="h-8 w-8 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="h-7 w-7 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 6 8-6" />
             </svg>
@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
             </span>
           </a>
           <div class="flex items-center gap-3 px-5 text-[var(--portfolio-text)]">
-            <svg class="h-8 w-8 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="h-7 w-7 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
               <circle cx="12" cy="10" r="2.5" />
             </svg>
@@ -192,32 +192,32 @@ onBeforeUnmount(() => {
 
     <!-- MAIN NAV -->
     <nav
-      class="sticky top-0 z-50 bg-[var(--portfolio-accent)] text-white shadow-md shadow-[#172b4d]/10"
+      class="sticky top-0 z-50 border-b border-[var(--portfolio-border)] bg-[#e0f2fe] text-[var(--portfolio-text)] shadow-md shadow-[#172b4d]/10"
       aria-label="Main navigation"
     >
       <div class="relative mx-auto flex h-[74px] max-w-[1400px] items-center justify-between px-5 sm:px-6 lg:px-8">
       <div class="ml-auto hidden items-center gap-1 xl:flex 2xl:gap-2">
         <NuxtLink
           :to="homeItem.path"
-          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-white/95 transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
-          active-class="bg-white/20 text-white"
-          exact-active-class="bg-white/20 text-white"
+          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-[var(--portfolio-text)] transition-colors duration-200 hover:bg-white/75 hover:text-[var(--portfolio-accent)] 2xl:text-[0.95rem]"
+          active-class="bg-white/80 text-[var(--portfolio-accent)]"
+          exact-active-class="bg-white/80 text-[var(--portfolio-accent)]"
         >
           {{ homeItem.name }}
         </NuxtLink>
         <div class="relative inline-flex items-center">
           <NuxtLink
             :to="currentAboutItem.path"
-            class="relative whitespace-nowrap rounded-l-full py-2 pl-3 pr-1 text-sm font-semibold text-white/95 transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
-            :class="aboutSectionActive ? 'bg-white/20 text-white' : ''"
-            active-class="bg-white/20 text-white"
+            class="relative whitespace-nowrap rounded-l-full py-2 pl-3 pr-1 text-sm font-semibold text-[var(--portfolio-text)] transition-colors duration-200 hover:bg-white/75 hover:text-[var(--portfolio-accent)] 2xl:text-[0.95rem]"
+            :class="aboutSectionActive ? 'bg-white/80 text-[var(--portfolio-accent)]' : ''"
+            active-class="bg-white/80 text-[var(--portfolio-accent)]"
           >
             {{ currentAboutItem.name }}
           </NuxtLink>
           <button
             type="button"
-            class="relative inline-flex items-center rounded-r-full py-2 pl-1 pr-3 text-sm font-semibold text-white/95 transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
-            :class="aboutSectionActive ? 'bg-white/20 text-white' : ''"
+            class="relative inline-flex items-center rounded-r-full py-2 pl-1 pr-3 text-sm font-semibold text-[var(--portfolio-text)] transition-colors duration-200 hover:bg-white/75 hover:text-[var(--portfolio-accent)] 2xl:text-[0.95rem]"
+            :class="aboutSectionActive ? 'bg-white/80 text-[var(--portfolio-accent)]' : ''"
             :aria-expanded="aboutMenuOpen"
             aria-haspopup="true"
             aria-controls="about-dropdown"
@@ -267,9 +267,9 @@ onBeforeUnmount(() => {
           v-for="item in navItems"
           :key="item.path"
           :to="item.path"
-          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-white/95 transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
-          active-class="bg-white/20 text-white"
-          exact-active-class="bg-white/20 text-white"
+          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-[var(--portfolio-text)] transition-colors duration-200 hover:bg-white/75 hover:text-[var(--portfolio-accent)] 2xl:text-[0.95rem]"
+          active-class="bg-white/80 text-[var(--portfolio-accent)]"
+          exact-active-class="bg-white/80 text-[var(--portfolio-accent)]"
         >
           {{ item.name }}
         </NuxtLink>
