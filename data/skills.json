@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1792920042209",
+    "name": "react",
+    "category": "Frontend",
+    "level": 88
+  },
+  {
+    "id": "1",
+    "name": "HTML",
+    "category": "Frontend",
+    "level": 22
+  },
+  {
+    "id": "2",
+    "name": "CSS / Tailwind CSS",
+    "category": "Frontend",
+    "level": 52
+  },
+  {
+    "id": "3",
+    "name": "JavaScript",
+    "category": "Frontend",
+    "level": 54
+  },
+  {
+    "id": "4",
+    "name": "TypeScript",
+    "category": "Frontend",
+    "level": 44
+  },
+  {
+    "id": "5",
+    "name": "Vue.js",
+    "category": "Frontend",
+    "level": 53
+  },
+  {
+    "id": "6",
+    "name": "Nuxt.js",
+    "category": "Frontend",
+    "level": 47
+  },
+  {
+    "id": "7",
+    "name": "Laravel",
+    "category": "Backend",
+    "level": 57
+  },
+  {
+    "id": "8",
+    "name": "Flutter",
+    "category": "Mobile",
+    "level": 51
+  }
+]

@@ -1,3 +1,5 @@
+import { readJsonData, writeJsonData } from './json-storage'
+
 export interface Education {
   id: number
   institution: string
@@ -19,12 +21,9 @@ export const defaultEducation: Education[] = [
 ]
 
 export async function getEducation(): Promise<Education[]> {
-  const storage = useStorage('assets:server')
-  const education = await storage.getItem<Education[]>('education.json')
-  return education ?? defaultEducation.map(item => ({ ...item }))
+  return readJsonData('education.json', defaultEducation.map(item => ({ ...item })))
 }
 
 export async function saveEducation(education: Education[]) {
-  const storage = useStorage('assets:server')
-  await storage.setItem('education.json', education)
+  await writeJsonData('education.json', education)
 }

@@ -1,3 +1,5 @@
+import { readJsonData, writeJsonData } from './json-storage'
+
 export interface Skill {
   id: string
   name: string
@@ -17,11 +19,9 @@ export const defaultSkills: Skill[] = [
 ]
 
 export async function getSkills(): Promise<Skill[]> {
-  const storage = useStorage('assets:server')
-  return await storage.getItem<Skill[]>('skills.json') ?? defaultSkills
+  return readJsonData('skills.json', defaultSkills)
 }
 
 export async function saveSkills(skills: Skill[]) {
-  const storage = useStorage('assets:server')
-  await storage.setItem('skills.json', skills)
+  await writeJsonData('skills.json', skills)
 }

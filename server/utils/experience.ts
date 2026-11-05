@@ -1,3 +1,5 @@
+import { readJsonData, writeJsonData } from './json-storage'
+
 export interface Experience {
   id: string
   company: string
@@ -31,12 +33,9 @@ export const defaultExperiences: Experience[] = [
 ]
 
 export async function getExperiences(): Promise<Experience[]> {
-  const storage = useStorage('assets:server')
-  const experiences = await storage.getItem<Experience[]>('experiences.json')
-  return experiences ?? defaultExperiences.map(experience => ({ ...experience }))
+  return readJsonData('experiences.json', defaultExperiences.map(experience => ({ ...experience })))
 }
 
 export async function saveExperiences(experiences: Experience[]) {
-  const storage = useStorage('assets:server')
-  await storage.setItem('experiences.json', experiences)
+  await writeJsonData('experiences.json', experiences)
 }

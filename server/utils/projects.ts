@@ -1,3 +1,5 @@
+import { readJsonData, writeJsonData } from './json-storage'
+
 export interface Project {
   id: string
   title: string
@@ -53,12 +55,9 @@ export const defaultProjects: Project[] = [
 ]
 
 export async function getProjects(): Promise<Project[]> {
-  const storage = useStorage('assets:server')
-  const projects = await storage.getItem<Project[]>('projects.json')
-  return projects ?? defaultProjects.map(project => ({ ...project }))
+  return readJsonData('projects.json', defaultProjects.map(project => ({ ...project })))
 }
 
 export async function saveProjects(projects: Project[]) {
-  const storage = useStorage('assets:server')
-  await storage.setItem('projects.json', projects)
+  await writeJsonData('projects.json', projects)
 }
