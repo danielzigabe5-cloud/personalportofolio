@@ -1,5 +1,5 @@
 import { createError, defineEventHandler, getCookie, readMultipartFormData } from 'h3'
-import { getMediaFormat, hasValidMediaSignature, saveMediaFile, type MediaFile } from '../../utils/media'
+import { getMediaFormat, hasValidMediaSignature, saveMediaFile, usesBlobMediaStorage, type MediaFile } from '../../utils/media'
 
 const maxFileSize = 10 * 1024 * 1024
 const maxFileCount = 20
@@ -8,6 +8,9 @@ const maxTotalSize = 100 * 1024 * 1024
 export default defineEventHandler(async (event) => {
   if (!getCookie(event, 'auth_token')) {
     throw createError({ statusCode: 401, statusMessage: 'Please sign in to upload media.' })
+  }
+  if (usesBlobMediaStorage()) {
+    throw createError({ statusCode: 409, statusMessage: 'Use the direct upload flow for persistent media storage.' })
   }
 
   const contentLength = Number(event.node.req.headers['content-length'] || 0)

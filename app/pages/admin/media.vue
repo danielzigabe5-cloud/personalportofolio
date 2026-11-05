@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { upload } from '@vercel/blob/client'
 
 definePageMeta({
   layout: 'admin'
@@ -25,6 +26,7 @@ const statusMessage = ref('')
 const fileInput = ref<HTMLInputElement | null>(null)
 const searchQuery = ref('')
 const selectedImage = ref<MediaFile | null>(null)
+const directUpload = ref(false)
 const filteredFiles = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
   if (!query) return uploadedFiles.value
@@ -34,15 +36,27 @@ const filteredFiles = computed(() => {
   )
 })
 
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (typeof error === 'object' && error !== null && 'data' in error) {
+    const data = error.data
+    if (typeof data === 'object' && data !== null && 'statusMessage' in data && typeof data.statusMessage === 'string') {
+      return data.statusMessage
+    }
+  }
+  return error instanceof Error ? error.message : fallback
+}
+
 onMounted(loadMedia)
 
 async function loadMedia() {
   errorMessage.value = ''
   isLoading.value = true
   try {
-    uploadedFiles.value = await $fetch<MediaFile[]>('/api/media')
+    const result = await $fetch<{ files: MediaFile[]; directUpload: boolean }>('/api/media')
+    uploadedFiles.value = result.files
+    directUpload.value = result.directUpload
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Could not load uploaded files.'
+    errorMessage.value = getErrorMessage(error, 'Could not load uploaded files.')
   } finally {
     isLoading.value = false
   }
@@ -84,16 +98,38 @@ async function handleFileUpload(files: FileList | File[] | null) {
     return
   }
 
-  const body = new FormData()
-  selectedFiles.forEach(file => body.append('files', file))
   isUploading.value = true
+  let uploadedCount = 0
 
   try {
-    const savedFiles = await $fetch<MediaFile[]>('/api/media', { method: 'POST', body })
-    uploadedFiles.value = [...savedFiles, ...uploadedFiles.value]
-    statusMessage.value = `${savedFiles.length} file${savedFiles.length === 1 ? '' : 's'} uploaded successfully.`
+    if (directUpload.value) {
+      for (const file of selectedFiles) {
+        const name = file.name.replace(/[\\/\u0000-\u001f\u007f]/g, '_').trim().slice(0, 255)
+        const extension = name.split('.').pop()?.toLowerCase() || ''
+        const contentType = allowedTypes[extension]?.find(type => type !== 'application/octet-stream') || 'application/octet-stream'
+        await upload(`portfolio-media/${crypto.randomUUID()}/${encodeURIComponent(name)}`, file, {
+          access: 'public',
+          handleUploadUrl: '/api/media/upload-token',
+          contentType,
+          multipart: file.size > 5 * 1024 * 1024
+        })
+        uploadedCount += 1
+      }
+      await loadMedia()
+    } else {
+      const body = new FormData()
+      selectedFiles.forEach(file => body.append('files', file))
+      const savedFiles = await $fetch<MediaFile[]>('/api/media', { method: 'POST', body })
+      uploadedFiles.value = [...savedFiles, ...uploadedFiles.value]
+      uploadedCount = savedFiles.length
+    }
+    statusMessage.value = `${selectedFiles.length} file${selectedFiles.length === 1 ? '' : 's'} uploaded successfully.`
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Could not upload the selected file.'
+    if (directUpload.value && uploadedCount > 0) {
+      await loadMedia()
+      statusMessage.value = `${uploadedCount} file${uploadedCount === 1 ? '' : 's'} uploaded before the next upload failed.`
+    }
+    errorMessage.value = getErrorMessage(error, 'Could not upload the selected file.')
   } finally {
     isUploading.value = false
   }
@@ -120,7 +156,7 @@ async function deleteFile(file: MediaFile) {
     uploadedFiles.value = uploadedFiles.value.filter(item => item.id !== file.id)
     statusMessage.value = `${file.name} deleted.`
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Could not delete the file.'
+    errorMessage.value = getErrorMessage(error, 'Could not delete the file.')
   }
 }
 
@@ -130,7 +166,7 @@ async function copyLink(url: string) {
     statusMessage.value = 'File link copied to clipboard.'
     errorMessage.value = ''
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Could not copy the file link.'
+    errorMessage.value = getErrorMessage(error, 'Could not copy the file link.')
   }
 }
 
@@ -147,7 +183,7 @@ async function shareFile(file: MediaFile) {
     errorMessage.value = ''
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') return
-    errorMessage.value = error instanceof Error ? error.message : 'Could not share the file.'
+    errorMessage.value = getErrorMessage(error, 'Could not share the file.')
   }
 }
 

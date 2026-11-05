@@ -1,3 +1,4 @@
+import { del, list, put } from '@vercel/blob'
 import { randomUUID } from 'node:crypto'
 import { mkdir, readFile, readdir, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -27,8 +28,43 @@ const supportedFormats = {
 type MediaExtension = keyof typeof supportedFormats
 
 const mediaDirectory = join(process.cwd(), 'data', 'media')
+const blobPrefix = 'portfolio-media/'
+
+export function usesBlobMediaStorage(): boolean {
+  return process.env.VERCEL === '1' ||
+    Boolean(process.env.BLOB_READ_WRITE_TOKEN)
+}
 
 export async function listMediaFiles(): Promise<MediaFile[]> {
+  if (usesBlobMediaStorage()) {
+    assertBlobStorageConfigured()
+    const files: MediaFile[] = []
+    let cursor: string | undefined
+
+    do {
+      const result = await list({ prefix: blobPrefix, cursor })
+      for (const blob of result.blobs) {
+        const [, id, encodedName] = blob.pathname.split('/')
+        if (!id || !isMediaId(id) || !encodedName) continue
+
+        const name = decodeURIComponent(encodedName)
+        const format = getMediaFormat(name)
+        if (!format) continue
+        files.push({
+          id,
+          name,
+          size: blob.size,
+          date: blob.uploadedAt.toISOString(),
+          url: blob.url,
+          ...format
+        })
+      }
+      cursor = result.hasMore ? result.cursor : undefined
+    } while (cursor)
+
+    return files.sort((a, b) => b.date.localeCompare(a.date))
+  }
+
   await mkdir(mediaDirectory, { recursive: true })
   const entries = await readdir(mediaDirectory)
   const records = await Promise.all(
@@ -56,8 +92,26 @@ export async function saveMediaFile(name: string, data: Buffer): Promise<MediaFi
   const format = getMediaFormat(name)
   if (!format) throw new Error(`Unsupported media format: ${name}`)
 
-  await mkdir(mediaDirectory, { recursive: true })
   const id = randomUUID()
+  if (usesBlobMediaStorage()) {
+    assertBlobStorageConfigured()
+    const blob = await put(`${blobPrefix}${id}/${encodeURIComponent(name)}`, data, {
+      access: 'public',
+      addRandomSuffix: false,
+      contentType: format.mimeType,
+      maximumSizeInBytes: 10 * 1024 * 1024
+    })
+    return {
+      id,
+      name,
+      size: data.byteLength,
+      date: new Date().toISOString(),
+      url: blob.url,
+      ...format
+    }
+  }
+
+  await mkdir(mediaDirectory, { recursive: true })
   const file: MediaFile = {
     id,
     name,
@@ -83,6 +137,15 @@ export async function saveMediaFile(name: string, data: Buffer): Promise<MediaFi
 export async function getMediaFile(id: string): Promise<{ metadata: MediaFile; data: Buffer } | null> {
   if (!isMediaId(id)) return null
 
+  if (usesBlobMediaStorage()) {
+    const metadata = (await listMediaFiles()).find(file => file.id === id)
+    if (!metadata) return null
+
+    const response = await fetch(metadata.url)
+    if (!response.ok) throw new Error(`Could not read stored media (${response.status}).`)
+    return { metadata, data: Buffer.from(await response.arrayBuffer()) }
+  }
+
   try {
     const metadata = JSON.parse(await readFile(join(mediaDirectory, `${id}.json`), 'utf8')) as Partial<MediaFile> & Pick<MediaFile, 'id' | 'name' | 'size' | 'date' | 'url'>
     const format = getMediaFormat(metadata.name)
@@ -102,6 +165,14 @@ export async function getMediaFile(id: string): Promise<{ metadata: MediaFile; d
 export async function deleteMediaFile(id: string): Promise<boolean> {
   if (!isMediaId(id)) return false
 
+  if (usesBlobMediaStorage()) {
+    assertBlobStorageConfigured()
+    const file = (await listMediaFiles()).find(item => item.id === id)
+    if (!file) return false
+    await del(file.url)
+    return true
+  }
+
   const file = await getMediaFile(id)
   if (!file) return false
 
@@ -114,6 +185,12 @@ export async function deleteMediaFile(id: string): Promise<boolean> {
   } catch (error) {
     if (isFileNotFound(error)) return false
     throw error
+  }
+}
+
+function assertBlobStorageConfigured(): void {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error('Persistent uploads are not configured. Connect a Vercel Blob store and set BLOB_READ_WRITE_TOKEN in the deployment environment.')
   }
 }
 
