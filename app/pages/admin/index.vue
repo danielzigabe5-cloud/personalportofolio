@@ -387,6 +387,36 @@ const deleteSelectedMessage = () => {
         </div>
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- CV -->
+          <NuxtLink
+            to="/admin/cv"
+            class="rounded-xl border border-slate-700 bg-slate-900/50 p-4 transition duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:bg-slate-900"
+          >
+            <div class="text-xl">📄</div>
+            <div class="mt-2 text-sm font-bold text-slate-100">CV Management</div>
+            <div class="mt-1 text-xs text-slate-500">Upload or replace your public CV</div>
+          </NuxtLink>
+
+          <!-- SITE SETTINGS -->
+          <NuxtLink
+            to="/admin/profile"
+            class="rounded-xl border border-slate-700 bg-slate-900/50 p-4 transition duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:bg-slate-900"
+          >
+            <div class="text-xl">🌐</div>
+            <div class="mt-2 text-sm font-bold text-slate-100">Site Settings</div>
+            <div class="mt-1 text-xs text-slate-500">Update public website information</div>
+          </NuxtLink>
+
+          <!-- SECURITY -->
+          <NuxtLink
+            to="/admin/settings#security"
+            class="rounded-xl border border-slate-700 bg-slate-900/50 p-4 transition duration-300 hover:-translate-y-1 hover:border-blue-500/50 hover:bg-slate-900"
+          >
+            <div class="text-xl">🔐</div>
+            <div class="mt-2 text-sm font-bold text-slate-100">Security</div>
+            <div class="mt-1 text-xs text-slate-500">Change password and revoke sessions</div>
+          </NuxtLink>
+
           <!-- PROJECTS -->
           <NuxtLink
             to="/admin/projects"

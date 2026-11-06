@@ -22,3 +22,7 @@ logs
 .env
 .env.*
 !.env.example
+
+# Local admin credentials and uploaded CV
+/data/admin-credentials.json
+/data/cv.pdf

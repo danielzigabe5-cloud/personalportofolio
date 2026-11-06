@@ -10,41 +10,39 @@ const password = ref('')
 const error = ref('')
 const loading = ref(false)
 
-const login = () => {
+const login = async () => {
   error.value = ''
 
-  // Check empty fields
   if (!email.value || !password.value) {
     error.value = 'Please enter your email and password.'
     return
   }
 
   loading.value = true
-
-  // Admin credentials check (ወይም ወደፊት ከ Backend API ጋር ማገናኘት ይቻላል)
-  if (
-    email.value === 'dani@gmail.com' &&
-    password.value === 'dani@1212'
-  ) {
-    // 1. የ auth_token ኩኪን እናስቀምጣለን (ይህም Middleware እንዲያልፍ እና ሎጊን ሆኖ እንዲቆይ ያደርጋል)
-    const authToken = useCookie('auth_token', {
-      maxAge: 60 * 60 * 24 * 7 // ለ 7 ቀናት እንዲቆይ (1 ሳምንት)
+  try {
+    await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: { email: email.value, password: password.value }
     })
-    authToken.value = 'mock-admin-token-xyz-12345'
-
-    // 2. ወደ አድሚን ዳሽቦርድ እንወስደዋለን
-    setTimeout(() => {
-      loading.value = false
-      navigateTo('/admin')
-    }, 500)
-    return
-  }
-
-  // Wrong credentials
-  setTimeout(() => {
+    await navigateTo('/admin/dashboard')
+  } catch (cause) {
+    const statusCode = cause && typeof cause === 'object' && 'statusCode' in cause
+      ? cause.statusCode
+      : undefined
+    if (statusCode === 400) {
+      error.value = 'Please enter a valid email address and password.'
+    } else if (statusCode === 401) {
+      error.value = 'Invalid email or password.'
+    } else if (statusCode === 503) {
+      error.value = 'Admin login is not configured. Run npm run admin:setup locally, or configure the required server environment variables.'
+    } else if (statusCode) {
+      error.value = `The sign-in service returned an error (${statusCode}). Please check the server logs.`
+    } else {
+      error.value = 'Could not reach the sign-in service. Check the server connection and try again.'
+    }
+  } finally {
     loading.value = false
-    error.value = 'Invalid email or password.'
-  }, 400)
+  }
 }
 </script>
 
@@ -81,6 +79,7 @@ const login = () => {
       <!-- ERROR MESSAGE -->
       <div
         v-if="error"
+        role="alert"
         class="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
       >
         {{ error }}

@@ -91,7 +91,7 @@ const socialLinks = [
 <style scoped>
 /* ===== Footer Base ===== */
 .site-footer {
-  background: linear-gradient(135deg, var(--portfolio-text) 0%, var(--portfolio-deep) 100%) !important;
+  background: linear-gradient(135deg, var(--portfolio-deep) 0%, #1e3a5f 100%) !important;
   color: var(--portfolio-on-dark) !important;
   padding: 60px 20px 0;
   margin-top: 80px;

@@ -72,17 +72,17 @@ const { data: profile } = await useProfile()
 
 <style scoped>
 .services-page {
-  --service-ink: #172b4d;
-  --service-muted: #60708a;
+  --service-ink: #f1f5f9;
+  --service-muted: #aab8ca;
   --service-accent: #0ea5e9;
   --service-accent-strong: #0284c7;
-  --service-deep: #102a56;
+  --service-deep: #141e2d;
   min-height: 70vh;
   padding: 2rem max(1.5rem, calc((100vw - 1320px) / 2)) 5rem;
   color: var(--service-ink);
   background:
-    radial-gradient(ellipse at 50% 0, rgb(14 165 233 / 10%), transparent 42%),
-    #eef4ff;
+    radial-gradient(ellipse at 50% 0, rgb(14 165 233 / 12%), transparent 42%),
+    #172335;
 }
 
 .services-intro {
@@ -141,10 +141,10 @@ const { data: profile } = await useProfile()
   max-height: 310px;
   overflow: hidden;
   aspect-ratio: 4 / 3;
-  border: 5px solid rgb(255 255 255 / 75%);
+  border: 5px solid rgb(255 255 255 / 10%);
   border-radius: 1.5rem;
-  background: #dfeefb;
-  box-shadow: 0 18px 40px rgb(23 75 69 / 16%);
+  background: #26364b;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 24%);
 }
 
 .services-intro__photo {
@@ -167,7 +167,7 @@ const { data: profile } = await useProfile()
   padding: 0.8rem 1rem;
   border: 1px solid rgb(255 255 255 / 28%);
   border-radius: 0.8rem;
-  background: rgb(15 43 39 / 78%);
+  background: rgb(20 30 45 / 82%);
   color: #fff;
   backdrop-filter: blur(10px);
 }
@@ -178,7 +178,7 @@ const { data: profile } = await useProfile()
 }
 
 .services-intro__caption span {
-  color: #d1e0dd;
+  color: #cbd5e1;
   font-size: 0.75rem;
 }
 
@@ -191,7 +191,7 @@ const { data: profile } = await useProfile()
 .services-error {
   max-width: 1050px;
   margin: -1.5rem auto 2rem;
-  color: #9b2c2c;
+  color: #fca5a5;
   text-align: center;
 }
 
@@ -201,16 +201,16 @@ const { data: profile } = await useProfile()
   min-height: 430px;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid #cbd9ee;
-  background: #f8faff;
-  box-shadow: 0 14px 35px rgb(23 43 77 / 7%);
+  border: 1px solid #344256;
+  background: #202d40;
+  box-shadow: 0 14px 35px rgb(0 0 0 / 18%);
   transition: border-color 220ms ease, background-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
 }
 
 .service-card:hover {
   transform: translateY(-5px);
   border-color: rgb(14 165 233 / 52%);
-  box-shadow: 0 22px 45px rgb(16 76 129 / 12%);
+  box-shadow: 0 22px 45px rgb(0 0 0 / 28%);
 }
 
 .service-card__topline {
@@ -230,7 +230,7 @@ const { data: profile } = await useProfile()
   height: 58%;
   place-items: center;
   overflow: hidden;
-  background: #f3f9f8;
+  background: #26364b;
   opacity: 0;
   transition: opacity 300ms ease;
 }
@@ -284,7 +284,7 @@ const { data: profile } = await useProfile()
   place-items: center;
   margin-bottom: 1.25rem;
   border-radius: 22px;
-  background: var(--service-accent-soft, #e0f2fe);
+  background: var(--service-accent-soft, rgb(14 165 233 / 12%));
   color: var(--service-accent);
   transition: background 220ms ease, color 220ms ease, transform 220ms ease;
 }
@@ -340,9 +340,9 @@ const { data: profile } = await useProfile()
   height: 42px;
   place-items: center;
   border-radius: 50%;
-  background: #f8faff;
-  color: var(--service-ink);
-  box-shadow: 0 4px 18px rgb(16 76 129 / 12%);
+  background: #26364b;
+  color: #f1f5f9;
+  box-shadow: 0 4px 18px rgb(0 0 0 / 24%);
   text-decoration: none;
   transition: color 220ms ease, background 220ms ease, transform 220ms ease, top 300ms ease, width 300ms ease, height 300ms ease;
   z-index: 3;

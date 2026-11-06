@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 .default-layout {
-	--portfolio-bg: #eef4ff;
-	--portfolio-surface: #f8faff;
-	--portfolio-surface-raised: #e3ebfa;
+	--portfolio-bg: #172335;
+	--portfolio-surface: #202d40;
+	--portfolio-surface-raised: #26364b;
 	--portfolio-accent: #0ea5e9;
 	--portfolio-accent-hover: #0284c7;
-	--portfolio-deep: #102a56;
+	--portfolio-deep: #141e2d;
 	--portfolio-highlight: #7dd3fc;
-	--portfolio-on-dark: #e8f4ff;
-	--portfolio-text: #172b4d;
-	--portfolio-muted: #60708a;
-	--portfolio-border: #cbd9ee;
+	--portfolio-on-dark: #f1f5f9;
+	--portfolio-text: #f1f5f9;
+	--portfolio-muted: #aab8ca;
+	--portfolio-border: #344256;
 	background: var(--portfolio-bg);
 	color: var(--portfolio-text);
 }
@@ -20,12 +20,26 @@
 	background: var(--portfolio-bg);
 }
 
+.default-layout .portfolio-topbar {
+	background: linear-gradient(100deg, #1e3a5f 0%, var(--portfolio-deep) 100%);
+}
+
+.default-layout .portfolio-social-icon {
+	background-color: #ffffff;
+	color: #102b55;
+}
+
+.default-layout .portfolio-social-icon:hover {
+	background-color: var(--portfolio-accent);
+	color: #ffffff;
+}
+
 .default-layout section.bg-white {
 	background-color: var(--portfolio-bg) !important;
 }
 
 .default-layout section.bg-slate-50 {
-	background-color: var(--portfolio-surface) !important;
+	background-color: var(--portfolio-bg) !important;
 }
 
 .default-layout .bg-white,
@@ -47,6 +61,14 @@
 .default-layout .bg-blue-50,
 .default-layout .bg-blue-100 {
 	background-color: var(--portfolio-surface-raised) !important;
+}
+
+.default-layout .bg-blue-900 {
+	background-color: var(--portfolio-deep) !important;
+}
+
+.default-layout .text-blue-900 {
+	color: var(--portfolio-accent) !important;
 }
 
 .default-layout .bg-blue-600 {
@@ -116,7 +138,7 @@
 }
 
 .default-layout [class~="bg-white/90"] {
-	background-color: rgb(248 250 255 / 94%) !important;
+	background-color: rgb(32 45 64 / 94%) !important;
 }
 
 .default-layout .bg-orange-500 {

@@ -91,6 +91,8 @@ const passwordForm = reactive({
 })
 const passwordError = ref('')
 const passwordLoading = ref(false)
+const isLoggingOut = ref(false)
+const isRevokingSessions = ref(false)
 
 const openPasswordModal = () => {
   passwordForm.currentPassword = ''
@@ -107,8 +109,8 @@ const closePasswordModal = () => {
 const handlePasswordChange = async () => {
   passwordError.value = ''
 
-  if (passwordForm.newPassword.length < 6) {
-    passwordError.value = 'New password must be at least 6 characters.'
+  if (passwordForm.newPassword.length < 12) {
+    passwordError.value = 'New password must be at least 12 characters.'
     return
   }
 
@@ -118,13 +120,27 @@ const handlePasswordChange = async () => {
   }
 
   passwordLoading.value = true
-
-  // API Call Simulation
-  setTimeout(() => {
-    passwordLoading.value = false
+  try {
+    await $fetch('/api/auth/password', {
+      method: 'PUT',
+      body: {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      }
+    })
     closePasswordModal()
-    showToast('Password changed successfully!')
-  }, 800)
+    showToast('Password changed. Sign in with your new password.')
+    await navigateTo('/admin/login', { replace: true })
+  } catch (error) {
+    const message = typeof error === 'object' && error !== null && 'data' in error &&
+      typeof error.data === 'object' && error.data !== null &&
+      'statusMessage' in error.data && typeof error.data.statusMessage === 'string'
+      ? error.data.statusMessage
+      : error instanceof Error ? error.message : 'Could not change your password.'
+    passwordError.value = message
+  } finally {
+    passwordLoading.value = false
+  }
 }
 
 /* =====================================================
@@ -132,14 +148,29 @@ const handlePasswordChange = async () => {
 ===================================================== */
 const isLogoutModalOpen = ref(false)
 
-const confirmLogoutAll = () => {
-  isLogoutModalOpen.value = false
-  showToast('Logged out from all active sessions.', 'info')
+const logoutCurrentSession = async () => {
+  isLoggingOut.value = true
+  try {
+    await $fetch('/api/auth/logout', { method: 'POST' })
+    await navigateTo('/admin/login', { replace: true })
+  } catch {
+    showToast('Could not end this session. Please try again.', 'error')
+  } finally {
+    isLoggingOut.value = false
+  }
+}
 
-  // Example redirect: If you have an auth store or login page
-  setTimeout(() => {
-    // navigateTo('/login')
-  }, 1000)
+const confirmLogoutAll = async () => {
+  isRevokingSessions.value = true
+  try {
+    await $fetch('/api/auth/logout-all', { method: 'POST' })
+    isLogoutModalOpen.value = false
+    await navigateTo('/admin/login', { replace: true })
+  } catch {
+    showToast('Could not revoke all sessions. Please try again.', 'error')
+  } finally {
+    isRevokingSessions.value = false
+  }
 }
 </script>
 
@@ -258,11 +289,11 @@ const confirmLogoutAll = () => {
     </section>
 
     <!-- SECURITY -->
-    <section class="rounded-2xl border border-slate-700 bg-slate-800/50 p-6">
+    <section id="security" class="scroll-mt-6 rounded-2xl border border-slate-700 bg-slate-800/50 p-6">
       <h2 class="font-black text-slate-100">Security</h2>
-      <p class="mt-1 text-xs text-slate-400">Manage your password and authentication.</p>
+      <p class="mt-1 text-xs text-slate-400">Change your password, sign out, or revoke every active browser session.</p>
 
-      <div class="mt-6">
+      <div class="mt-6 flex flex-wrap gap-3">
         <button
           type="button"
           @click="openPasswordModal"
@@ -270,6 +301,14 @@ const confirmLogoutAll = () => {
         >
           <span>🔒</span>
           Change Password
+        </button>
+        <button
+          type="button"
+          :disabled="isLoggingOut"
+          @click="logoutCurrentSession"
+          class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900/60 px-5 py-2.5 text-sm font-bold text-slate-200 transition hover:border-blue-500 hover:text-blue-300 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {{ isLoggingOut ? 'Signing out...' : 'Log out this browser' }}
         </button>
       </div>
     </section>
@@ -333,7 +372,7 @@ const confirmLogoutAll = () => {
               <input
                 v-model="passwordForm.newPassword"
                 type="password"
-                placeholder="At least 6 characters"
+                placeholder="                At least 12 characters"
                 required
                 class="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -400,10 +439,11 @@ const confirmLogoutAll = () => {
             </button>
             <button
               type="button"
+              :disabled="isRevokingSessions"
               @click="confirmLogoutAll"
               class="rounded-xl bg-red-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-red-600/20 hover:bg-red-500"
             >
-              አዎ፣ Logout አድርግ
+              {{ isRevokingSessions ? 'Revoking sessions...' : 'Yes, log out all devices' }}
             </button>
           </div>
         </div>

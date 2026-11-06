@@ -1,7 +1,5 @@
 <script setup lang="ts">
 // 1. Authentication Token እና Cookies
-const token = useCookie('auth_token')
-const user = useCookie('user')
 const isLoggingOut = ref(false)
 const isSidebarCollapsed = ref(false)
 const isMobileSidebarOpen = ref(false)
@@ -52,28 +50,10 @@ const handleLogout = async () => {
   isProfileOpen.value = false
 
   try {
-    await $fetch('/api/logout', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-        Accept: 'application/json'
-      }
-    }).catch(() => {})
-  } finally {
-    // Token እና Auth Cookies ማጥፋት
-    token.value = null
-    user.value = null
-
-    if (import.meta.client) {
-      sessionStorage.clear()
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('user')
-    }
-
-    isLoggingOut.value = false
-
-    // ✅ ወደ ዋናው Public Page (Home) መመለስ
+    await $fetch('/api/auth/logout', { method: 'POST' })
     await navigateTo('/', { replace: true })
+  } finally {
+    isLoggingOut.value = false
   }
 }
 
@@ -87,6 +67,9 @@ const navItems = [
   { name: 'Education', to: '/admin/education', icon: '🎓' },
   { name: 'Messages', to: '/admin/messages', icon: '📬' },
   { name: 'Media', to: '/admin/media', icon: '🗂️' },
+  { name: 'CV Management', to: '/admin/cv', icon: '📄' },
+  { name: 'Site Settings', to: '/admin/profile', icon: '🌐' },
+  { name: 'Security', to: '/admin/settings#security', icon: '🔐' },
 ]
 </script>
 

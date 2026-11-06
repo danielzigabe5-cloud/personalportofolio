@@ -6,6 +6,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev --open",
     "generate": "nuxt generate",
+    "admin:setup": "node scripts/setup-admin.mjs",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },

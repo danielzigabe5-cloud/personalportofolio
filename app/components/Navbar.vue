@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, computed, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import heroImg from '~/assets/images/photo.jpg'
 
 const menuOpen = ref(false)
 const aboutMenuOpen = ref(false)
 const mobileAboutMenuOpen = ref(false)
+const profileMenuOpen = ref(false)
+const profileMenuRef = ref<HTMLElement | null>(null)
+const profileButtonRef = ref<HTMLButtonElement | null>(null)
 const route = useRoute()
 const { data: profile } = await useProfile()
-const authToken = useCookie('auth_token')
 const phoneHref = computed(() => `tel:${profile.value.phone.replace(/[^\d+]/g, '')}`)
-const adminDestination = computed(() => authToken.value ? '/admin' : '/admin/login')
-const adminLinkLabel = computed(() => authToken.value ? 'Admin Dashboard' : 'Login')
 
 const homeItem = { name: 'Home', path: '/' }
 const navItems = [
@@ -85,6 +85,38 @@ const handleEscape = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
     closeMenu()
     aboutMenuOpen.value = false
+    if (profileMenuOpen.value) {
+      profileMenuOpen.value = false
+      profileButtonRef.value?.focus()
+    }
+  }
+}
+
+const toggleProfileMenu = async () => {
+  profileMenuOpen.value = !profileMenuOpen.value
+  if (profileMenuOpen.value) {
+    await nextTick()
+    profileMenuRef.value?.querySelector<HTMLElement>('[role="menuitem"]')?.focus()
+  }
+}
+
+const handleProfileMenuKeys = async (event: KeyboardEvent) => {
+  if (event.key === 'ArrowDown' || event.key === 'Home') {
+    event.preventDefault()
+    if (!profileMenuOpen.value) {
+      profileMenuOpen.value = true
+      await nextTick()
+    }
+    profileMenuRef.value?.querySelector<HTMLElement>('[role="menuitem"]')?.focus()
+  } else if (event.key === 'ArrowUp' || event.key === 'End') {
+    event.preventDefault()
+    profileButtonRef.value?.focus()
+  }
+}
+
+const handleOutsideProfileClick = (event: PointerEvent) => {
+  if (profileMenuOpen.value && !profileMenuRef.value?.contains(event.target as Node)) {
+    profileMenuOpen.value = false
   }
 }
 
@@ -94,6 +126,7 @@ watch(
   () => {
     closeMenu()
     aboutMenuOpen.value = false
+    profileMenuOpen.value = false
   }
 )
 
@@ -106,10 +139,12 @@ watch(menuOpen, (open) => {
 
 onMounted(() => {
   window.addEventListener('keydown', handleEscape)
+  document.addEventListener('pointerdown', handleOutsideProfileClick)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleEscape)
+  document.removeEventListener('pointerdown', handleOutsideProfileClick)
   if (import.meta.client) {
     document.body.style.overflow = ''
   }
@@ -121,7 +156,7 @@ onBeforeUnmount(() => {
        NAVBAR
   ====================================================== -->
   <header class="border-b border-[var(--portfolio-border)] bg-white shadow-lg shadow-[#172b4d]/5">
-    <div class="bg-[var(--portfolio-deep)] text-white">
+    <div class="portfolio-topbar text-white">
       <div class="mx-auto flex h-11 max-w-[1400px] items-center justify-between gap-3 px-5 text-xs font-semibold sm:px-6 lg:px-8">
         <span class="truncate">Welcome to {{ profile.name }}’s portfolio</span>
         <div class="flex shrink-0 items-center gap-1" aria-label="Social media links">
@@ -133,7 +168,7 @@ onBeforeUnmount(() => {
             :title="social.name"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[var(--portfolio-deep)] transition-colors duration-200 hover:bg-[var(--portfolio-accent)] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            class="portfolio-social-icon flex h-7 w-7 items-center justify-center rounded-full transition-colors duration-200 hover:bg-[var(--portfolio-accent)] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path :d="social.iconPath" />
@@ -145,16 +180,62 @@ onBeforeUnmount(() => {
 
     <div class="bg-white">
       <div class="mx-auto flex min-h-[80px] max-w-[1400px] items-center justify-between gap-6 px-5 py-3 sm:px-6 lg:px-8">
-        <NuxtLink to="/" class="group flex min-w-0 shrink-0 items-center gap-3" :aria-label="`${profile.name} — Home`">
-          <div class="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border-2 border-white bg-[var(--portfolio-surface-raised)] shadow-md shadow-[#172b4d]/10 ring-2 ring-[var(--portfolio-border)] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg">
-            <img :src="profile.avatarUrl || heroImg" alt="" class="h-full w-full object-cover object-top" />
-            <span class="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-white bg-[var(--portfolio-accent)]" aria-hidden="true" />
+        <div class="group flex min-w-0 shrink-0 items-center gap-3">
+          <div ref="profileMenuRef" class="relative h-12 w-12 shrink-0">
+            <button
+              ref="profileButtonRef"
+              type="button"
+              class="relative h-full w-full overflow-hidden rounded-2xl border-2 border-white bg-[var(--portfolio-surface-raised)] shadow-md shadow-[#172b4d]/10 ring-2 ring-[var(--portfolio-border)] transition duration-300 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--portfolio-accent)]"
+              :aria-label="`${profile.name} profile menu`"
+              aria-haspopup="menu"
+              :aria-expanded="profileMenuOpen"
+              aria-controls="profile-admin-menu"
+              @click="toggleProfileMenu"
+              @keydown="handleProfileMenuKeys"
+            >
+              <img :src="profile.avatarUrl || heroImg" alt="" class="h-full w-full object-cover object-top" />
+              <span class="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-white bg-[var(--portfolio-accent)]" aria-hidden="true" />
+            </button>
+            <Transition
+              enter-active-class="transition duration-150 ease-out"
+              enter-from-class="-translate-y-1 opacity-0"
+              enter-to-class="translate-y-0 opacity-100"
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="translate-y-0 opacity-100"
+              leave-to-class="-translate-y-1 opacity-0"
+            >
+              <div
+                v-if="profileMenuOpen"
+                id="profile-admin-menu"
+                role="menu"
+                aria-label="Profile menu"
+                class="absolute left-0 top-full z-[70] mt-3 w-56 rounded-xl border border-[var(--portfolio-border)] bg-white p-2 text-[var(--portfolio-text)] shadow-xl shadow-[#172b4d]/15"
+                @keydown="handleProfileMenuKeys"
+              >
+                <p class="px-3 pb-2 pt-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--portfolio-muted)]">
+                  Administrator Access
+                </p>
+                <NuxtLink
+                  to="/admin/login"
+                  role="menuitem"
+                  class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-[var(--portfolio-text)] transition-colors hover:bg-[var(--portfolio-surface-raised)] hover:text-[var(--portfolio-accent)] focus-visible:bg-[var(--portfolio-surface-raised)] focus-visible:outline-none focus-visible:text-[var(--portfolio-accent)]"
+                  @click="profileMenuOpen = false"
+                >
+                  <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4" />
+                  </svg>
+                  Admin Login
+                </NuxtLink>
+              </div>
+            </Transition>
           </div>
-          <span class="max-w-[190px] truncate text-base font-extrabold tracking-tight text-[var(--portfolio-text)] transition-colors group-hover:text-[var(--portfolio-accent)] sm:text-lg">
-            {{ profile.name }}
-          </span>
-        </NuxtLink>
-
+          <NuxtLink to="/" class="min-w-0" :aria-label="`${profile.name} — Home`">
+            <span class="max-w-[190px] truncate text-base font-extrabold tracking-tight text-[var(--portfolio-text)] transition-colors group-hover:text-[var(--portfolio-accent)] sm:text-lg">
+              {{ profile.name }}
+            </span>
+          </NuxtLink>
+        </div>
         <div class="hidden items-center divide-x divide-[var(--portfolio-border)] lg:flex">
           <a :href="phoneHref" class="flex items-center gap-3 px-5 text-[var(--portfolio-text)] transition-colors hover:text-[var(--portfolio-accent)]" :aria-label="`Call ${profile.name}`">
             <svg class="h-7 w-7 shrink-0 text-[var(--portfolio-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -192,32 +273,32 @@ onBeforeUnmount(() => {
 
     <!-- MAIN NAV -->
     <nav
-      class="sticky top-0 z-50 border-b border-[var(--portfolio-border)] bg-[#e0f2fe] text-[var(--portfolio-text)] shadow-md shadow-[#172b4d]/10"
+      class="sticky top-0 z-50 border-b border-[var(--portfolio-border)] bg-[var(--portfolio-deep)] text-[var(--portfolio-on-dark)] shadow-md shadow-[#172b4d]/10"
       aria-label="Main navigation"
     >
       <div class="relative mx-auto flex h-[74px] max-w-[1400px] items-center justify-between px-5 sm:px-6 lg:px-8">
       <div class="ml-auto hidden items-center gap-1 xl:flex 2xl:gap-2">
         <NuxtLink
           :to="homeItem.path"
-          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-[var(--portfolio-text)] transition-colors duration-200 hover:bg-white/75 hover:text-[var(--portfolio-accent)] 2xl:text-[0.95rem]"
-          active-class="bg-white/80 text-[var(--portfolio-accent)]"
-          exact-active-class="bg-white/80 text-[var(--portfolio-accent)]"
+          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-[var(--portfolio-on-dark)] transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
+          active-class="bg-white text-[var(--portfolio-accent-hover)]"
+          exact-active-class="bg-white text-[var(--portfolio-accent-hover)]"
         >
           {{ homeItem.name }}
         </NuxtLink>
         <div class="relative inline-flex items-center">
           <NuxtLink
             :to="currentAboutItem.path"
-            class="relative whitespace-nowrap rounded-l-full py-2 pl-3 pr-1 text-sm font-semibold text-[var(--portfolio-text)] transition-colors duration-200 hover:bg-white/75 hover:text-[var(--portfolio-accent)] 2xl:text-[0.95rem]"
-            :class="aboutSectionActive ? 'bg-white/80 text-[var(--portfolio-accent)]' : ''"
-            active-class="bg-white/80 text-[var(--portfolio-accent)]"
+            class="relative whitespace-nowrap rounded-l-full py-2 pl-3 pr-1 text-sm font-semibold text-[var(--portfolio-on-dark)] transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
+            :class="aboutSectionActive ? 'bg-white text-[var(--portfolio-accent-hover)]' : ''"
+            active-class="bg-white text-[var(--portfolio-accent-hover)]"
           >
             {{ currentAboutItem.name }}
           </NuxtLink>
           <button
             type="button"
-            class="relative inline-flex items-center rounded-r-full py-2 pl-1 pr-3 text-sm font-semibold text-[var(--portfolio-text)] transition-colors duration-200 hover:bg-white/75 hover:text-[var(--portfolio-accent)] 2xl:text-[0.95rem]"
-            :class="aboutSectionActive ? 'bg-white/80 text-[var(--portfolio-accent)]' : ''"
+            class="relative inline-flex items-center rounded-r-full py-2 pl-1 pr-3 text-sm font-semibold text-[var(--portfolio-on-dark)] transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
+            :class="aboutSectionActive ? 'bg-white text-[var(--portfolio-accent-hover)]' : ''"
             :aria-expanded="aboutMenuOpen"
             aria-haspopup="true"
             aria-controls="about-dropdown"
@@ -267,33 +348,13 @@ onBeforeUnmount(() => {
           v-for="item in navItems"
           :key="item.path"
           :to="item.path"
-          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-[var(--portfolio-text)] transition-colors duration-200 hover:bg-white/75 hover:text-[var(--portfolio-accent)] 2xl:text-[0.95rem]"
-          active-class="bg-white/80 text-[var(--portfolio-accent)]"
-          exact-active-class="bg-white/80 text-[var(--portfolio-accent)]"
+          class="relative whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-[var(--portfolio-on-dark)] transition-colors duration-200 hover:bg-white/15 hover:text-white 2xl:text-[0.95rem]"
+          active-class="bg-white text-[var(--portfolio-accent-hover)]"
+          exact-active-class="bg-white text-[var(--portfolio-accent-hover)]"
         >
           {{ item.name }}
         </NuxtLink>
       </div>
-
-      <NuxtLink
-        :to="adminDestination"
-        class="ml-6 hidden h-10 items-center justify-center gap-2 rounded-full bg-[var(--portfolio-deep)] px-5 text-sm font-semibold text-white shadow-md shadow-[#172b4d]/20 transition-colors duration-200 hover:bg-[var(--portfolio-accent-hover)] xl:inline-flex"
-        :aria-label="adminLinkLabel"
-      >
-        <svg
-          class="h-5 w-5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          aria-hidden="true"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 17l5-5-5-5" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3" />
-        </svg>
-        <span>{{ adminLinkLabel }}</span>
-      </NuxtLink>
 
       <!-- MOBILE MENU TOGGLE -->
       <button

@@ -41,7 +41,7 @@ const featuredProjects = [
       id="home"
       class="relative overflow-hidden pt-6 pb-20 text-white"
       :style="{
-        backgroundImage: `linear-gradient(120deg, rgba(11, 18, 35, 0.58), rgba(14, 76, 146, 0.44)), url(${heroImg})`,
+        backgroundImage: `linear-gradient(120deg, rgba(16, 43, 85, 0.68), rgba(14, 165, 233, 0.38)), url(${heroImg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -88,7 +88,7 @@ const featuredProjects = [
             </a>
 
             <a
-              href="/Daniel%20Zigabe%20-%20Professional%20CV.pdf"
+              href="/api/cv"
               download="Daniel_Zigabe_CV.pdf"
               class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/40 font-bold px-6 py-3.5 rounded-xl transition"
             >
@@ -97,7 +97,7 @@ const featuredProjects = [
             </a>
 
             <a
-              href="/Daniel%20Zigabe%20-%20Professional%20CV.pdf"
+              href="/api/cv"
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/40 font-bold px-6 py-3.5 rounded-xl transition"

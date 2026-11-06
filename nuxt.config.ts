@@ -3,6 +3,12 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   compatibilityDate: '2026-10-07',
 
+  runtimeConfig: {
+    adminEmail: '',
+    adminPasswordHash: '',
+    adminSessionSecret: ''
+  },
+
   devtools: {
     enabled: true
   },
