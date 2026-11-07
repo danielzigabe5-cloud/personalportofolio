@@ -41,7 +41,7 @@ const featuredProjects = [
       id="home"
       class="relative overflow-hidden pt-6 pb-20 text-white"
       :style="{
-        backgroundImage: `linear-gradient(120deg, rgba(16, 43, 85, 0.68), rgba(14, 165, 233, 0.38)), url(${heroImg})`,
+        backgroundImage: `linear-gradient(120deg, rgba(20, 36, 61, 0.78), rgba(22, 139, 255, 0.42)), url(${heroImg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',

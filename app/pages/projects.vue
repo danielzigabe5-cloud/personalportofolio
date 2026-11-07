@@ -30,8 +30,8 @@ const gradients = [
 'from-blue-800 via-sky-800 to-sky-950'
 ]
 const accents = [
-  { badge: 'border-sky-300/20 bg-sky-400/10 text-sky-300', link: 'text-sky-400 hover:text-sky-300' },
-  { badge: 'border-fuchsia-300/20 bg-fuchsia-400/10 text-fuchsia-300', link: 'text-fuchsia-400 hover:text-fuchsia-300' },
+  { badge: 'border-blue-300/50 bg-blue-400/10 text-blue-800', link: 'text-blue-700 hover:text-blue-800' },
+  { badge: 'border-sky-300/30 bg-sky-400/10 text-sky-700', link: 'text-sky-700 hover:text-sky-800' },
   { badge: 'border-teal-300/20 bg-teal-400/10 text-teal-300', link: 'text-teal-400 hover:text-teal-300' },
   { badge: 'border-amber-300/20 bg-amber-400/10 text-amber-300', link: 'text-amber-400 hover:text-amber-300' }
 ]
@@ -49,18 +49,18 @@ const getProjectTags = (project: Project) => {
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#172335] text-white selection:bg-[#0ea5e9] selection:text-white">
+  <main class="projects-page min-h-screen bg-[#172335] text-white selection:bg-[#0ea5e9] selection:text-white">
     <section class="relative isolate overflow-hidden bg-[radial-gradient(ellipse_at_50%_45%,rgba(14,165,233,0.14),transparent_52%),linear-gradient(115deg,#172335_0%,#1b2b40_50%,#172335_100%)]">
       <div class="pointer-events-none absolute inset-0 -z-10 opacity-40" aria-hidden="true">
         <span class="absolute left-[12%] top-12 h-1 w-1 rounded-full bg-sky-300" />
-        <span class="absolute right-[15%] top-24 h-1 w-1 rounded-full bg-fuchsia-300" />
+        <span class="absolute right-[15%] top-24 h-1 w-1 rounded-full bg-blue-300" />
         <span class="absolute left-[27%] bottom-10 h-1 w-1 rounded-full bg-sky-300" />
-        <span class="absolute right-[30%] bottom-16 h-1 w-1 rounded-full bg-violet-300" />
+        <span class="absolute right-[30%] bottom-16 h-1 w-1 rounded-full bg-sky-300" />
       </div>
       <div class="mx-auto max-w-7xl px-6 pb-8 pt-14 text-center sm:pb-10 sm:pt-16">
-        <span class="inline-flex rounded-full border border-fuchsia-300/15 bg-fuchsia-400/10 px-3 py-1 text-[10px] font-bold tracking-wide text-fuchsia-300">PORTFOLIO</span>
+        <span class="inline-flex rounded-full border border-blue-300/40 bg-blue-300/20 px-3 py-1 text-[10px] font-bold tracking-wide text-blue-800">PORTFOLIO</span>
         <h1 class="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">
-          Featured <span class="bg-gradient-to-r from-sky-400 via-violet-400 to-pink-400 bg-clip-text text-transparent">Projects</span>
+          Featured <span class="bg-gradient-to-r from-blue-900 via-blue-700 to-sky-400 bg-clip-text text-transparent">Projects</span>
         </h1>
         <p class="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#aab8ca] sm:text-base">
             A selection of digital products and practical solutions I’ve worked on, from web platforms to mobile applications.
@@ -119,9 +119,9 @@ const getProjectTags = (project: Project) => {
             <div class="relative w-full max-w-md overflow-hidden rounded-xl border border-white/15 bg-slate-950/85 p-4 shadow-2xl backdrop-blur-md transition duration-300 group-hover:scale-[1.02]">
               <div class="mb-3 flex items-center justify-between border-b border-white/10 pb-2.5">
                 <div class="flex items-center gap-1.5" aria-hidden="true">
-                  <span class="h-2 w-2 rounded-full bg-rose-400" />
-                  <span class="h-2 w-2 rounded-full bg-amber-300" />
-                  <span class="h-2 w-2 rounded-full bg-sky-400" />
+                  <span class="h-2 w-2 rounded-full bg-blue-400" />
+                  <span class="h-2 w-2 rounded-full bg-sky-300" />
+                  <span class="h-2 w-2 rounded-full bg-sky-500" />
                 </div>
                 <span class="max-w-[65%] truncate font-mono text-[10px] text-[#aab8ca]">{{ project.category }}</span>
               </div>

@@ -27,7 +27,7 @@ const formatDate = (date: string) =>
 </script>
 
 <template>
-  <main class="min-h-[70vh] bg-[#172335] px-5 py-14 text-[#f1f5f9] sm:px-6 sm:py-20">
+  <main class="blog-page min-h-[70vh] bg-[#172335] px-5 py-14 text-[#f1f5f9] sm:px-6 sm:py-20">
     <div class="mx-auto max-w-7xl">
       <header class="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
         <p class="mb-4 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-[#0ea5e9]">

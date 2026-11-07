@@ -72,17 +72,17 @@ const { data: profile } = await useProfile()
 
 <style scoped>
 .services-page {
-  --service-ink: #f1f5f9;
-  --service-muted: #aab8ca;
-  --service-accent: #0ea5e9;
-  --service-accent-strong: #0284c7;
-  --service-deep: #141e2d;
+  --service-ink: #293437;
+  --service-muted: #6c7475;
+  --service-accent: #c84e36;
+  --service-accent-strong: #a93d2b;
+  --service-deep: #30383a;
   min-height: 70vh;
   padding: 2rem max(1.5rem, calc((100vw - 1320px) / 2)) 5rem;
   color: var(--service-ink);
   background:
-    radial-gradient(ellipse at 50% 0, rgb(14 165 233 / 12%), transparent 42%),
-    #172335;
+    radial-gradient(ellipse at 50% 0, rgb(200 78 54 / 10%), transparent 42%),
+    #fff8f5;
 }
 
 .services-intro {
@@ -141,10 +141,10 @@ const { data: profile } = await useProfile()
   max-height: 310px;
   overflow: hidden;
   aspect-ratio: 4 / 3;
-  border: 5px solid rgb(255 255 255 / 10%);
+  border: 5px solid rgb(200 78 54 / 12%);
   border-radius: 1.5rem;
-  background: #26364b;
-  box-shadow: 0 18px 40px rgb(0 0 0 / 24%);
+  background: #ffede6;
+  box-shadow: 0 18px 40px rgb(48 56 58 / 12%);
 }
 
 .services-intro__photo {
@@ -201,23 +201,23 @@ const { data: profile } = await useProfile()
   min-height: 430px;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid #344256;
-  background: #202d40;
-  box-shadow: 0 14px 35px rgb(0 0 0 / 18%);
+  border: 1px solid #f0d7cf;
+  background: #ffffff;
+  box-shadow: 0 14px 35px rgb(48 56 58 / 8%);
   transition: border-color 220ms ease, background-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
 }
 
 .service-card:hover {
   transform: translateY(-5px);
-  border-color: rgb(14 165 233 / 52%);
-  box-shadow: 0 22px 45px rgb(0 0 0 / 28%);
+  border-color: rgb(200 78 54 / 65%);
+  box-shadow: 0 22px 45px rgb(48 56 58 / 14%);
 }
 
 .service-card__topline {
   position: relative;
   z-index: 2;
   height: 7px;
-  background: linear-gradient(90deg, var(--service-accent), #7dd3fc);
+  background: linear-gradient(90deg, var(--service-accent), #f2ad3e);
 }
 
 .service-card__image {
@@ -230,7 +230,7 @@ const { data: profile } = await useProfile()
   height: 58%;
   place-items: center;
   overflow: hidden;
-  background: #26364b;
+  background: #ffede6;
   opacity: 0;
   transition: opacity 300ms ease;
 }
@@ -284,7 +284,7 @@ const { data: profile } = await useProfile()
   place-items: center;
   margin-bottom: 1.25rem;
   border-radius: 22px;
-  background: var(--service-accent-soft, rgb(14 165 233 / 12%));
+  background: var(--service-accent-soft, rgb(200 78 54 / 10%));
   color: var(--service-accent);
   transition: background 220ms ease, color 220ms ease, transform 220ms ease;
 }
@@ -320,7 +320,7 @@ const { data: profile } = await useProfile()
   width: 70px;
   height: 4px;
   margin: 1rem 0;
-  background: linear-gradient(90deg, var(--service-accent) 0 35%, #7dd3fc 35% 100%);
+  background: linear-gradient(90deg, var(--service-accent) 0 65%, #f2ad3e 65% 100%);
 }
 
 .service-card p {
@@ -340,9 +340,9 @@ const { data: profile } = await useProfile()
   height: 42px;
   place-items: center;
   border-radius: 50%;
-  background: #26364b;
-  color: #f1f5f9;
-  box-shadow: 0 4px 18px rgb(0 0 0 / 24%);
+  background: var(--service-accent);
+  color: #ffffff;
+  box-shadow: 0 4px 18px rgb(23 63 37 / 18%);
   text-decoration: none;
   transition: color 220ms ease, background 220ms ease, transform 220ms ease, top 300ms ease, width 300ms ease, height 300ms ease;
   z-index: 3;
@@ -382,7 +382,7 @@ const { data: profile } = await useProfile()
 
 .services-cta p {
   margin: 0 0 0.4rem;
-  color: #bfdbfe;
+  color: #ffd59b;
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.12em;

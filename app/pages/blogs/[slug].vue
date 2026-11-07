@@ -29,7 +29,7 @@ const sharePost = (platform: 'facebook' | 'linkedin' | 'x') => {
 </script>
 
 <template>
-  <main class="min-h-[70vh] bg-[#172335] px-5 py-12 text-[#f1f5f9] sm:px-6 sm:py-16">
+  <main class="blog-page min-h-[70vh] bg-[#172335] px-5 py-12 text-[#f1f5f9] sm:px-6 sm:py-16">
     <article class="mx-auto max-w-4xl">
       <NuxtLink to="/blogs" class="inline-flex items-center gap-2 text-sm font-bold text-[#0ea5e9] hover:text-[#0284c7]">
         <span aria-hidden="true">←</span> All articles

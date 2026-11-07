@@ -251,20 +251,20 @@ function resetFormView() {
 
 <style scoped>
 .contact-page {
-  --brand: #0ea5e9;
-  --brand-dark: #0284c7;
-  --brand-soft: #e0f2fe;
-  --brand-soft-2: #bae6fd;
-  --bg: #f0f5ff;
+  --brand: #168bff;
+  --brand-dark: #075ec9;
+  --brand-soft: #e7effb;
+  --brand-soft-2: #cfe4ff;
+  --bg: #f4f7fc;
   --card: #ffffff;
   --panel: #ffffff;
-  --text: #172e55;
-  --muted: #526783;
-  --line: #dce6f5;
-  --field-border: #dce6f5;
-  --success-bg: #e0f2fe;
-  --success-border: #7dd3fc;
-  --success-text: #075985;
+  --text: #1b2b45;
+  --muted: #61718a;
+  --line: #d2deef;
+  --field-border: #d2deef;
+  --success-bg: #eaf5e9;
+  --success-border: #a8d1a2;
+  --success-text: #28603a;
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);

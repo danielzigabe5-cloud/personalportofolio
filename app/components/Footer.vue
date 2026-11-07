@@ -91,12 +91,12 @@ const socialLinks = [
 <style scoped>
 /* ===== Footer Base ===== */
 .site-footer {
-  background: linear-gradient(135deg, var(--portfolio-deep) 0%, #1e3a5f 100%) !important;
+  background: linear-gradient(135deg, var(--portfolio-deep) 0%, #075ec9 100%) !important;
   color: var(--portfolio-on-dark) !important;
   padding: 60px 20px 0;
   margin-top: 80px;
   font-family: 'Segoe UI', Arial, sans-serif;
-  border-top: 3px solid var(--portfolio-accent) !important;
+  border-top: 3px solid var(--portfolio-highlight) !important;
 }
 
 /* ===== Container ===== */
@@ -138,13 +138,13 @@ const socialLinks = [
   justify-content: center;
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, var(--portfolio-accent), #38bdf8);
+  background: linear-gradient(135deg, #168bff, var(--portfolio-deep));
   color: #ffffff;
   border-radius: 10px;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 1px;
-  box-shadow: 0 4px 16px rgb(14 165 233 / 28%);
+  box-shadow: 0 4px 16px rgb(20 36 61 / 24%);
 }
 
 .footer-brand p {
