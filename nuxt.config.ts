@@ -1,7 +1,8 @@
+
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
-  compatibilityDate: '2026-10-07',
+  compatibilityDate: '2026-11-10',
 
   runtimeConfig: {
     adminEmail: '',
@@ -22,10 +23,10 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    externals: {
-      inline: [
-        /[\\/]node_modules[\\/]nuxt[\\/]dist[\\/]/
-      ]
+    preset: 'cloudflare_module',
+    cloudflare: {
+      deployConfig: true,
+      nodeCompat: true
     }
   },
 

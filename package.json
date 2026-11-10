@@ -21,6 +21,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "prisma": "^8.0.0-rc.24",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "wrangler": "^4.160.0"
   }
 }
